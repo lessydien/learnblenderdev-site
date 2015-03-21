@@ -4,10 +4,10 @@
     <title>Learn Blender Development</title>
     <description>A blog on scripting and extending of Blender.
 </description>
-    <link>http://thebusytypist.github.io/</link>
-    <atom:link href="http://thebusytypist.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 21 Mar 2015 23:19:27 +0800</pubDate>
-    <lastBuildDate>Sat, 21 Mar 2015 23:19:27 +0800</lastBuildDate>
+    <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
+    <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sat, 21 Mar 2015 23:27:25 +0800</pubDate>
+    <lastBuildDate>Sat, 21 Mar 2015 23:27:25 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -98,8 +98,8 @@ You can achieve this
 by setting command arguments to &lt;code&gt;-b -P script.py&lt;/code&gt; if you are using Visual C++.&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Mar 2015 00:00:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/2015/03/20/tips-on-tracing-blender-system.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/2015/03/20/tips-on-tracing-blender-system.html</guid>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html</guid>
         
         <category>blender-coding</category>
         
@@ -130,8 +130,8 @@ and add definition of &lt;code&gt;WITH_INPUT_IME&lt;/code&gt; manually
 to the project &lt;code&gt;bf_intern_ghost&lt;/code&gt;.&lt;/p&gt;
 </description>
         <pubDate>Thu, 19 Mar 2015 00:00:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/2015/03/19/blender-as-module.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/2015/03/19/blender-as-module.html</guid>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/03/19/blender-as-module.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/19/blender-as-module.html</guid>
         
         <category>blender-scripting</category>
         
