@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Tags</title>
-  <meta name="description" content="A blog on scripting and extending of Blender.
-">
+  <title>Add properties for operator</title>
+  <meta name="description" content="It is easy to define properties for an operatorand get values of those properties during the execution.This pageprovides a detailed introduction for this tas...">
 
   <link rel="stylesheet" href="/learnblenderdev-site/css/main.css">
-  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/tags/">
+  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/2015/03/28/add-properties-for-operator.html">
   <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" />
 
   
@@ -64,85 +63,58 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Tags</h1>
+    <h1 class="post-title">Add properties for operator</h1>
+    <p class="post-meta">Mar 28, 2015</p>
   </header>
 
   <article class="post-content">
-    <ul class="tags">
+    <p>It is easy to define properties for an operator
+and get values of those properties during the execution.
+<a href="http://wiki.blender.org/index.php/Dev:2.5/Source/Architecture/RNA">This page</a>
+provides a detailed introduction for this task.
+As a summary, you can just search for property definition functions
+in the file <code>rna_define.h</code>, and property access functions
+in the file <code>rna_access.h</code>.</p>
 
-  
-  <li><a href="#blender-scripting">blender-scripting</a> (1)</li>
+<p>I put an example
+<a href="https://github.com/thebusytypist/BlenderExtraOperators/tree/master/EchoProperties">here</a>.</p>
 
-  
-  <li><a href="#blender-coding">blender-coding</a> (3)</li>
+<p>More than defining properties by their value types(<code>int</code>s, <code>float</code>s, <code>string</code>s, etc.),
+you can also assign a sub-type for a property.</p>
 
-  
-  <li><a href="#operator">operator</a> (2)</li>
+<p>A sub-type can supply usefull informations for the editor’s user interface.
+In the above example,
+I assign a string property with a sub-type of <code>PROP_FILEPATH</code>.
+The <code>PROP_FILEPATH</code> will make the UI add an extra file browse button
+in addition to the widgets of a plain string property.</p>
 
-</ul>
+<p>In the file <code>rna_define.h</code> Blender system provides many utilities
+to define properties with sub-type.
+For sub-type <code>PROP_FILEPATH</code> I use <code>RNA_def_string_file_path</code>.
+Within this function you can see a call to <code>RNA_def_property</code>
+which indicates the sub-type for our property:</p>
 
-<h4><a name="blender-scripting"></a><a class="internal" href="#blender-scripting">blender-scripting</a></h4>
-<ul>
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/19/blender-as-module.html">Use Blender as Python module</a>
-      <span class="date">March 19, 2015</span>
-    </li>
-    
-  
-  </ul>
-
-<h4><a name="blender-coding"></a><a class="internal" href="#blender-coding">blender-coding</a></h4>
-<ul>
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/28/add-properties-for-operator.html">Add properties for operator</a>
-      <span class="date">March 28, 2015</span>
-    </li>
-    
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/28/write-first-blender-operator.html">Write first Blender operator</a>
-      <span class="date">March 28, 2015</span>
-    </li>
-    
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html">Tips on tracing Blender system</a>
-      <span class="date">March 20, 2015</span>
-    </li>
-    
-  
-  </ul>
-
-<h4><a name="operator"></a><a class="internal" href="#operator">operator</a></h4>
-<ul>
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/28/add-properties-for-operator.html">Add properties for operator</a>
-      <span class="date">March 28, 2015</span>
-    </li>
-    
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/28/write-first-blender-operator.html">Write first Blender operator</a>
-      <span class="date">March 28, 2015</span>
-    </li>
-    
-  
-  </ul>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">prop</span> <span class="o">=</span> <span class="n">RNA_def_property</span><span class="p">(</span><span class="n">cont</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">PROP_STRING</span><span class="p">,</span> <span class="n">PROP_FILEPATH</span><span class="p">);</span></code></pre></div>
 
 
   </article>
 
   <hr>
   
+  
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'learnblenderdev';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
   
 </div>
 
