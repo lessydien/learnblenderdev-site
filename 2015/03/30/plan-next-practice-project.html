@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Tags</title>
-  <meta name="description" content="A blog on scripting and extending of Blender.
-">
+  <title>Plan next practice project</title>
+  <meta name="description" content="As my next practice project for learning Blender development,I plan to write an operatorwhich generates meshfor isosurfaces of an implicit function.This is a...">
 
   <link rel="stylesheet" href="/learnblenderdev-site/css/main.css">
-  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/tags/">
+  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/2015/03/30/plan-next-practice-project.html">
   <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" />
 
   
@@ -64,92 +63,71 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Tags</h1>
+    <h1 class="post-title">Plan next practice project</h1>
+    <p class="post-meta">Mar 30, 2015</p>
   </header>
 
   <article class="post-content">
-    <ul class="tags">
+    <p>As my next practice project for learning Blender development,
+I plan to write an operator
+which generates mesh
+for isosurfaces of an implicit function.
+This is also called contouring.
+Many techniques, such as
+<a href="http://en.wikipedia.org/wiki/Marching_cubes">Marching Cubes</a>
+and
+<a href="http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf">Dual Contouring</a>,
+can be used for this task. </p>
 
-  
-  <li><a href="#blender-scripting">blender-scripting</a> (1)</li>
+<p>Currently I have only a very general idea for this project.
+Some parts of it have not been designed.
+For example,
+questions like “how to input the implicit function to our operator?”
+have not been answered.
+If I choose to accept symbolic representation of those implicit function
+I have to write a parser for that.
+Or, I can use a fixed form of implicit function with some variable coefficients.
+In this way the parsing can be really easy but we lose too much flexibility.
+I think I need to consider these questions at a later time.</p>
 
-  
-  <li><a href="#blender-coding">blender-coding</a> (4)</li>
+<p>In the comming post,
+I will do an analysis on the operator
+<code>MESH_OT_primitive_cube_add</code>.
+This operator illustrates many usefull informations
+(such as the MVC model in Blender, the BMesh system, etc.) for me
+to write my contouring operator.
+More over, it is not involved with too much theoretical background
+of the BMesh data struction, so I think it should be not hard to read.</p>
 
-  
-  <li><a href="#operator">operator</a> (2)</li>
+<p>By looking closely at its source code
+I expect following question to be answered:</p>
 
+<ul>
+  <li>How is an object linked to the scene?</li>
+  <li>How is the mesh data(i.e. vertices, edges, faces) set?</li>
+  <li>How is the view get notified to update itself?</li>
 </ul>
 
-<h4><a name="blender-scripting"></a><a class="internal" href="#blender-scripting">blender-scripting</a></h4>
-<ul>
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/19/blender-as-module.html">Use Blender as Python module</a>
-      <span class="date">March 19, 2015</span>
-    </li>
-    
-  
-  </ul>
-
-<h4><a name="blender-coding"></a><a class="internal" href="#blender-coding">blender-coding</a></h4>
-<ul>
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/30/plan-next-practice-project.html">Plan next practice project</a>
-      <span class="date">March 30, 2015</span>
-    </li>
-    
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/28/add-properties-for-operator.html">Add properties for operator</a>
-      <span class="date">March 28, 2015</span>
-    </li>
-    
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/28/write-first-blender-operator.html">Write first Blender operator</a>
-      <span class="date">March 28, 2015</span>
-    </li>
-    
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html">Tips on tracing Blender system</a>
-      <span class="date">March 20, 2015</span>
-    </li>
-    
-  
-  </ul>
-
-<h4><a name="operator"></a><a class="internal" href="#operator">operator</a></h4>
-<ul>
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/28/add-properties-for-operator.html">Add properties for operator</a>
-      <span class="date">March 28, 2015</span>
-    </li>
-    
-  
-    
-    <li>
-      <a href="/learnblenderdev-site/2015/03/28/write-first-blender-operator.html">Write first Blender operator</a>
-      <span class="date">March 28, 2015</span>
-    </li>
-    
-  
-  </ul>
-
+<p>That is all for today. See you in next post.</p>
 
   </article>
 
   <hr>
   
+  
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'learnblenderdev';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
   
 </div>
 

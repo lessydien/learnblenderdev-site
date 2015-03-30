@@ -6,9 +6,62 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 28 Mar 2015 19:59:34 +0800</pubDate>
-    <lastBuildDate>Sat, 28 Mar 2015 19:59:34 +0800</lastBuildDate>
+    <pubDate>Mon, 30 Mar 2015 21:25:30 +0800</pubDate>
+    <lastBuildDate>Mon, 30 Mar 2015 21:25:30 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Plan next practice project</title>
+        <description>&lt;p&gt;As my next practice project for learning Blender development,
+I plan to write an operator
+which generates mesh
+for isosurfaces of an implicit function.
+This is also called contouring.
+Many techniques, such as
+&lt;a href=&quot;http://en.wikipedia.org/wiki/Marching_cubes&quot;&gt;Marching Cubes&lt;/a&gt;
+and
+&lt;a href=&quot;http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf&quot;&gt;Dual Contouring&lt;/a&gt;,
+can be used for this task. &lt;/p&gt;
+
+&lt;p&gt;Currently I have only a very general idea for this project.
+Some parts of it have not been designed.
+For example,
+questions like “how to input the implicit function to our operator?”
+have not been answered.
+If I choose to accept symbolic representation of those implicit function
+I have to write a parser for that.
+Or, I can use a fixed form of implicit function with some variable coefficients.
+In this way the parsing can be really easy but we lose too much flexibility.
+I think I need to consider these questions at a later time.&lt;/p&gt;
+
+&lt;p&gt;In the comming post,
+I will do an analysis on the operator
+&lt;code&gt;MESH_OT_primitive_cube_add&lt;/code&gt;.
+This operator illustrates many usefull informations
+(such as the MVC model in Blender, the BMesh system, etc.) for me
+to write my contouring operator.
+More over, it is not involved with too much theoretical background
+of the BMesh data struction, so I think it should be not hard to read.&lt;/p&gt;
+
+&lt;p&gt;By looking closely at its source code
+I expect following question to be answered:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;How is an object linked to the scene?&lt;/li&gt;
+  &lt;li&gt;How is the mesh data(i.e. vertices, edges, faces) set?&lt;/li&gt;
+  &lt;li&gt;How is the view get notified to update itself?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;That is all for today. See you in next post.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 30 Mar 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/03/30/plan-next-practice-project.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/30/plan-next-practice-project.html</guid>
+        
+        <category>blender-coding</category>
+        
+        
+      </item>
     
       <item>
         <title>Add properties for operator</title>
