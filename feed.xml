@@ -6,8 +6,8 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 30 Mar 2015 21:25:30 +0800</pubDate>
-    <lastBuildDate>Mon, 30 Mar 2015 21:25:30 +0800</lastBuildDate>
+    <pubDate>Wed, 01 Apr 2015 00:01:34 +0800</pubDate>
+    <lastBuildDate>Wed, 01 Apr 2015 00:01:34 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -41,7 +41,7 @@ This operator illustrates many usefull informations
 (such as the MVC model in Blender, the BMesh system, etc.) for me
 to write my contouring operator.
 More over, it is not involved with too much theoretical background
-of the BMesh data struction, so I think it should be not hard to read.&lt;/p&gt;
+of the BMesh data structure, so I think it should be not hard to read.&lt;/p&gt;
 
 &lt;p&gt;By looking closely at its source code
 I expect following question to be answered:&lt;/p&gt;
