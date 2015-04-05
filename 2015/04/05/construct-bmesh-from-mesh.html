@@ -77,7 +77,7 @@ the suggested usage from the design.)</p>
 <p>In this post I will take an experiment
 on generating mesh dynamically in Blender.</p>
 
-<p>As I said in the <a href="{site.baseurl}/2015/04/01/analyze-primitive-cube-add-operator.html">previous post</a>
+<p>As I said in the <a href="/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html">previous post</a>
 there are two possible approaches to generate mesh data dynamically.
 One is to add a new BMesh operator which is similar to <code>create_cube</code>.
 The other is
@@ -150,7 +150,7 @@ in file <code>bpy_types.py</code>(directory <code>blender/release/scripts/module
 
 <p>All functions called above is implemented in C.
 By applying tracing techniques I introduced in
-<a href="{site.baseurl}/2015/03/20/tips-on-tracing-blender-system.html">this post</a>
+<a href="/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html">this post</a>
 (Hint: search <code>"add"</code>, <code>"loop_start"</code> in the source code.
 Be sure to include the double quotes while searching
 since we are interested in the reflection code with those words),
@@ -159,7 +159,7 @@ we can collect all of the information we need to construct a <code>Mesh</code>.<
 <p>After that, the remains are simple.</p>
 
 <p>To call a BMesh operator, according our
-<a href="{site.baseurl}/2015/04/01/analyze-primitive-cube-add-operator.html">analysis</a>
+<a href="/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html">analysis</a>
 on BMesh system,
 you can find the operator name and parameters in <code>bmo_opdefines</code>.</p>
 
