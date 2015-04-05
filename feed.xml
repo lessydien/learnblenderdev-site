@@ -6,8 +6,8 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 05 Apr 2015 10:04:52 +0800</pubDate>
-    <lastBuildDate>Sun, 05 Apr 2015 10:04:52 +0800</lastBuildDate>
+    <pubDate>Sun, 05 Apr 2015 10:10:21 +0800</pubDate>
+    <lastBuildDate>Sun, 05 Apr 2015 10:10:21 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -21,7 +21,7 @@ the suggested usage from the design.)&lt;/p&gt;
 &lt;p&gt;In this post I will take an experiment
 on generating mesh dynamically in Blender.&lt;/p&gt;
 
-&lt;p&gt;As I said in the &lt;a href=&quot;/2015/04/01/analyze-primitive-cube-add-operator.html&quot;&gt;previous post&lt;/a&gt;
+&lt;p&gt;As I said in the &lt;a href=&quot;{site.baseurl}/2015/04/01/analyze-primitive-cube-add-operator.html&quot;&gt;previous post&lt;/a&gt;
 there are two possible approaches to generate mesh data dynamically.
 One is to add a new BMesh operator which is similar to &lt;code&gt;create_cube&lt;/code&gt;.
 The other is
@@ -94,7 +94,7 @@ in file &lt;code&gt;bpy_types.py&lt;/code&gt;(directory &lt;code&gt;blender/rele
 
 &lt;p&gt;All functions called above is implemented in C.
 By applying tracing techniques I introduced in
-&lt;a href=&quot;/2015/03/20/tips-on-tracing-blender-system.html&quot;&gt;this post&lt;/a&gt;
+&lt;a href=&quot;{site.baseurl}/2015/03/20/tips-on-tracing-blender-system.html&quot;&gt;this post&lt;/a&gt;
 (Hint: search &lt;code&gt;&quot;add&quot;&lt;/code&gt;, &lt;code&gt;&quot;loop_start&quot;&lt;/code&gt; in the source code.
 Be sure to include the double quotes while searching
 since we are interested in the reflection code with those words),
@@ -103,7 +103,7 @@ we can collect all of the information we need to construct a &lt;code&gt;Mesh&lt
 &lt;p&gt;After that, the remains are simple.&lt;/p&gt;
 
 &lt;p&gt;To call a BMesh operator, according our
-&lt;a href=&quot;/2015/04/01/analyze-primitive-cube-add-operator.html&quot;&gt;analysis&lt;/a&gt;
+&lt;a href=&quot;{site.baseurl}/2015/04/01/analyze-primitive-cube-add-operator.html&quot;&gt;analysis&lt;/a&gt;
 on BMesh system,
 you can find the operator name and parameters in &lt;code&gt;bmo_opdefines&lt;/code&gt;.&lt;/p&gt;
 
