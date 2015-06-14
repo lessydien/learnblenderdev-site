@@ -6,9 +6,9 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 05 Apr 2015 10:15:21 +0800</pubDate>
-    <lastBuildDate>Sun, 05 Apr 2015 10:15:21 +0800</lastBuildDate>
-    <generator>Jekyll v2.5.2</generator>
+    <pubDate>Sun, 14 Jun 2015 21:53:55 +0800</pubDate>
+    <lastBuildDate>Sun, 14 Jun 2015 21:53:55 +0800</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>Construct BMesh from Mesh</title>
@@ -131,7 +131,7 @@ and trigger a notification.&lt;/p&gt;
         <description>&lt;p&gt;(The revision of Blender used for analysis is
 &lt;code&gt;bacdfc70e2109711eeecef122cf408e6803990ca&lt;/code&gt;)&lt;/p&gt;
 
-&lt;h1 id=&quot;overview&quot;&gt;Overview&lt;/h1&gt;
+&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;
 &lt;p&gt;I assume you have already used “cube adding” before
 (By pressing &lt;code&gt;Shift + A&lt;/code&gt;, and choosing the &lt;code&gt;Cube&lt;/code&gt; item in the &lt;code&gt;Mesh&lt;/code&gt; sub-menu).
 And from previous posts we are already familiar with
@@ -145,7 +145,7 @@ Then we dive into the BMesh system to see how the actual mesh data is constructe
 
 &lt;p&gt;&lt;strong&gt;TL;DR&lt;/strong&gt; There is also a summary section in the end for you if you just want to see which functions are required for writing your own operators.&lt;/p&gt;
 
-&lt;h1 id=&quot;the-mvc-pattern-in-blender&quot;&gt;The MVC pattern in Blender&lt;/h1&gt;
+&lt;h2 id=&quot;the-mvc-pattern-in-blender&quot;&gt;The MVC pattern in Blender&lt;/h2&gt;
 &lt;p&gt;Speaking with the theory of &lt;a href=&quot;http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller&quot;&gt;MVC&lt;/a&gt; pattern,
 a successfully executed action usually experiences following steps:&lt;/p&gt;
 
@@ -247,7 +247,7 @@ I will cover this topic in later posts.&lt;/p&gt;
 &lt;p&gt;Until now we have discussed all but the mesh data filling.
 I leave this to the next section.&lt;/p&gt;
 
-&lt;h1 id=&quot;the-bmesh-system&quot;&gt;The BMesh system&lt;/h1&gt;
+&lt;h2 id=&quot;the-bmesh-system&quot;&gt;The BMesh system&lt;/h2&gt;
 &lt;p&gt;In history there was a huge refactoring on mesh implementation.
 The original mesh sub-system was replaced by
 &lt;a href=&quot;http://wiki.blender.org/index.php/Dev:2.6/Source/Modeling/BMesh/Design&quot;&gt;BMesh&lt;/a&gt;.&lt;/p&gt;
@@ -335,7 +335,7 @@ The &lt;code&gt;BMO_slot_buffer_hflag_enable&lt;/code&gt; will use the output sl
 
 &lt;p&gt;Finally we end the BMesh operator execution with &lt;code&gt;EDBM_op_finish&lt;/code&gt;, which dereferences the mesh data we are working on.&lt;/p&gt;
 
-&lt;h1 id=&quot;summary&quot;&gt;Summary&lt;/h1&gt;
+&lt;h2 id=&quot;summary&quot;&gt;Summary&lt;/h2&gt;
 &lt;p&gt;Here is a short summary of functions which you need to call in your own mesh operator:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -348,12 +348,12 @@ You can find BMesh operator specifications(including operator name, input and ou
 in &lt;code&gt;bmo_opdefines&lt;/code&gt; array(file &lt;code&gt;bmesh_opdefines.c&lt;/code&gt;).&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&quot;some-random-notes-and-remained-questions&quot;&gt;Some random notes and remained questions&lt;/h1&gt;
+&lt;h2 id=&quot;some-random-notes-and-remained-questions&quot;&gt;Some random notes and remained questions&lt;/h2&gt;
 &lt;p&gt;I think there are a lot of things and details I did not cover in this post.
 And there are also many questions for me to work on.
 I list some of them below.&lt;/p&gt;
 
-&lt;h2 id=&quot;the-event-system-and-notifications&quot;&gt;The event system and notifications&lt;/h2&gt;
+&lt;h3 id=&quot;the-event-system-and-notifications&quot;&gt;The event system and notifications&lt;/h3&gt;
 &lt;p&gt;I used to believe that in a GUI framework written in real time graphics API like OpenGL,
 the views(I mean the window renderer) refresh itself in a 60 FPS rate.
 Hence the models need not to send notifications manually to the view to trigger a refresh.&lt;/p&gt;
@@ -367,7 +367,7 @@ should be only for the dependency resolving.&lt;/p&gt;
 I noticed the mandatory function call to &lt;code&gt;WM_event_add_notifier&lt;/code&gt; in operators.
 It seems that I was wrong.&lt;/p&gt;
 
-&lt;h2 id=&quot;reduce-operator-looking-up-by-string-interning&quot;&gt;Reduce operator looking up by string interning&lt;/h2&gt;
+&lt;h3 id=&quot;reduce-operator-looking-up-by-string-interning&quot;&gt;Reduce operator looking up by string interning&lt;/h3&gt;
 &lt;p&gt;The BMesh operator is indexed by their names.
 While you are request one BMesh operator’s definition,
 you have to perform a linear search(in function &lt;code&gt;BMO_opcode_from_opname&lt;/code&gt;) on these names.&lt;/p&gt;
@@ -381,7 +381,7 @@ to reduce the linear search.&lt;/p&gt;
 (that is, a mapping defined in compile time and remains constant during runtime),
 this search can be reduced to constant time using &lt;a href=&quot;http://en.wikipedia.org/wiki/String_interning&quot;&gt;string interning&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h2 id=&quot;do-i-have-to-add-new-operators-to-bmesh&quot;&gt;Do I have to add new operators to BMesh?&lt;/h2&gt;
+&lt;h3 id=&quot;do-i-have-to-add-new-operators-to-bmesh&quot;&gt;Do I have to add new operators to BMesh?&lt;/h3&gt;
 &lt;p&gt;For my proposed project in previous post,
 I am going to construct mesh dynamically.&lt;/p&gt;
 
@@ -416,7 +416,7 @@ Many techniques, such as
 &lt;a href=&quot;http://en.wikipedia.org/wiki/Marching_cubes&quot;&gt;Marching Cubes&lt;/a&gt;
 and
 &lt;a href=&quot;http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf&quot;&gt;Dual Contouring&lt;/a&gt;,
-can be used for this task. &lt;/p&gt;
+can be used for this task.&lt;/p&gt;
 
 &lt;p&gt;Currently I have only a very general idea for this project.
 Some parts of it have not been designed.
@@ -512,9 +512,9 @@ and try to provide a basic framework for Blender operators developing.&lt;/p&gt;
 &lt;a href=&quot;https://github.com/thebusytypist/BlenderExtraOperators/tree/master/Echo&quot;&gt;&lt;code&gt;Echo&lt;/code&gt;&lt;/a&gt;
 operator as an example.&lt;/p&gt;
 
-&lt;h1 id=&quot;the-life-of-a-blender-operator&quot;&gt;The life of a Blender operator&lt;/h1&gt;
+&lt;h2 id=&quot;the-life-of-a-blender-operator&quot;&gt;The life of a Blender operator&lt;/h2&gt;
 
-&lt;h2 id=&quot;the-operator-template-wmoperatortype&quot;&gt;The operator “template” &lt;code&gt;wmOperatorType&lt;/code&gt;&lt;/h2&gt;
+&lt;h3 id=&quot;the-operator-template-wmoperatortype&quot;&gt;The operator “template” &lt;code&gt;wmOperatorType&lt;/code&gt;&lt;/h3&gt;
 &lt;p&gt;Have a look at our &lt;code&gt;Echo&lt;/code&gt; operator:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;echo_exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wmOperator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -568,7 +568,7 @@ blender-app.exe!main(int argc, const unsigned char * * UNUSED_argv_c) Line 1767
 &lt;p&gt;Jump to the frame which contains the call &lt;code&gt;ED_spacetypes_init&lt;/code&gt;
 then you can find all other operators are also registered there.&lt;/p&gt;
 
-&lt;h2 id=&quot;operator-invocation-and-execution&quot;&gt;Operator invocation and execution&lt;/h2&gt;
+&lt;h3 id=&quot;operator-invocation-and-execution&quot;&gt;Operator invocation and execution&lt;/h3&gt;
 
 &lt;p&gt;When you launch an operator
 (e.g. hit space key and execute an operator from the pop-up panel),
@@ -595,7 +595,7 @@ the operator by calling the function which we had registered through
 We may revisit these functions later
 for some advanced topics like redo/undo stack, modal operator, etc.&lt;/p&gt;
 
-&lt;h2 id=&quot;finalization&quot;&gt;Finalization&lt;/h2&gt;
+&lt;h3 id=&quot;finalization&quot;&gt;Finalization&lt;/h3&gt;
 
 &lt;p&gt;For an operator instance returns &lt;code&gt;OPERATOR_FINISHED&lt;/code&gt;,
 it will be added to a queue of window manager,
@@ -622,7 +622,7 @@ which is in function &lt;code&gt;WM_operator_last_redo&lt;/code&gt;(file &lt;cod
 &lt;p&gt;For our &lt;code&gt;Echo&lt;/code&gt; operator, which does not have an undo flag,
 it will not be active during a redo action.&lt;/p&gt;
 
-&lt;h1 id=&quot;build-blender-with-your-operator&quot;&gt;Build Blender with your operator&lt;/h1&gt;
+&lt;h2 id=&quot;build-blender-with-your-operator&quot;&gt;Build Blender with your operator&lt;/h2&gt;
 
 &lt;p&gt;To include your operator in Blender system,
 you have to do following things:&lt;/p&gt;
@@ -643,7 +643,7 @@ from the file &lt;code&gt;blender/build_files/cmake/macros.cmake&lt;/code&gt;.&l
   &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&quot;blender-extra-operator-framework&quot;&gt;Blender extra operator framework&lt;/h1&gt;
+&lt;h2 id=&quot;blender-extra-operator-framework&quot;&gt;Blender extra operator framework&lt;/h2&gt;
 
 &lt;p&gt;I think it would be tedious to add custom operators
 to build system manually every time.

@@ -71,7 +71,7 @@
     <p>(The revision of Blender used for analysis is
 <code>bacdfc70e2109711eeecef122cf408e6803990ca</code>)</p>
 
-<h1 id="overview">Overview</h1>
+<h2 id="overview">Overview</h2>
 <p>I assume you have already used “cube adding” before
 (By pressing <code>Shift + A</code>, and choosing the <code>Cube</code> item in the <code>Mesh</code> sub-menu).
 And from previous posts we are already familiar with
@@ -85,7 +85,7 @@ Then we dive into the BMesh system to see how the actual mesh data is constructe
 
 <p><strong>TL;DR</strong> There is also a summary section in the end for you if you just want to see which functions are required for writing your own operators.</p>
 
-<h1 id="the-mvc-pattern-in-blender">The MVC pattern in Blender</h1>
+<h2 id="the-mvc-pattern-in-blender">The MVC pattern in Blender</h2>
 <p>Speaking with the theory of <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> pattern,
 a successfully executed action usually experiences following steps:</p>
 
@@ -187,7 +187,7 @@ I will cover this topic in later posts.</p>
 <p>Until now we have discussed all but the mesh data filling.
 I leave this to the next section.</p>
 
-<h1 id="the-bmesh-system">The BMesh system</h1>
+<h2 id="the-bmesh-system">The BMesh system</h2>
 <p>In history there was a huge refactoring on mesh implementation.
 The original mesh sub-system was replaced by
 <a href="http://wiki.blender.org/index.php/Dev:2.6/Source/Modeling/BMesh/Design">BMesh</a>.</p>
@@ -275,7 +275,7 @@ The <code>BMO_slot_buffer_hflag_enable</code> will use the output slots to mark 
 
 <p>Finally we end the BMesh operator execution with <code>EDBM_op_finish</code>, which dereferences the mesh data we are working on.</p>
 
-<h1 id="summary">Summary</h1>
+<h2 id="summary">Summary</h2>
 <p>Here is a short summary of functions which you need to call in your own mesh operator:</p>
 
 <ul>
@@ -288,12 +288,12 @@ You can find BMesh operator specifications(including operator name, input and ou
 in <code>bmo_opdefines</code> array(file <code>bmesh_opdefines.c</code>).</li>
 </ul>
 
-<h1 id="some-random-notes-and-remained-questions">Some random notes and remained questions</h1>
+<h2 id="some-random-notes-and-remained-questions">Some random notes and remained questions</h2>
 <p>I think there are a lot of things and details I did not cover in this post.
 And there are also many questions for me to work on.
 I list some of them below.</p>
 
-<h2 id="the-event-system-and-notifications">The event system and notifications</h2>
+<h3 id="the-event-system-and-notifications">The event system and notifications</h3>
 <p>I used to believe that in a GUI framework written in real time graphics API like OpenGL,
 the views(I mean the window renderer) refresh itself in a 60 FPS rate.
 Hence the models need not to send notifications manually to the view to trigger a refresh.</p>
@@ -307,7 +307,7 @@ should be only for the dependency resolving.</p>
 I noticed the mandatory function call to <code>WM_event_add_notifier</code> in operators.
 It seems that I was wrong.</p>
 
-<h2 id="reduce-operator-looking-up-by-string-interning">Reduce operator looking up by string interning</h2>
+<h3 id="reduce-operator-looking-up-by-string-interning">Reduce operator looking up by string interning</h3>
 <p>The BMesh operator is indexed by their names.
 While you are request one BMesh operator’s definition,
 you have to perform a linear search(in function <code>BMO_opcode_from_opname</code>) on these names.</p>
@@ -321,7 +321,7 @@ to reduce the linear search.</p>
 (that is, a mapping defined in compile time and remains constant during runtime),
 this search can be reduced to constant time using <a href="http://en.wikipedia.org/wiki/String_interning">string interning</a>.</p>
 
-<h2 id="do-i-have-to-add-new-operators-to-bmesh">Do I have to add new operators to BMesh?</h2>
+<h3 id="do-i-have-to-add-new-operators-to-bmesh">Do I have to add new operators to BMesh?</h3>
 <p>For my proposed project in previous post,
 I am going to construct mesh dynamically.</p>
 

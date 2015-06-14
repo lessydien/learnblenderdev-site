@@ -78,9 +78,9 @@ and try to provide a basic framework for Blender operators developing.</p>
 <a href="https://github.com/thebusytypist/BlenderExtraOperators/tree/master/Echo"><code>Echo</code></a>
 operator as an example.</p>
 
-<h1 id="the-life-of-a-blender-operator">The life of a Blender operator</h1>
+<h2 id="the-life-of-a-blender-operator">The life of a Blender operator</h2>
 
-<h2 id="the-operator-template-wmoperatortype">The operator “template” <code>wmOperatorType</code></h2>
+<h3 id="the-operator-template-wmoperatortype">The operator “template” <code>wmOperatorType</code></h3>
 <p>Have a look at our <code>Echo</code> operator:</p>
 
 <div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">echo_exec</span><span class="p">(</span><span class="n">bContext</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="n">wmOperator</span> <span class="o">*</span><span class="n">op</span><span class="p">)</span>
@@ -134,7 +134,7 @@ blender-app.exe!main(int argc, const unsigned char * * UNUSED_argv_c) Line 1767
 <p>Jump to the frame which contains the call <code>ED_spacetypes_init</code>
 then you can find all other operators are also registered there.</p>
 
-<h2 id="operator-invocation-and-execution">Operator invocation and execution</h2>
+<h3 id="operator-invocation-and-execution">Operator invocation and execution</h3>
 
 <p>When you launch an operator
 (e.g. hit space key and execute an operator from the pop-up panel),
@@ -161,7 +161,7 @@ the operator by calling the function which we had registered through
 We may revisit these functions later
 for some advanced topics like redo/undo stack, modal operator, etc.</p>
 
-<h2 id="finalization">Finalization</h2>
+<h3 id="finalization">Finalization</h3>
 
 <p>For an operator instance returns <code>OPERATOR_FINISHED</code>,
 it will be added to a queue of window manager,
@@ -188,7 +188,7 @@ which is in function <code>WM_operator_last_redo</code>(file <code>wm_operators.
 <p>For our <code>Echo</code> operator, which does not have an undo flag,
 it will not be active during a redo action.</p>
 
-<h1 id="build-blender-with-your-operator">Build Blender with your operator</h1>
+<h2 id="build-blender-with-your-operator">Build Blender with your operator</h2>
 
 <p>To include your operator in Blender system,
 you have to do following things:</p>
@@ -209,7 +209,7 @@ from the file <code>blender/build_files/cmake/macros.cmake</code>.</p>
   </li>
 </ul>
 
-<h1 id="blender-extra-operator-framework">Blender extra operator framework</h1>
+<h2 id="blender-extra-operator-framework">Blender extra operator framework</h2>
 
 <p>I think it would be tedious to add custom operators
 to build system manually every time.
