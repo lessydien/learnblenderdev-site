@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Learn Blender Development</title>
-  <meta name="description" content="A blog on scripting and extending of Blender.
-">
+  <title>2D dual contouring in Blender script</title>
+  <meta name="description" content="After a long break I begin to implement 2D dual contouring today.This is the result I achieved:">
 
   <link rel="stylesheet" href="/learnblenderdev-site/css/main.css">
-  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/">
+  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/2015/07/16/bpy-2d-dual-contouring.html">
   <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" />
 
   
@@ -61,80 +60,66 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <div class="post">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title">2D dual contouring in Blender script</h1>
+    <p class="post-meta">Jul 16, 2015</p>
+  </header>
 
-  <ul class="post-list">
+  <article class="post-content">
+    <p>After a long break I begin to implement 2D dual contouring today.
+This is the result I achieved:</p>
+
+<p><img src="/assets/heart-function-2d-dc.png" alt="2D dual contouring of heart function" /></p>
+
+<p>My implementation is based on
+<a href="http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf">Dual Contouring of Hermite Data</a>
+and
+<a href="http://www.cs.berkeley.edu/~jrs/meshpapers/SchaeferWarren2.pdf">Dual Contouring: “The Secret Sauce”</a>.
+The source code of this tool can be found
+<a href="https://gist.github.com/thebusytypist/1d1c9db590670def874e">here</a>.</p>
+
+<p>You can edit the <code>Function</code> parameter to contour other kinds of geometry.
+The input of <code>Function</code> parameter should be a 2D distance field function.
+Its zero isopleth will be contoured. 
+You may find <a href="http://iquilezles.org/www/articles/distfunctions/distfunctions.htm">this page</a> useful.</p>
+
+<p>There are also some details worth noting.
+I use <code>numpy.linalg.pinv</code> to solve linear system.
+According to numpy’s document, <code>pinv</code> computes the Moore-Penrose pseudo-inverse of a matrix.
+Hence when we are given a linear system which is rank deficient,
+the solution is minimized to the origin.
+This may lead to a vertex outside its bounding square.
+In this implementation I use the mass point translation approach to resolve this problem.</p>
+
+<p>This tool is tested on some simple cases and most of them works well.
+But there is a problem when the isopleth hits the grid point.
+In this case the common intersection point will be used by four adjacent squares
+and then have four vertices generated.
+This makes the shape’s topology incorrect.
+A slight displacement may alleviate this problem.
+But I am looking for a more robust solution.</p>
+
+  </article>
+
+  <hr>
+  
+  
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'learnblenderdev';
     
-      <li>
-        <span class="post-meta">Jul 16, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/07/16/bpy-2d-dual-contouring.html">2D dual contouring in Blender script</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 5, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/04/05/construct-bmesh-from-mesh.html">Construct BMesh from Mesh</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 1, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html">Analyze the cube adding operator</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 30, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/30/plan-next-practice-project.html">Plan next practice project</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 28, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/28/add-properties-for-operator.html">Add properties for operator</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 28, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/28/write-first-blender-operator.html">Write first Blender operator</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 20, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html">Tips on tracing Blender system</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 19, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/19/blender-as-module.html">Use Blender as Python module</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/learnblenderdev-site/feed.xml">via RSS</a></p>
-
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
 </div>
 
       </div>

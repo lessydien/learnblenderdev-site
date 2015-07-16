@@ -6,9 +6,53 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 14 Jun 2015 21:53:55 +0800</pubDate>
-    <lastBuildDate>Sun, 14 Jun 2015 21:53:55 +0800</lastBuildDate>
-    <generator>Jekyll v2.5.3</generator>
+    <pubDate>Thu, 16 Jul 2015 20:37:18 +0800</pubDate>
+    <lastBuildDate>Thu, 16 Jul 2015 20:37:18 +0800</lastBuildDate>
+    <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>2D dual contouring in Blender script</title>
+        <description>&lt;p&gt;After a long break I begin to implement 2D dual contouring today.
+This is the result I achieved:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/heart-function-2d-dc.png&quot; alt=&quot;2D dual contouring of heart function&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;My implementation is based on
+&lt;a href=&quot;http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf&quot;&gt;Dual Contouring of Hermite Data&lt;/a&gt;
+and
+&lt;a href=&quot;http://www.cs.berkeley.edu/~jrs/meshpapers/SchaeferWarren2.pdf&quot;&gt;Dual Contouring: “The Secret Sauce”&lt;/a&gt;.
+The source code of this tool can be found
+&lt;a href=&quot;https://gist.github.com/thebusytypist/1d1c9db590670def874e&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can edit the &lt;code&gt;Function&lt;/code&gt; parameter to contour other kinds of geometry.
+The input of &lt;code&gt;Function&lt;/code&gt; parameter should be a 2D distance field function.
+Its zero isopleth will be contoured. 
+You may find &lt;a href=&quot;http://iquilezles.org/www/articles/distfunctions/distfunctions.htm&quot;&gt;this page&lt;/a&gt; useful.&lt;/p&gt;
+
+&lt;p&gt;There are also some details worth noting.
+I use &lt;code&gt;numpy.linalg.pinv&lt;/code&gt; to solve linear system.
+According to numpy’s document, &lt;code&gt;pinv&lt;/code&gt; computes the Moore-Penrose pseudo-inverse of a matrix.
+Hence when we are given a linear system which is rank deficient,
+the solution is minimized to the origin.
+This may lead to a vertex outside its bounding square.
+In this implementation I use the mass point translation approach to resolve this problem.&lt;/p&gt;
+
+&lt;p&gt;This tool is tested on some simple cases and most of them works well.
+But there is a problem when the isopleth hits the grid point.
+In this case the common intersection point will be used by four adjacent squares
+and then have four vertices generated.
+This makes the shape’s topology incorrect.
+A slight displacement may alleviate this problem.
+But I am looking for a more robust solution.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 16 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/16/bpy-2d-dual-contouring.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/16/bpy-2d-dual-contouring.html</guid>
+        
+        <category>blender-scripting</category>
+        
+        
+      </item>
     
       <item>
         <title>Construct BMesh from Mesh</title>
