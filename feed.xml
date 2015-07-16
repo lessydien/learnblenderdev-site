@@ -6,8 +6,8 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 16 Jul 2015 20:37:18 +0800</pubDate>
-    <lastBuildDate>Thu, 16 Jul 2015 20:37:18 +0800</lastBuildDate>
+    <pubDate>Thu, 16 Jul 2015 20:40:54 +0800</pubDate>
+    <lastBuildDate>Thu, 16 Jul 2015 20:40:54 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -15,7 +15,7 @@
         <description>&lt;p&gt;After a long break I begin to implement 2D dual contouring today.
 This is the result I achieved:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/heart-function-2d-dc.png&quot; alt=&quot;2D dual contouring of heart function&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/heart-function-2d-dc.png&quot; alt=&quot;2D dual contouring of heart function&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;My implementation is based on
 &lt;a href=&quot;http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf&quot;&gt;Dual Contouring of Hermite Data&lt;/a&gt;
