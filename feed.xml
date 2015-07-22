@@ -6,9 +6,57 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 17 Jul 2015 23:23:14 +0800</pubDate>
-    <lastBuildDate>Fri, 17 Jul 2015 23:23:14 +0800</lastBuildDate>
+    <pubDate>Wed, 22 Jul 2015 16:27:37 +0800</pubDate>
+    <lastBuildDate>Wed, 22 Jul 2015 16:27:37 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Some updates on my 2D dual contouring script</title>
+        <description>&lt;p&gt;I test more cases with my 2D dual contouring script. Here are some updates.&lt;/p&gt;
+
+&lt;h2 id=&quot;touching-vertex&quot;&gt;Touching vertex&lt;/h2&gt;
+
+&lt;p&gt;When the isopleth hits the grid vertex, duplicated vertices may be generated.
+See figure below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/dc-touching-vertex.svg&quot; alt=&quot;Touching vertex&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The touching grid point(the black one) will have duplicated vertices generated in the red cells.
+Then these vertices will overlap at the black grid point.&lt;/p&gt;
+
+&lt;p&gt;My solution is to omit the edge which has one side with zero value and the other side with positive value. I mark this kind of edges with bold black color in the figure.&lt;/p&gt;
+
+&lt;h2 id=&quot;solution-outside-the-cell&quot;&gt;Solution outside the cell&lt;/h2&gt;
+
+&lt;p&gt;Sometimes a solution of pseudoinverse will be outside the cell:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/dc-vertex-outside-cube.svg&quot; alt=&quot;Solution outside the cell&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a sample data set:
+The first intersection is &lt;code&gt;(0.17391304, -0.84122239)&lt;/code&gt; with normal vector &lt;code&gt;(0.27874198, -0.41094215)&lt;/code&gt;;
+The second intersection is &lt;code&gt;(0.26083516, -0.7826087)&lt;/code&gt; with normal vector &lt;code&gt;(0.40979725, -0.60430874)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this case I simply set the solution to the center of the cell.&lt;/p&gt;
+
+&lt;h2 id=&quot;incorrect-topology&quot;&gt;Incorrect topology&lt;/h2&gt;
+
+&lt;p&gt;Currently I construct edges from one grid cell to its four adjacent neighbors. This approach will generate incorrect topology when it encounters sharp features.&lt;/p&gt;
+
+&lt;p&gt;Here is an example of upper part of heart function:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/2d-dc-incorrect-topology.svg&quot; alt=&quot;Incorrect topology in heart function&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The red part forms an incorrect “bridge”-like mesh.
+I do not find a solution yet.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 22 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/22/revise-2d-dual-contouring.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/22/revise-2d-dual-contouring.html</guid>
+        
+        <category>blender-scripting</category>
+        
+        
+      </item>
     
       <item>
         <title>2D dual contouring in Blender script</title>
