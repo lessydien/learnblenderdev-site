@@ -6,9 +6,96 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 22 Jul 2015 16:27:37 +0800</pubDate>
-    <lastBuildDate>Wed, 22 Jul 2015 16:27:37 +0800</lastBuildDate>
+    <pubDate>Thu, 23 Jul 2015 20:36:21 +0800</pubDate>
+    <lastBuildDate>Thu, 23 Jul 2015 20:36:21 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Learn how Blender&#39;s modifier system works (part 1)</title>
+        <description>&lt;p&gt;In this and following several posts I will write about Blender’s modifier system.
+I expect following questions to be answered:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;How is modifiers’ source code organized in the source tree?&lt;/li&gt;
+  &lt;li&gt;How is a modifier registered to Blender system?&lt;/li&gt;
+  &lt;li&gt;Where and when does a modifier operate?&lt;/li&gt;
+  &lt;li&gt;How are modifiers combined together?&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;It seems that the last question is too broad. Let me elaborate to make it more specific.&lt;/p&gt;
+
+&lt;p&gt;As you know, Blender organizes all modifiers in a stack.
+Then multiple modifiers can be combined and chained together.
+Two adjacent modifiers in the stack must agree in a data format
+so that the processed data from previous modifier can be handed over
+to the next one.
+So what is the protocol of data format which is used among different modifiers?&lt;/p&gt;
+
+&lt;p&gt;Now let us get started with above questions in mind.&lt;/p&gt;
+
+&lt;p&gt;First we start with the function where a modifier is added to an object.
+Hover the cursor on the &lt;code&gt;Array&lt;/code&gt; modifier icon from the &lt;code&gt;Add Modifier&lt;/code&gt; menu in the modifiers panel,
+you can see the Python code in the pop-up: &lt;code&gt;bpy.ops.object.modifier_add(type=&quot;ARRAY&quot;)&lt;/code&gt;.
+This is an operator named &lt;code&gt;modifier_add&lt;/code&gt;.
+Search this name in the source code you will find the operator registration function &lt;code&gt;OBJECT_OT_modifier_add&lt;/code&gt;.
+And then you can locate the actual execution function of this operator: &lt;code&gt;modifier_add_exec&lt;/code&gt;(file &lt;code&gt;source/blender/editors/object/object_modifier.c&lt;/code&gt;).
+We add a break point in &lt;code&gt;modifier_add_exec&lt;/code&gt; to trace the construction of a modifier.&lt;/p&gt;
+
+&lt;p&gt;Now we try to add an &lt;code&gt;Array&lt;/code&gt; modifier and step into the &lt;code&gt;ED_object_modifier_add&lt;/code&gt; from &lt;code&gt;modifier_add_exec&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;In &lt;code&gt;ED_object_modifier_add&lt;/code&gt;,&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Information of a modifier is retrieved by calling function
+&lt;code&gt;modifierType_getInfo&lt;/code&gt;(file &lt;code&gt;source/blender/blenkernel/intern/modifier.c&lt;/code&gt;)
+on a given &lt;code&gt;ModifierType&lt;/code&gt;(file &lt;code&gt;source/blender/makesdna/DNA_modifier_types.h&lt;/code&gt;).
+This information is stored in &lt;code&gt;struct ModifierTypeInfo&lt;/code&gt;(file &lt;code&gt;source/blender/blenkernel/BKE_modifier.h&lt;/code&gt;).
+You can register your own modifiers by providing informations for them in this file.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;A new modifier is constructed in function &lt;code&gt;modifier_new&lt;/code&gt;(file &lt;code&gt;source/blender/blenkernel/intern/modifier.c&lt;/code&gt;).
+In this function, a &lt;code&gt;ModifierData&lt;/code&gt; structure(file ‘source/blender/makesdna/DNA_modifier_types.h’) is allocated
+through &lt;code&gt;MEM_callocN(mti-&amp;gt;structSize, mti-&amp;gt;structName)&lt;/code&gt;.&lt;/p&gt;
+
+    &lt;p&gt;Note that a “derived” &lt;code&gt;ModifierData&lt;/code&gt; is actually allocated here.
+The allocator uses a structure size recored in &lt;code&gt;ModifierTypeInfo&lt;/code&gt;(&lt;code&gt;mti&lt;/code&gt; variable in the code), which usually is different from &lt;code&gt;ModifierData&lt;/code&gt;’s.&lt;/p&gt;
+
+    &lt;p&gt;For ‘Array’ modifier, we can see it is &lt;code&gt;ArrayModifierData&lt;/code&gt;,
+which is defined in the file &lt;code&gt;source/blender/makesdna/DNA_modifier_types.h&lt;/code&gt;.&lt;/p&gt;
+
+    &lt;p&gt;After that, the modifier gets initialized through &lt;code&gt;if (mti-&amp;gt;initData) mti-&amp;gt;initData(md);&lt;/code&gt;.&lt;/p&gt;
+
+    &lt;p&gt;The function &lt;code&gt;initData&lt;/code&gt; is a function pointer you could set in the &lt;code&gt;ModifierTypeInfo&lt;/code&gt; structure.
+By stepping into this function you can reach the definition of &lt;code&gt;Array&lt;/code&gt; modifier’s initializer,
+which resides in the file &lt;code&gt;source/blender/modifiers/intern/MOD_array.c&lt;/code&gt;.
+During the initialization stage, one modifier’s “derived” &lt;code&gt;ModifierData&lt;/code&gt; is initialized.&lt;/p&gt;
+
+    &lt;p&gt;In the file &lt;code&gt;MOD_array.c&lt;/code&gt; there are also many other functions.
+These functions could be set to the &lt;code&gt;ModifierTypeInfo&lt;/code&gt; structure when you define the modifier.&lt;/p&gt;
+
+    &lt;p&gt;Along with the file &lt;code&gt;MOD_array.c&lt;/code&gt; there are many other files with a prefix of &lt;code&gt;MOD_&lt;/code&gt;.
+These are the sources of other modifiers. They reside in the folder &lt;code&gt;source/blender/modifiers/intern&lt;/code&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Speak in the Object-Oriented glossary,
+the &lt;code&gt;ModifierTypeInfo&lt;/code&gt; is the common interface that modifiers should derive from.&lt;/p&gt;
+
+&lt;p&gt;Now the definition and construction of a modifier are finished.&lt;/p&gt;
+
+&lt;p&gt;In the next part I will dive into the execution code of the &lt;code&gt;Array&lt;/code&gt; modifier.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 23 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/23/how-modifier-system-works-part-1.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/23/how-modifier-system-works-part-1.html</guid>
+        
+        <category>blender-coding</category>
+        
+        <category>modifier</category>
+        
+        
+      </item>
     
       <item>
         <title>Some updates on my 2D dual contouring script</title>
