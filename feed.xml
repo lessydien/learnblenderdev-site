@@ -6,8 +6,8 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 24 Jul 2015 21:34:32 +0800</pubDate>
-    <lastBuildDate>Fri, 24 Jul 2015 21:34:32 +0800</lastBuildDate>
+    <pubDate>Sat, 25 Jul 2015 06:28:50 +0800</pubDate>
+    <lastBuildDate>Sat, 25 Jul 2015 06:28:50 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -416,7 +416,7 @@ we can collect all of the information we need to construct a &lt;code&gt;Mesh&lt
 &lt;p&gt;To call a BMesh operator, according our
 &lt;a href=&quot;/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html&quot;&gt;analysis&lt;/a&gt;
 on BMesh system,
-you can find the operator name and parameters in &lt;code&gt;bmo_opdefines&lt;/code&gt;.&lt;/p&gt;
+you can find the desired operator name and parameters in &lt;code&gt;bmo_opdefines&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Also do not forget to link the newly created object to the scene,
 and trigger a notification.&lt;/p&gt;
