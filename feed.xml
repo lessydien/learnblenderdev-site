@@ -6,9 +6,28 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 23 Jul 2015 20:36:21 +0800</pubDate>
-    <lastBuildDate>Thu, 23 Jul 2015 20:36:21 +0800</lastBuildDate>
+    <pubDate>Fri, 24 Jul 2015 12:05:42 +0800</pubDate>
+    <lastBuildDate>Fri, 24 Jul 2015 12:05:42 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Preliminary 3D dual contouring</title>
+        <description>&lt;p&gt;I try to do 3D dual contouring in Python today.
+It runs too slow and suffers severe numerical problems in some test cases.
+I guess my intersection solver fails and causes infinite loop.&lt;/p&gt;
+
+&lt;p&gt;Anyway here is a working result I get for the moment:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/preliminary-3d-dc.png&quot; alt=&quot;Touching vertex&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 24 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html</guid>
+        
+        <category>blender-scripting</category>
+        
+        
+      </item>
     
       <item>
         <title>Learn how Blender&#39;s modifier system works (part 1)</title>
@@ -942,38 +961,6 @@ by setting command arguments to &lt;code&gt;-b -P script.py&lt;/code&gt; if you 
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html</guid>
         
         <category>blender-coding</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Use Blender as Python module</title>
-        <description>&lt;p&gt;I have my &lt;code&gt;bpy&lt;/code&gt; module work today by following the directions of
-&lt;a href=&quot;http://wiki.blender.org/index.php/User:Ideasman42/BlenderAsPyModule&quot;&gt;BlenderAsPyModule&lt;/a&gt;.
-The only difference is in that
-I do not copy &lt;code&gt;*.dll&lt;/code&gt; and &lt;code&gt;bpy.pyd&lt;/code&gt; files to &lt;code&gt;site-packages&lt;/code&gt;.
-Instead, I set environment variable &lt;code&gt;PATH&lt;/code&gt; pointing to those &lt;code&gt;*.dll&lt;/code&gt;s
-and set &lt;code&gt;sys.path&lt;/code&gt; pointing to &lt;code&gt;bpy.pyd&lt;/code&gt;.
-However, 
-a copy of &lt;code&gt;bin/&amp;lt;blender-version&amp;gt;&lt;/code&gt; in the Python’s root directory
-seems inevitable.&lt;/p&gt;
-
-&lt;p&gt;Note that the architecture of Python and &lt;code&gt;bpy&lt;/code&gt; module should be matched.
-That is, you cannot imported an x86-64 build of &lt;code&gt;bpy&lt;/code&gt; module
-in an x86 version of Python.
-Otherwise you would get a “DLL load failed” error.&lt;/p&gt;
-
-&lt;p&gt;There is also a minor building error in the revision of Blender I used
-(&lt;code&gt;ff1ed872d93b5c40f1de599d79084d48f213921d&lt;/code&gt;, x86-64 build).
-I have to add header path for &lt;code&gt;utfconv.h&lt;/code&gt;
-and add definition of &lt;code&gt;WITH_INPUT_IME&lt;/code&gt; manually
-to the project &lt;code&gt;bf_intern_ghost&lt;/code&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Thu, 19 Mar 2015 00:00:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/03/19/blender-as-module.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/19/blender-as-module.html</guid>
-        
-        <category>blender-scripting</category>
         
         
       </item>
