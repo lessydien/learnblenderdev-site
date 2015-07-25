@@ -6,8 +6,8 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 25 Jul 2015 06:28:50 +0800</pubDate>
-    <lastBuildDate>Sat, 25 Jul 2015 06:28:50 +0800</lastBuildDate>
+    <pubDate>Sat, 25 Jul 2015 08:57:52 +0800</pubDate>
+    <lastBuildDate>Sat, 25 Jul 2015 08:57:52 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -131,7 +131,7 @@ I guess my intersection solver fails and causes infinite loop.&lt;/p&gt;
 
 &lt;p&gt;Anyway here is a working result I get for the moment:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/preliminary-3d-dc.png&quot; alt=&quot;Touching vertex&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/preliminary-3d-dc.png&quot; alt=&quot;Preliminary 3D dual contouring&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 24 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html</link>
