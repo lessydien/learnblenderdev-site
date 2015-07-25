@@ -4,7 +4,7 @@
  <title>Learn Blender Development</title>
  <link href="http://thebusytypist.github.io/learnblenderdev-site/atom.xml" rel="self"/>
  <link href="http://thebusytypist.github.io/learnblenderdev-site/"/>
- <updated>2015-07-25T23:10:10+08:00</updated>
+ <updated>2015-07-26T06:56:15+08:00</updated>
  <id>http://thebusytypist.github.io</id>
  <author>
    <name>TheBusyTypist</name>
@@ -242,7 +242,7 @@ You can register your own modifiers by providing informations for them in this f
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;A new modifier is constructed in function &lt;code&gt;modifier_new&lt;/code&gt;(file &lt;code&gt;source/blender/blenkernel/intern/modifier.c&lt;/code&gt;).
-In this function, a &lt;code&gt;ModifierData&lt;/code&gt; structure(file ‘source/blender/makesdna/DNA_modifier_types.h’) is allocated
+In this function, a &lt;code&gt;ModifierData&lt;/code&gt; structure(file &lt;code&gt;source/blender/makesdna/DNA_modifier_types.h&lt;/code&gt;) is allocated
 through &lt;code&gt;MEM_callocN(mti-&amp;gt;structSize, mti-&amp;gt;structName)&lt;/code&gt;.&lt;/p&gt;
 
     &lt;p&gt;Note that a “derived” &lt;code&gt;ModifierData&lt;/code&gt; is actually allocated here.
