@@ -87,7 +87,7 @@
     <a class="sidebar-nav-item" href="/archive/v1.0.0.zip">Download</a>
     <a class="sidebar-nav-item" href="">GitHub project</a>
     -->
-    <span class="sidebar-nav-item">Latest update: 2015-07-25 21:29:17 +0800</span>
+    <span class="sidebar-nav-item">Latest update: 2015-07-25 21:43:25 +0800</span>
   </nav>
 
   <div class="sidebar-item">
@@ -124,33 +124,6 @@
 
     <p>I fixed a problem in my previous 3D dual contouring script today.</p>
 
-<p>For a given mesh grid constructed by <code>numpy.meshgrid</code>, for example:</p>
-
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-
-<span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span>
-
-<span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-
-<span class="n">s</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span></code></pre></div>
-
-<p>A coordinate of <code>(x0 + step * x, y0 + step * y, z0 + step * z)</code>,
-whose integer grid coordinate is <code>(x, y, z)</code>,
-needs to be indexed from the mesh grid using <code>s[y, x, z]</code>.</p>
-
-<p>Now the 3D heart function can be successfully contoured:</p>
-
-<p><img src="/learnblenderdev-site/assets/heart-function-3d-dc.png" alt="3D dual contoured heart function" /></p>
-
-<p>The source code of this script can be found <a href="https://gist.github.com/thebusytypist/b043745a6d7712998485">here</a>.
-It still has some topology issues to be resolved.</p>
 
   </div>
   
@@ -166,102 +139,6 @@ It still has some topology issues to be resolved.</p>
     <p>We have learned how a modifier is constructed
 in the <a href="/learnblenderdev-site/2015/07/23/how-modifier-system-works-part-1.html">previous post</a>.</p>
 
-<p>In this post we will learn how a modifier is applied.</p>
-
-<p>We have already known that a modifier defines a derived <code>ModifierTypeInfo</code> structure.
-Take <code>Array</code> modifier as an example, its <code>ModifierTypeInfo</code> is defined
-in the file <code>source/blender/modifiers/intern/MOD_array.c</code>.</p>
-
-<p>The <code>applyModifier</code> function in <code>ModifierTypeInfo</code> seems to be the place where actual modifier execution happens.
-We can set a break point in it and do some tracing.</p>
-
-<p>Following is a call stack for the <code>applyModifier</code> function:</p>
-
-<pre><code>arrayModifier_doArray(ArrayModifierData * amd, Scene * scene, Object * ob, DerivedMesh * dm, ModifierApplyFlag flag)
-applyModifier(ModifierData * md, Object * ob, DerivedMesh * dm, ModifierApplyFlag flag)
-modwrap_applyModifier(ModifierData * md, Object * ob, DerivedMesh * dm, ModifierApplyFlag flag)
-mesh_calc_modifiers(Scene * scene, Object * ob, float[3] * inputVertexCos, DerivedMesh * * deform_r, DerivedMesh * * final_r, int useRenderParams, int useDeform, int needMapping, unsigned __int64 dataMask, int index, int useCache, int build_shapekey_layers)
-mesh_build_data(Scene * scene, Object * ob, unsigned __int64 dataMask, int build_shapekey_layers, int needMapping)
-makeDerivedMesh(Scene * scene, Object * ob, BMEditMesh * em, unsigned __int64 dataMask, int build_shapekey_layers)
-BKE_object_handle_data_update(EvaluationContext * eval_ctx, Scene * scene, Object * ob)
-BKE_object_handle_update_ex(EvaluationContext * eval_ctx, Scene * scene, Object * ob, RigidBodyWorld * rbw, const bool do_proxy_update)
-scene_update_object_func(TaskPool * pool, void * taskdata, int threadid)
-BLI_task_pool_work_and_wait(TaskPool * pool)
-scene_update_objects(EvaluationContext * eval_ctx, Main * bmain, Scene * scene, Scene * scene_parent)
-scene_update_tagged_recursive(EvaluationContext * eval_ctx, Main * bmain, Scene * scene, Scene * scene_parent)
-BKE_scene_update_tagged(EvaluationContext * eval_ctx, Main * bmain, Scene * scene)
-wm_event_do_notifiers(bContext * C)
-WM_main(bContext * C)
-main(int argc, const unsigned char * * UNUSED_argv_c)
-</code></pre>
-
-<p>In the function <code>mesh_calc_modifiers</code> we see a loop through all modifiers:</p>
-
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">for</span> <span class="p">(;</span> <span class="n">md</span><span class="p">;</span> <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">,</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-    <span class="n">ndm</span> <span class="o">=</span> <span class="n">modwrap_applyModifier</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">app_flags</span><span class="p">);</span>
-    <span class="n">ASSERT_IS_VALID_DM</span><span class="p">(</span><span class="n">ndm</span><span class="p">);</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">ndm</span><span class="p">)</span> <span class="p">{</span>
-        <span class="cm">/* if the modifier returned a new dm, release the old one */</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">dm</span> <span class="o">&amp;&amp;</span> <span class="n">dm</span> <span class="o">!=</span> <span class="n">ndm</span><span class="p">)</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">release</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
-
-        <span class="n">dm</span> <span class="o">=</span> <span class="n">ndm</span><span class="p">;</span>
-        <span class="c1">// ...</span>
-    <span class="p">}</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></div>
-
-<p>Inside this loop each modifier gets executed in <code>modwrap_applyModifier</code> function.</p>
-
-<p>We notice that a <code>DerivedMesh</code>(file <code>source/blender/blenkernel/BKE_DerivedMesh.h</code>) object(variable <code>dm</code> in the code) is passed to the modifier
-and then another <code>DerivedMesh</code> object(variable <code>ndm</code> in the code) is returned back to the caller.
-We can then conclude that the <code>DerivedMesh</code> is the media that gets passed through modifier stack.
-<a href="http://wiki.blender.org/index.php/Dev:Source/Modeling/DerivedMesh">Here</a> is the document for <code>Derivedmesh</code>.</p>
-
-<p>Also note that the caller of a modifier always <em>own</em> the <code>DerivedMesh</code> object.
-If we construct a new <code>DerivedMesh</code> in our modifier like what the <code>Array</code> modifier does,
-the new derived mesh will be <em>moved</em> to the caller, and the old one will be released.</p>
-
-<p>Now we go back to the function <code>arrayModifier_doArray</code>, where actual modifier action happens.
-This is a long function. I try to provide an overview of what it does.</p>
-
-<p>In the beginning of <code>arrayModifier_doArray</code> it collects options and parameters from the <code>ArrayModifierData</code>(variable <code>amd</code> in following source code).
-For example:</p>
-
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">const</span> <span class="kt">bool</span> <span class="n">use_merge</span> <span class="o">=</span> <span class="p">(</span><span class="n">amd</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">MOD_ARR_MERGE</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="c1">// ...</span>
-<span class="k">const</span> <span class="kt">bool</span> <span class="n">use_offset_ob</span> <span class="o">=</span> <span class="p">((</span><span class="n">amd</span><span class="o">-&gt;</span><span class="n">offset_type</span> <span class="o">&amp;</span> <span class="n">MOD_ARR_OFF_OBJ</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">amd</span><span class="o">-&gt;</span><span class="n">offset_ob</span><span class="p">);</span>
-<span class="c1">// ...</span>
-<span class="n">count</span> <span class="o">=</span> <span class="n">amd</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span></code></pre></div>
-
-<p>Then it reads in the <code>DerivedMesh</code> which is passed from previous modifier in the modifier stack:</p>
-
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">chunk_nverts</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumVerts</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
-<span class="n">chunk_nedges</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumEdges</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
-<span class="n">chunk_nloops</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumLoops</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
-<span class="n">chunk_npolys</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumPolys</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
-<span class="c1">// ...</span>
-<span class="n">src_mvert</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getVertArray</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span></code></pre></div>
-
-<p>After all information has been ready, a new derived mesh will be constructed:</p>
-
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">result</span> <span class="o">=</span> <span class="n">CDDM_from_template</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result_nverts</span><span class="p">,</span> <span class="n">result_nedges</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">result_nloops</span><span class="p">,</span> <span class="n">result_npolys</span><span class="p">);</span></code></pre></div>
-
-<p>Then we can write to this new derived mesh:</p>
-
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* copy customdata to original geometry */</span>
-<span class="n">DM_copy_vert_data</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_nverts</span><span class="p">);</span>
-<span class="n">DM_copy_edge_data</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_nedges</span><span class="p">);</span>
-<span class="n">DM_copy_loop_data</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_nloops</span><span class="p">);</span>
-<span class="n">DM_copy_poly_data</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_npolys</span><span class="p">);</span>
-<span class="c1">// ...</span></code></pre></div>
-
-<p>Finally the modifier finishes by returning the new derived mesh: <code>return result;</code>.</p>
-
-<p>Now we have learned almost all about Blender modifier system,
-except that the dependency graph related functions in a modifier implementation.
-I leave these things to future posts.</p>
 
   </div>
   
@@ -278,9 +155,6 @@ I leave these things to future posts.</p>
 It runs too slow and suffers severe numerical problems in some test cases.
 I guess my intersection solver fails and causes infinite loop.</p>
 
-<p>Anyway here is a working result I get for the moment:</p>
-
-<p><img src="/learnblenderdev-site/assets/preliminary-3d-dc.png" alt="Preliminary 3D dual contouring" /></p>
 
   </div>
   
@@ -296,76 +170,6 @@ I guess my intersection solver fails and causes infinite loop.</p>
     <p>In this and following several posts I will write about Blender’s modifier system.
 I expect following questions to be answered:</p>
 
-<ol>
-  <li>How is modifiers’ source code organized in the source tree?</li>
-  <li>How is a modifier registered to Blender system?</li>
-  <li>Where and when does a modifier operate?</li>
-  <li>How are modifiers combined together?</li>
-</ol>
-
-<p>It seems that the last question is too broad. Let me elaborate to make it more specific.</p>
-
-<p>As you know, Blender organizes all modifiers in a stack.
-Then multiple modifiers can be combined and chained together.
-Two adjacent modifiers in the stack must agree in a data format
-so that the processed data from previous modifier can be handed over
-to the next one.
-So what is the protocol of data format which is used among different modifiers?</p>
-
-<p>Now let us get started with above questions in mind.</p>
-
-<p>First we start with the function where a modifier is added to an object.
-Hover the cursor on the <code>Array</code> modifier icon from the <code>Add Modifier</code> menu in the modifiers panel,
-you can see the Python code in the pop-up: <code>bpy.ops.object.modifier_add(type="ARRAY")</code>.
-This is an operator named <code>modifier_add</code>.
-Search this name in the source code you will find the operator registration function <code>OBJECT_OT_modifier_add</code>.
-And then you can locate the actual execution function of this operator: <code>modifier_add_exec</code>(file <code>source/blender/editors/object/object_modifier.c</code>).
-We add a break point in <code>modifier_add_exec</code> to trace the construction of a modifier.</p>
-
-<p>Now we try to add an <code>Array</code> modifier and step into the <code>ED_object_modifier_add</code> from <code>modifier_add_exec</code>.</p>
-
-<p>In <code>ED_object_modifier_add</code>,</p>
-
-<ol>
-  <li>
-    <p>Information of a modifier is retrieved by calling function
-<code>modifierType_getInfo</code>(file <code>source/blender/blenkernel/intern/modifier.c</code>)
-on a given <code>ModifierType</code>(file <code>source/blender/makesdna/DNA_modifier_types.h</code>).
-This information is stored in <code>struct ModifierTypeInfo</code>(file <code>source/blender/blenkernel/BKE_modifier.h</code>).
-You can register your own modifiers by providing informations for them in this file.</p>
-  </li>
-  <li>
-    <p>A new modifier is constructed in function <code>modifier_new</code>(file <code>source/blender/blenkernel/intern/modifier.c</code>).
-In this function, a <code>ModifierData</code> structure(file ‘source/blender/makesdna/DNA_modifier_types.h’) is allocated
-through <code>MEM_callocN(mti-&gt;structSize, mti-&gt;structName)</code>.</p>
-
-    <p>Note that a “derived” <code>ModifierData</code> is actually allocated here.
-The allocator uses a structure size recored in <code>ModifierTypeInfo</code>(<code>mti</code> variable in the code), which usually is different from <code>ModifierData</code>’s.</p>
-
-    <p>For ‘Array’ modifier, we can see it is <code>ArrayModifierData</code>,
-which is defined in the file <code>source/blender/makesdna/DNA_modifier_types.h</code>.</p>
-
-    <p>After that, the modifier gets initialized through <code>if (mti-&gt;initData) mti-&gt;initData(md);</code>.</p>
-
-    <p>The function <code>initData</code> is a function pointer you could set in the <code>ModifierTypeInfo</code> structure.
-By stepping into this function you can reach the definition of <code>Array</code> modifier’s initializer,
-which resides in the file <code>source/blender/modifiers/intern/MOD_array.c</code>.
-During the initialization stage, one modifier’s “derived” <code>ModifierData</code> is initialized.</p>
-
-    <p>In the file <code>MOD_array.c</code> there are also many other functions.
-These functions could be set to the <code>ModifierTypeInfo</code> structure when you define the modifier.</p>
-
-    <p>Along with the file <code>MOD_array.c</code> there are many other files with a prefix of <code>MOD_</code>.
-These are the sources of other modifiers. They reside in the folder <code>source/blender/modifiers/intern</code>.</p>
-  </li>
-</ol>
-
-<p>Speak in the Object-Oriented glossary,
-the <code>ModifierTypeInfo</code> is the common interface that modifiers should derive from.</p>
-
-<p>Now the definition and construction of a modifier are finished.</p>
-
-<p>In the next part I will dive into the execution code of the <code>Array</code> modifier.</p>
 
   </div>
   
@@ -380,40 +184,6 @@ the <code>ModifierTypeInfo</code> is the common interface that modifiers should 
 
     <p>I test more cases with my 2D dual contouring script. Here are some updates.</p>
 
-<h2 id="touching-vertex">Touching vertex</h2>
-
-<p>When the isopleth hits the grid vertex, duplicated vertices may be generated.
-See figure below.</p>
-
-<p><img src="/learnblenderdev-site/assets/dc-touching-vertex.svg" alt="Touching vertex" /></p>
-
-<p>The touching grid point(the black one) will have duplicated vertices generated in the red cells.
-Then these vertices will overlap at the black grid point.</p>
-
-<p>My solution is to omit the edge which has one side with zero value and the other side with positive value. I mark this kind of edges with bold black color in the figure.</p>
-
-<h2 id="solution-outside-the-cell">Solution outside the cell</h2>
-
-<p>Sometimes a solution of pseudoinverse will be outside the cell:</p>
-
-<p><img src="/learnblenderdev-site/assets/dc-vertex-outside-cube.svg" alt="Solution outside the cell" /></p>
-
-<p>Here is a sample data set:
-The first intersection is <code>(0.17391304, -0.84122239)</code> with normal vector <code>(0.27874198, -0.41094215)</code>;
-The second intersection is <code>(0.26083516, -0.7826087)</code> with normal vector <code>(0.40979725, -0.60430874)</code>.</p>
-
-<p>In this case I simply set the solution to the center of the cell.</p>
-
-<h2 id="incorrect-topology">Incorrect topology</h2>
-
-<p>Currently I construct edges from one grid cell to its four adjacent neighbors. This approach will generate incorrect topology when it encounters sharp features.</p>
-
-<p>Here is an example of upper part of heart function:</p>
-
-<p><img src="/learnblenderdev-site/assets/2d-dc-incorrect-topology.svg" alt="Incorrect topology in heart function" /></p>
-
-<p>The red part forms an incorrect “bridge”-like mesh.
-I do not find a solution yet.</p>
 
   </div>
   
