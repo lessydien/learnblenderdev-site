@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Learn Blender Development</title>
-  <meta name="description" content="A blog on scripting and extending of Blender.
-">
+  <title>Fix mesh grid indexing in 3D dual contouring</title>
+  <meta name="description" content="I fixed a problem in my previous 3D dual contouring script today.">
 
   <link rel="stylesheet" href="/learnblenderdev-site/css/main.css">
-  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/">
+  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html">
   <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" />
 
   
@@ -61,120 +60,63 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <div class="post">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title">Fix mesh grid indexing in 3D dual contouring</h1>
+    <p class="post-meta">Jul 25, 2015</p>
+  </header>
 
-  <ul class="post-list">
+  <article class="post-content">
+    <p>I fixed a problem in my previous 3D dual contouring script today.</p>
+
+<p>For a given mesh grid constructed by <code>numpy.meshgrid</code>, for example:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span>
+
+<span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span></code></pre></div>
+
+<p>A coordinate of <code>(x0 + step * x, y0 + step * y, z0 + step * z)</code>,
+whose integer grid coordinate is <code>(x, y, z)</code>,
+needs to be indexed from the mesh grid using <code>s[y, x, z]</code>.</p>
+
+<p>Now the 3D heart function can be successfully contoured:</p>
+
+<p><img src="/learnblenderdev-site/assets/heart-function-3d-dc.png" alt="3D dual contoured heart function" /></p>
+
+<p>The source code of this script can be found <a href="https://gist.github.com/thebusytypist/b043745a6d7712998485">here</a>.
+It still has some topology issues to be resolved.</p>
+
+  </article>
+
+  <hr>
+  
+  
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'learnblenderdev';
     
-      <li>
-        <span class="post-meta">Jul 25, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html">Fix mesh grid indexing in 3D dual contouring</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 25, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html">Learn how Blender's modifier system works (part 2)</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 24, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html">Preliminary 3D dual contouring</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 23, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/07/23/how-modifier-system-works-part-1.html">Learn how Blender's modifier system works (part 1)</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 22, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/07/22/revise-2d-dual-contouring.html">Some updates on my 2D dual contouring script</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 16, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/07/16/bpy-2d-dual-contouring.html">2D dual contouring in Blender script</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 5, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/04/05/construct-bmesh-from-mesh.html">Construct BMesh from Mesh</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 1, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html">Analyze the cube adding operator</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 30, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/30/plan-next-practice-project.html">Plan next practice project</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 28, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/28/add-properties-for-operator.html">Add properties for operator</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 28, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/28/write-first-blender-operator.html">Write first Blender operator</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 20, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html">Tips on tracing Blender system</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 19, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/19/blender-as-module.html">Use Blender as Python module</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/learnblenderdev-site/feed.xml">via RSS</a></p>
-
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
 </div>
 
       </div>

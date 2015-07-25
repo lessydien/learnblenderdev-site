@@ -6,9 +6,50 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 25 Jul 2015 08:57:52 +0800</pubDate>
-    <lastBuildDate>Sat, 25 Jul 2015 08:57:52 +0800</lastBuildDate>
+    <pubDate>Sat, 25 Jul 2015 18:16:35 +0800</pubDate>
+    <lastBuildDate>Sat, 25 Jul 2015 18:16:35 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Fix mesh grid indexing in 3D dual contouring</title>
+        <description>&lt;p&gt;I fixed a problem in my previous 3D dual contouring script today.&lt;/p&gt;
+
+&lt;p&gt;For a given mesh grid constructed by &lt;code&gt;numpy.meshgrid&lt;/code&gt;, for example:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;np&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;meshgrid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;F&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vectorize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;A coordinate of &lt;code&gt;(x0 + step * x, y0 + step * y, z0 + step * z)&lt;/code&gt;,
+whose integer grid coordinate is &lt;code&gt;(x, y, z)&lt;/code&gt;,
+needs to be indexed from the mesh grid using &lt;code&gt;s[y, x, z]&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now the 3D heart function can be successfully contoured:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/heart-function-3d-dc.png&quot; alt=&quot;3D dual contoured heart function&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The source code of this script can be found &lt;a href=&quot;https://gist.github.com/thebusytypist/b043745a6d7712998485&quot;&gt;here&lt;/a&gt;.
+It still has some topology issues to be resolved.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 25 Jul 2015 17:57:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</guid>
+        
+        <category>blender-scripting</category>
+        
+        
+      </item>
     
       <item>
         <title>Learn how Blender&#39;s modifier system works (part 2)</title>
@@ -803,177 +844,6 @@ which indicates the sub-type for our property:&lt;/p&gt;
         <pubDate>Sat, 28 Mar 2015 19:56:00 +0800</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/03/28/add-properties-for-operator.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/28/add-properties-for-operator.html</guid>
-        
-        <category>blender-coding</category>
-        
-        <category>operator</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Write first Blender operator</title>
-        <description>&lt;p&gt;&lt;a href=&quot;http://wiki.blender.org/index.php/Dev:2.5/Source/Architecture/Operators/Tutorial&quot;&gt;This operator tutorial&lt;/a&gt;
-covers almost all about Blender operator development.
-I do not want to merely repeat that tutorial in this post.
-Instead, I will discuss a general work flow of adding your own operator,
-and try to provide a basic framework for Blender operators developing.&lt;/p&gt;
-
-&lt;p&gt;In the following discus I will take my
-&lt;a href=&quot;https://github.com/thebusytypist/BlenderExtraOperators/tree/master/Echo&quot;&gt;&lt;code&gt;Echo&lt;/code&gt;&lt;/a&gt;
-operator as an example.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-life-of-a-blender-operator&quot;&gt;The life of a Blender operator&lt;/h2&gt;
-
-&lt;h3 id=&quot;the-operator-template-wmoperatortype&quot;&gt;The operator “template” &lt;code&gt;wmOperatorType&lt;/code&gt;&lt;/h3&gt;
-&lt;p&gt;Have a look at our &lt;code&gt;Echo&lt;/code&gt; operator:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;echo_exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wmOperator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;BKE_reportf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reports&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RPT_INFO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                &lt;span class=&quot;s&quot;&gt;&amp;quot;Operator %s is invoked.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                &lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idname&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OPERATOR_FINISHED&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
- 
-&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;EXTRA_OT_echo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wmOperatorType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Echo&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;description&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Echo operator invocation&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idname&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;EXTRA_OT_echo&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
- 
-    &lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;echo_exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
- 
-    &lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OPTYPE_REGISTER&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;You may have already noticed that a &lt;code&gt;wmOperatorType&lt;/code&gt; is used
-while you are writing operator registration function;
-but a &lt;code&gt;wmOperator&lt;/code&gt; is used
-while you are implementing an operator’s execution function.&lt;/p&gt;
-
-&lt;p&gt;The difference between &lt;code&gt;wmOperatorType&lt;/code&gt; and &lt;code&gt;wmOperator&lt;/code&gt;
-is in that the former one has only static information,
-such as &lt;code&gt;idname&lt;/code&gt;(which will be used as a key for operator finding),
-and operator description for GUI display.
-While the &lt;code&gt;wmOperator&lt;/code&gt; is a runtime thing and may contain runtime data.&lt;/p&gt;
-
-&lt;p&gt;I prefer to call &lt;code&gt;wmOperator&lt;/code&gt; an operator instance since
-it is instantiated from the operator template, &lt;code&gt;wmOperatorType&lt;/code&gt;.
-And several operator instances of same type share their static information
-in a single operator template.&lt;/p&gt;
-
-&lt;p&gt;When Blender starts, only operator templates are created.
-This is the time your operator registration function(&lt;code&gt;EXTRA_OT_echo&lt;/code&gt;) happens.&lt;/p&gt;
-
-&lt;p&gt;The call stack looks like:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;blender-app.exe!EXTRA_OT_echo(wmOperatorType * ot) Line 17
-blender-app.exe!WM_operatortype_append(void (wmOperatorType *) * opfunc) Line 175
-blender-app.exe!ED_operatortypes_extra() Line 5
-blender-app.exe!ED_spacetypes_init() Line 130
-blender-app.exe!WM_init(bContext * C, int argc, const unsigned char * * argv) Line 159
-blender-app.exe!main(int argc, const unsigned char * * UNUSED_argv_c) Line 1767
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Jump to the frame which contains the call &lt;code&gt;ED_spacetypes_init&lt;/code&gt;
-then you can find all other operators are also registered there.&lt;/p&gt;
-
-&lt;h3 id=&quot;operator-invocation-and-execution&quot;&gt;Operator invocation and execution&lt;/h3&gt;
-
-&lt;p&gt;When you launch an operator
-(e.g. hit space key and execute an operator from the pop-up panel),
-an operator instance is created.&lt;/p&gt;
-
-&lt;p&gt;The operator instantiation happens in
-function &lt;code&gt;wm_operator_create&lt;/code&gt;(file &lt;code&gt;wm_event_system.c&lt;/code&gt;),
-which is called by &lt;code&gt;wm_operator_invoke&lt;/code&gt;(file &lt;code&gt;wm_event_system.c&lt;/code&gt;).&lt;/p&gt;
-
-&lt;p&gt;I list a partial call stack here:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;blender-app.exe!echo_exec(bContext * C, wmOperator * op) Line 11
-blender-app.exe!wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRNA * properties, ReportList * reports, const bool poll_only) Line 1048
-blender-app.exe!wm_operator_call_internal(bContext * C, wmOperatorType * ot, PointerRNA * properties, ReportList * reports, const short context, const bool poll_only) Line 1263
-blender-app.exe!WM_operator_name_call_ptr(bContext * C, wmOperatorType * ot, short context, PointerRNA * properties) Line 1275
-blender-app.exe!operator_call_cb(bContext * C, void * UNUSED_arg1, void * arg2) Line 3268
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;After the instantiation, &lt;code&gt;wm_operator_invoke&lt;/code&gt; continues and executes
-the operator by calling the function which we had registered through
-&lt;code&gt;wmOperatorType::exec&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Now most work of an operator has been finished.
-We may revisit these functions later
-for some advanced topics like redo/undo stack, modal operator, etc.&lt;/p&gt;
-
-&lt;h3 id=&quot;finalization&quot;&gt;Finalization&lt;/h3&gt;
-
-&lt;p&gt;For an operator instance returns &lt;code&gt;OPERATOR_FINISHED&lt;/code&gt;,
-it will be added to a queue of window manager,
-rather than destroyed immediately.&lt;/p&gt;
-
-&lt;p&gt;You can trace this process from following call stack:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;blender-app.exe!wm_operator_register(bContext * C, wmOperator * op) Line 154
-blender-app.exe!wm_operator_finished(bContext * C, wmOperator * op, const bool repeat) Line 697
-blender-app.exe!wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRNA * properties, ReportList * reports, const bool poll_only) Line 1073
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In the function &lt;code&gt;wm_operator_register&lt;/code&gt;(file &lt;code&gt;wm.c&lt;/code&gt;)
-there is call to &lt;code&gt;BLI_addtail(&amp;amp;wm-&amp;gt;operators, op);&lt;/code&gt;
-to save the last operator instance.&lt;/p&gt;
-
-&lt;p&gt;And those saved operators in &lt;code&gt;wm-&amp;gt;operators&lt;/code&gt; can be called from a redo,
-which is in function &lt;code&gt;WM_operator_last_redo&lt;/code&gt;(file &lt;code&gt;wm_operators.c&lt;/code&gt;):&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;op&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;operators&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;op&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OPTYPE_REGISTER&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OPTYPE_UNDO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;For our &lt;code&gt;Echo&lt;/code&gt; operator, which does not have an undo flag,
-it will not be active during a redo action.&lt;/p&gt;
-
-&lt;h2 id=&quot;build-blender-with-your-operator&quot;&gt;Build Blender with your operator&lt;/h2&gt;
-
-&lt;p&gt;To include your operator in Blender system,
-you have to do following things:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Tell the build script to include your operator sources/headers.
-You can achieve this by adding an &lt;code&gt;add_subdirectory&lt;/code&gt; in the &lt;code&gt;CMakeLists.txt&lt;/code&gt;
-which resides in the directory &lt;code&gt;blender/source/blender/editors&lt;/code&gt;.
-You need to call CMake macro &lt;code&gt;blender_add_lib&lt;/code&gt; to
-ask the build system to generate a library target for you.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Link the Blender system with your operator library.
-You need to add your library name into
-CMake variable &lt;code&gt;BLENDER_SORTED_LIBS&lt;/code&gt;
-from the file &lt;code&gt;blender/build_files/cmake/macros.cmake&lt;/code&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;blender-extra-operator-framework&quot;&gt;Blender extra operator framework&lt;/h2&gt;
-
-&lt;p&gt;I think it would be tedious to add custom operators
-to build system manually every time.
-So I start a project to make this process more elegant:
-&lt;a href=&quot;https://github.com/thebusytypist/BlenderExtraOperators&quot;&gt;BlenderExtraOperators&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;You need to apply a patch on Blender’s source only once.
-Then all your extra operators can be &lt;em&gt;automatically&lt;/em&gt; added into Blender system.&lt;/p&gt;
-
-&lt;p&gt;More than that, by using &lt;code&gt;BlenderExtraOperators&lt;/code&gt; framework,
-you can maintain your operator source out of the Blender directory.
-(This is like very much
-what &lt;code&gt;clang&lt;/code&gt; project does to its extension &lt;code&gt;clang-tools-extra&lt;/code&gt;.)&lt;/p&gt;
-
-&lt;p&gt;I hope this project also helps your Blender operator development.&lt;/p&gt;
-</description>
-        <pubDate>Sat, 28 Mar 2015 00:00:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/03/28/write-first-blender-operator.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/28/write-first-blender-operator.html</guid>
         
         <category>blender-coding</category>
         
