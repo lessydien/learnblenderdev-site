@@ -159,7 +159,7 @@ through <code>MEM_callocN(mti-&gt;structSize, mti-&gt;structName)</code>.</p>
     <p>Note that a “derived” <code>ModifierData</code> is actually allocated here.
 The allocator uses a structure size recored in <code>ModifierTypeInfo</code>(<code>mti</code> variable in the code), which usually is different from <code>ModifierData</code>’s.</p>
 
-    <p>For ‘Array’ modifier, we can see it is <code>ArrayModifierData</code>,
+    <p>For <code>Array</code> modifier, we can see its derived <code>ModifierData</code> is <code>ArrayModifierData</code>,
 which is defined in the file <code>source/blender/makesdna/DNA_modifier_types.h</code>.</p>
 
     <p>After that, the modifier gets initialized through <code>if (mti-&gt;initData) mti-&gt;initData(md);</code>.</p>

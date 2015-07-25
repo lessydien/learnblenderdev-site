@@ -4,7 +4,7 @@
  <title>Learn Blender Development</title>
  <link href="http://thebusytypist.github.io/learnblenderdev-site/atom.xml" rel="self"/>
  <link href="http://thebusytypist.github.io/learnblenderdev-site/"/>
- <updated>2015-07-26T06:56:15+08:00</updated>
+ <updated>2015-07-26T07:02:41+08:00</updated>
  <id>http://thebusytypist.github.io</id>
  <author>
    <name>TheBusyTypist</name>
@@ -248,7 +248,7 @@ through &lt;code&gt;MEM_callocN(mti-&amp;gt;structSize, mti-&amp;gt;structName)&
     &lt;p&gt;Note that a “derived” &lt;code&gt;ModifierData&lt;/code&gt; is actually allocated here.
 The allocator uses a structure size recored in &lt;code&gt;ModifierTypeInfo&lt;/code&gt;(&lt;code&gt;mti&lt;/code&gt; variable in the code), which usually is different from &lt;code&gt;ModifierData&lt;/code&gt;’s.&lt;/p&gt;
 
-    &lt;p&gt;For ‘Array’ modifier, we can see it is &lt;code&gt;ArrayModifierData&lt;/code&gt;,
+    &lt;p&gt;For &lt;code&gt;Array&lt;/code&gt; modifier, we can see its derived &lt;code&gt;ModifierData&lt;/code&gt; is &lt;code&gt;ArrayModifierData&lt;/code&gt;,
 which is defined in the file &lt;code&gt;source/blender/makesdna/DNA_modifier_types.h&lt;/code&gt;.&lt;/p&gt;
 
     &lt;p&gt;After that, the modifier gets initialized through &lt;code&gt;if (mti-&amp;gt;initData) mti-&amp;gt;initData(md);&lt;/code&gt;.&lt;/p&gt;
