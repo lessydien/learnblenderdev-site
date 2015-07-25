@@ -4,13 +4,36 @@
  <title>Learn Blender Development</title>
  <link href="http://thebusytypist.github.io/learnblenderdev-site/atom.xml" rel="self"/>
  <link href="http://thebusytypist.github.io/learnblenderdev-site/"/>
- <updated>2015-07-25T21:43:25+08:00</updated>
+ <updated>2015-07-25T22:22:50+08:00</updated>
  <id>http://thebusytypist.github.io</id>
  <author>
    <name>TheBusyTypist</name>
    <email>ounanding@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Update site's appearance</title>
+   <link href="http://thebusytypist.github.io/2015/07/25/update-site-appearance.html"/>
+   <updated>2015-07-25T21:50:00+08:00</updated>
+   <id>http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/update-site-appearance</id>
+   <content type="html">&lt;p&gt;I update this site to use the &lt;a href=&quot;https://github.com/poole/lanyon&quot;&gt;lanyon&lt;/a&gt; theme.&lt;/p&gt;
+
+&lt;p&gt;Pagination and MathJax support are also added.&lt;/p&gt;
+
+&lt;p&gt;Inlined symbol test: \( \sqrt{x} \);&lt;/p&gt;
+
+&lt;p&gt;Non-inlined equation:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+
+\begin{eqnarray*}
+(a + b)^2 &amp; = &amp; (a + b) * (a + b)\\
+&amp; = &amp; a^2 + 2ab + b^2
+\end{eqnarray*}
+ %]]&gt;&lt;/script&gt;
+</content>
+ </entry>
  
  <entry>
    <title>Fix mesh grid indexing in 3D dual contouring</title>

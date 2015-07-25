@@ -11,7 +11,7 @@
 
   <title>
     
-      2D dual contouring in Blender script &middot; Learn Blender Development
+      Update site's appearance &middot; Learn Blender Development
     
   </title>
 
@@ -29,6 +29,8 @@
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
 
   <!-- MathJax -->
+  
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 </head>
 
@@ -112,40 +114,23 @@
 
       <div class="container content">
         <div class="post">
-  <h1 class="post-title">2D dual contouring in Blender script</h1>
-  <span class="post-date">16 Jul 2015</span>
-  <p>After a long break I begin to implement 2D dual contouring today.
-This is the result I achieved:</p>
+  <h1 class="post-title">Update site's appearance</h1>
+  <span class="post-date">25 Jul 2015</span>
+  <p>I update this site to use the <a href="https://github.com/poole/lanyon">lanyon</a> theme.</p>
 
-<p><img src="/learnblenderdev-site/assets/heart-function-2d-dc.png" alt="2D dual contouring of heart function" /></p>
+<p>Pagination and MathJax support are also added.</p>
 
-<p>My implementation is based on
-<a href="http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf">Dual Contouring of Hermite Data</a>
-and
-<a href="http://www.cs.berkeley.edu/~jrs/meshpapers/SchaeferWarren2.pdf">Dual Contouring: “The Secret Sauce”</a>.
-The source code of this tool can be found
-<a href="https://gist.github.com/thebusytypist/1d1c9db590670def874e">here</a>.</p>
+<p>Inlined symbol test: \( \sqrt{x} \);</p>
 
-<p>You can edit the <code>Function</code> parameter to contour other kinds of geometry.
-The input of <code>Function</code> parameter should be a 2D distance field function.
-Its zero isopleth will be contoured. 
-You may find <a href="http://iquilezles.org/www/articles/distfunctions/distfunctions.htm">this page</a> useful.</p>
+<p>Non-inlined equation:</p>
 
-<p>There are also some details worth noting.
-I use <code>numpy.linalg.pinv</code> to solve linear system.
-According to numpy’s document, <code>pinv</code> computes the Moore-Penrose pseudo-inverse of a matrix.
-Hence when we are given a linear system which is rank deficient,
-the solution is minimized to the origin.
-This may lead to a vertex outside its bounding square.
-In this implementation I use the mass point translation approach to resolve this problem.</p>
+<script type="math/tex; mode=display">% <![CDATA[
 
-<p>This tool is tested on some simple cases and most of them works well.
-But there is a problem when the isopleth hits the grid point.
-In this case the common intersection point will be used by four adjacent squares
-and then have four vertices generated.
-This makes the shape’s topology incorrect.
-A slight displacement may alleviate this problem.
-But I am looking for a more robust solution.</p>
+\begin{eqnarray*}
+(a + b)^2 & = & (a + b) * (a + b)\\
+& = & a^2 + 2ab + b^2
+\end{eqnarray*}
+ %]]></script>
 
 
   <hr>
@@ -173,15 +158,6 @@ But I am looking for a more robust solution.</p>
     
       <li>
         <h3>
-          <a href="/learnblenderdev-site/2015/07/25/update-site-appearance.html">
-            Update site's appearance
-            <small>25 Jul 2015</small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
           <a href="/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html">
             Fix mesh grid indexing in 3D dual contouring
             <small>25 Jul 2015</small>
@@ -194,6 +170,15 @@ But I am looking for a more robust solution.</p>
           <a href="/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html">
             Learn how Blender's modifier system works (part 2)
             <small>25 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html">
+            Preliminary 3D dual contouring
+            <small>24 Jul 2015</small>
           </a>
         </h3>
       </li>
