@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      2D dual contouring in Blender script &middot; Learn Blender Development
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/learnblenderdev-site/public/css/poole.css">
+  <link rel="stylesheet" href="/learnblenderdev-site/public/css/syntax.css">
+  <link rel="stylesheet" href="/learnblenderdev-site/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/learnblenderdev-site/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/learnblenderdev-site/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+  <!-- MathJax -->
+  
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>This ia a blog on Blender scripting and extending.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/learnblenderdev-site/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/tags/">Tags</a>
+        
+      
+    
+
+    <!--
+    <a class="sidebar-nav-item" href="/archive/v1.0.0.zip">Download</a>
+    <a class="sidebar-nav-item" href="">GitHub project</a>
+    -->
+    <span class="sidebar-nav-item">Latest update: 2015-07-25 21:24:45 +0800</span>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2015. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/learnblenderdev-site/" title="Home">Learn Blender Development</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">2D dual contouring in Blender script</h1>
+  <span class="post-date">16 Jul 2015</span>
+  <p>After a long break I begin to implement 2D dual contouring today.
+This is the result I achieved:</p>
+
+<p><img src="/learnblenderdev-site/assets/heart-function-2d-dc.png" alt="2D dual contouring of heart function" /></p>
+
+<p>My implementation is based on
+<a href="http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf">Dual Contouring of Hermite Data</a>
+and
+<a href="http://www.cs.berkeley.edu/~jrs/meshpapers/SchaeferWarren2.pdf">Dual Contouring: “The Secret Sauce”</a>.
+The source code of this tool can be found
+<a href="https://gist.github.com/thebusytypist/1d1c9db590670def874e">here</a>.</p>
+
+<p>You can edit the <code>Function</code> parameter to contour other kinds of geometry.
+The input of <code>Function</code> parameter should be a 2D distance field function.
+Its zero isopleth will be contoured. 
+You may find <a href="http://iquilezles.org/www/articles/distfunctions/distfunctions.htm">this page</a> useful.</p>
+
+<p>There are also some details worth noting.
+I use <code>numpy.linalg.pinv</code> to solve linear system.
+According to numpy’s document, <code>pinv</code> computes the Moore-Penrose pseudo-inverse of a matrix.
+Hence when we are given a linear system which is rank deficient,
+the solution is minimized to the origin.
+This may lead to a vertex outside its bounding square.
+In this implementation I use the mass point translation approach to resolve this problem.</p>
+
+<p>This tool is tested on some simple cases and most of them works well.
+But there is a problem when the isopleth hits the grid point.
+In this case the common intersection point will be used by four adjacent squares
+and then have four vertices generated.
+This makes the shape’s topology incorrect.
+A slight displacement may alleviate this problem.
+But I am looking for a more robust solution.</p>
+
+
+  <hr>
+  
+  
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'learnblenderdev';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html">
+            Fix mesh grid indexing in 3D dual contouring
+            <small>25 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html">
+            Learn how Blender's modifier system works (part 2)
+            <small>25 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html">
+            Preliminary 3D dual contouring
+            <small>24 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

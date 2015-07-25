@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Analyze the cube adding operator &middot; Learn Blender Development
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/learnblenderdev-site/public/css/poole.css">
+  <link rel="stylesheet" href="/learnblenderdev-site/public/css/syntax.css">
+  <link rel="stylesheet" href="/learnblenderdev-site/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/learnblenderdev-site/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/learnblenderdev-site/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+  <!-- MathJax -->
+  
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>This ia a blog on Blender scripting and extending.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/learnblenderdev-site/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/tags/">Tags</a>
+        
+      
+    
+
+    <!--
+    <a class="sidebar-nav-item" href="/archive/v1.0.0.zip">Download</a>
+    <a class="sidebar-nav-item" href="">GitHub project</a>
+    -->
+    <span class="sidebar-nav-item">Latest update: 2015-07-25 21:24:45 +0800</span>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2015. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/learnblenderdev-site/" title="Home">Learn Blender Development</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Analyze the cube adding operator</h1>
+  <span class="post-date">01 Apr 2015</span>
+  <p>(The revision of Blender used for analysis is
+<code>bacdfc70e2109711eeecef122cf408e6803990ca</code>)</p>
+
+<h2 id="overview">Overview</h2>
+<p>I assume you have already used “cube adding” before
+(By pressing <code>Shift + A</code>, and choosing the <code>Cube</code> item in the <code>Mesh</code> sub-menu).
+And from previous posts we are already familiar with
+the operator registration process.
+So in this post, I will focus on the execution of this operator,
+i.e. the function <code>add_primitive_cube_exec</code>(file <code>editmesh_add.c</code>).</p>
+
+<p>In the following sections,
+we will have a look at the operator from the view of MVC pattern first.
+Then we dive into the BMesh system to see how the actual mesh data is constructed.</p>
+
+<p><strong>TL;DR</strong> There is also a summary section in the end for you if you just want to see which functions are required for writing your own operators.</p>
+
+<h2 id="the-mvc-pattern-in-blender">The MVC pattern in Blender</h2>
+<p>Speaking with the theory of <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> pattern,
+a successfully executed action usually experiences following steps:</p>
+
+<ol>
+  <li>
+    <p>When a user triggers some events,
+the controller translates those raw events into a series of commands,
+which can be understood by the model.</p>
+  </li>
+  <li>
+    <p>When the model receives the commands from controller,
+it will modify itself according to those commands.</p>
+  </li>
+  <li>
+    <p>After the model finished the modification(or some progress has been made),
+it notifies the view for an (visual)update for user.</p>
+  </li>
+</ol>
+
+<p>Now let us see how are these MVC concepts implemented in Blender.</p>
+
+<p>The controller part is simple in this case.
+The clicking on menu item can be directly translated to the commands for models.
+I will discuss the controller later
+in more depth for those complicated cases(i.e. the modal operator).</p>
+
+<p>The view part of Blender
+involves with how to represent models in graphic API draw calls.
+I do not want to spend much time on this for now.
+Actually we rarely need to touch this layer for writing operators.</p>
+
+<p>The model part is today’s main topic.
+In Blender, 3D objects, such as meshes, lights, cameras,
+are managed under a <em>scene</em> object.
+For every object in the scene, there is data with specific type stored
+in it.
+In our case, the cube we are going to create is
+an object containing mesh data.
+Now the whole process is clear: we create an object first,
+then link it to the scene,
+and finally fill mesh data into it.</p>
+
+<p>The object creation takes place in function <code>ED_object_add_type</code>(file <code>editmesh_add.c</code>).
+And the function <code>BKE_object_add</code> links the newly created object to the scene.
+The trace of object linking is shown below(the latest function invocation comes first):</p>
+
+<pre><code>ED_object_add_type(bContext * C, int type, const float * loc, const float * rot, bool enter_editmode, unsigned int layer) Line 409
+make_prim_init(bContext * C, const unsigned char * idname, float * dia, float[4] * mat, bool * was_editmode, const float * loc, const float * rot, const unsigned int layer) Line 65
+add_primitive_cube_exec(bContext * C, wmOperator * op) Line 155
+wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRNA * properties, ReportList * reports, const bool poll_only) Line 1048
+</code></pre>
+
+<p>While the object with mesh data is being created, the model send notifications to the view using function <code>WM_event_add_notifier</code>(defined in file <code>wm_event_system.c</code>).
+There will be multiple notifications for different objects during the operator execution. 
+One of them is for the scene, and that notification is sent from <code>make_prim_init</code>:</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">WM_event_add_notifier</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">NC_SCENE</span> <span class="o">|</span> <span class="n">ND_LAYER_CONTENT</span><span class="p">,</span> <span class="n">scene</span><span class="p">);</span></code></pre></div>
+
+<p>The abbreviation <code>NC</code> in <code>NC_SCENE</code> means “notification category”,
+and the <code>ND</code> in <code>ND_LAYER_CONTENT</code> stands for “notification data”.
+All of these enumerator definitions can be found in the file <code>WM_types.h</code>.</p>
+
+<p>Another notification is for the newly created object, and that is sent from <code>make_prim_finish</code>:</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">WM_event_add_notifier</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">NC_OBJECT</span> <span class="o">|</span> <span class="n">ND_DRAW</span><span class="p">,</span> <span class="n">obedit</span><span class="p">);</span></code></pre></div>
+
+<p>I list the call stack of this notification from <code>make_prim_finish</code> below:</p>
+
+<pre><code>WM_event_add_notifier(const bContext * C, unsigned int type, void * reference) Line 164
+make_prim_finish(bContext * C, Object * obedit, bool was_editmode, int enter_editmode) Line 96
+add_primitive_cube_exec(bContext * C, wmOperator * op) Line 167
+wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRNA * properties, ReportList * reports, const bool poll_only) Line 1048
+</code></pre>
+
+<p>This then finishes the execution of cube adding operator.</p>
+
+<p>Let me remind you that there are also many other interesting things
+in <code>add_primitive_cube_exec</code> but I did not mention them.
+To name a few of them:</p>
+
+<ul>
+  <li>
+    <p>Operator properties access in <code>ED_object_add_generic_get_opts</code>.</p>
+  </li>
+  <li>
+    <p>Editing mode toggling. The <code>ED_object_editmode_enter</code>(called in <code>make_prim_init</code>)
+and <code>ED_object_editmode_exit</code>(called in <code>make_prim_finish</code>) are used.</p>
+  </li>
+  <li>
+    <p>Dependency graph. In <code>ED_object_add_type</code>
+I saw some functions with prefix <code>DAG_</code>. They are for the dependency graph.
+The dependency graph is an important feature emerged from recent Blender development.
+I will cover this topic in later posts.</p>
+  </li>
+</ul>
+
+<p>Every topic from above worths an in-depth exploration.</p>
+
+<p>Until now we have discussed all but the mesh data filling.
+I leave this to the next section.</p>
+
+<h2 id="the-bmesh-system">The BMesh system</h2>
+<p>In history there was a huge refactoring on mesh implementation.
+The original mesh sub-system was replaced by
+<a href="http://wiki.blender.org/index.php/Dev:2.6/Source/Modeling/BMesh/Design">BMesh</a>.</p>
+
+<p>The BMesh sub-system is too complicated for such a simple operator as cube adding.
+But I think it is a good chance for us
+to learn the mechanism behind the BMesh from this simple case.</p>
+
+<p>After a search on the web I find this
+<a href="http://wiki.blender.org/index.php/Dev:2.6/Source/Modeling/BMesh/Design">design document</a> for BMesh.
+I suggest to read it later for a more complete understanding of BMesh system, especially the algorithm part if you want to do some extension for it.</p>
+
+<p>Another excellent material on BMesh is in the header file <code>bmesh.h</code>. It covers some practical concepts, such as flags, slots, etc.
+I think it can be used as a manual on how to use BMesh.</p>
+
+<p>Now let us start with some basic concepts.</p>
+
+<p>BMesh system contains a collection of operators(they are BMesh operators which start with prefix of <code>bmo_</code>, not the Blender operators we saw before), which can be composed to build desired functionality.</p>
+
+<p>The data which these BMesh operators manipulate, is called <em>slots</em>.</p>
+
+<p>A slot(<code>BMOpSlot</code>, file <code>bmesh_operator_api.h</code>) is associated with a slot type(e.g. booleans, integers, or floats).
+This type directs a BMesh operator how to read the value from slots.</p>
+
+<p>A BMesh operator(<code>BMOperator</code>, file <code>bmesh_operator_api.h</code>)
+owns two kinds of slots: one is for input, and the other is for output. There is a limit on the slots capacity, which is defined by <code>BMO_OP_MAX_SLOTS</code>.</p>
+
+<p>Before invocation, every BMesh operator is initialized by some meta information, such as “how many slots will be used?” and “which types are these slots?”. This meta information is stored in <code>BMOpDefine</code> structure. And all <code>BMOpDefine</code>s are arranged in an array called <code>bmo_opdefines</code>(file <code>bmesh_opdefines.c</code>).
+Note that every <code>BMOpDefine</code> also has a name. You can use this name as a key to search for the meta information about one BMesh operator in <code>bmo_opdefines</code> array.</p>
+
+<p>Let us now examine how this is implemented in Blender.</p>
+
+<p>We start from the function <code>EDBM_op_call_and_selectf</code>,
+which is the entry point to the BMesh system:</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">EDBM_op_call_and_selectf</span><span class="p">(</span>
+        <span class="n">em</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="s">&quot;verts.out&quot;</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span>
+        <span class="s">&quot;create_cube matrix=%m4 size=%f&quot;</span><span class="p">,</span>
+        <span class="n">mat</span><span class="p">,</span> <span class="n">RNA_float_get</span><span class="p">(</span><span class="n">op</span><span class="o">-&gt;</span><span class="n">ptr</span><span class="p">,</span> <span class="s">&quot;radius&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0f</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">OPERATOR_CANCELLED</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>The third argument <code>"verts.out"</code> is the name of the output slot;
+the argument in C-style format string(the fifth argument)
+gives the name of BMesh operator which is going to be executed
+and indicates the input format for the input slots.
+The slots names, <code>verts.out</code>, <code>matrix</code>, and <code>size</code>
+are the ones you specified in BMesh operator definitions(<code>bmo_opdefines</code> array).</p>
+
+<p>Now we step inside the function <code>EDBM_op_call_and_selectf</code>.</p>
+
+<p>The first function we encounter is <code>BMO_op_vinitf</code>.
+This function is a parser of the C-style format string.
+It gets the name of BMesh operator,
+and reads the variadic arguments into input slots.
+In this cube adding case,
+the operator name is <code>"create_cube"</code>.
+Then a 4x4 matrix and a single float are read into the input slots.
+When this function returns, the BMesh operator is successfully constructed.</p>
+
+<p>The next function <code>BMO_op_exec</code> executes the BMesh operator.
+In the function <code>bmo_create_cube_exec</code> you can see the
+vertices get filled, and faces get constructed.
+The output slots are also allocated and filled here
+inside the function <code>BMO_slot_buffer_from_enabled_flag</code>.</p>
+
+<p>I list the call stack below:</p>
+
+<pre><code>blender-app.exe!bmo_create_cube_exec(BMesh * bm, BMOperator * op) Line 667
+blender-app.exe!BMO_op_exec(BMesh * bm, BMOperator * op) Line 219
+blender-app.exe!EDBM_op_call_and_selectf(BMEditMesh * em, wmOperator * op, const unsigned char * select_slot_out, const bool select_extend, const unsigned char * fmt, ...) Line 294
+blender-app.exe!add_primitive_cube_exec(bContext * C, wmOperator * op) Line 161
+blender-app.exe!wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRNA * properties, ReportList * reports, const bool poll_only) Line 1048
+</code></pre>
+
+<p>Inside the function <code>BMO_slot_buffer_from_enabled_flag</code>,
+there are two concepts you have to understand.
+One is the header type, which are some properties about the BMesh elements themselves, such as “Is this a vertex, a face, a loop, or an edge?”.
+The other is the tool flags, which are some configurations about the BMesh operator being executed.</p>
+
+<p>After the BMesh operator execution is finished,
+we return to the function <code>EDBM_op_call_and_selectf</code>.
+The <code>BMO_slot_buffer_hflag_enable</code> will use the output slots to mark the newly created vertices selected.</p>
+
+<p>Finally we end the BMesh operator execution with <code>EDBM_op_finish</code>, which dereferences the mesh data we are working on.</p>
+
+<h2 id="summary">Summary</h2>
+<p>Here is a short summary of functions which you need to call in your own mesh operator:</p>
+
+<ul>
+  <li>Use <code>ED_object_add_type</code> to create object.</li>
+  <li>Link your object to the scene with <code>BKE_object_add</code>.</li>
+  <li>Use <code>WM_event_add_notifier</code> to emit a specific notification.
+Refer to the file <code>WM_types.h</code> for notification categories and types.</li>
+  <li>Call specific BMesh operator to manipulate mesh data.
+You can find BMesh operator specifications(including operator name, input and output slots names, etc.)
+in <code>bmo_opdefines</code> array(file <code>bmesh_opdefines.c</code>).</li>
+</ul>
+
+<h2 id="some-random-notes-and-remained-questions">Some random notes and remained questions</h2>
+<p>I think there are a lot of things and details I did not cover in this post.
+And there are also many questions for me to work on.
+I list some of them below.</p>
+
+<h3 id="the-event-system-and-notifications">The event system and notifications</h3>
+<p>I used to believe that in a GUI framework written in real time graphics API like OpenGL,
+the views(I mean the window renderer) refresh itself in a 60 FPS rate.
+Hence the models need not to send notifications manually to the view to trigger a refresh.</p>
+
+<p>And I thought the only possible need for a notification is that
+there are some other models depending on the modified parts.
+So the manually triggered notification
+should be only for the dependency resolving.</p>
+
+<p>But after reading the source code of Blender,
+I noticed the mandatory function call to <code>WM_event_add_notifier</code> in operators.
+It seems that I was wrong.</p>
+
+<h3 id="reduce-operator-looking-up-by-string-interning">Reduce operator looking up by string interning</h3>
+<p>The BMesh operator is indexed by their names.
+While you are request one BMesh operator’s definition,
+you have to perform a linear search(in function <code>BMO_opcode_from_opname</code>) on these names.</p>
+
+<p>This linear search happens twice in the function <code>BMO_op_vinitf</code>.</p>
+
+<p>It would be better to pass index of the operator across functions
+to reduce the linear search.</p>
+
+<p>More over, for a static string mapping
+(that is, a mapping defined in compile time and remains constant during runtime),
+this search can be reduced to constant time using <a href="http://en.wikipedia.org/wiki/String_interning">string interning</a>.</p>
+
+<h3 id="do-i-have-to-add-new-operators-to-bmesh">Do I have to add new operators to BMesh?</h3>
+<p>For my proposed project in previous post,
+I am going to construct mesh dynamically.</p>
+
+<p>I briefly browsed the BMesh operators list and found the
+<code>bmo_mesh_to_bmesh_def</code>.
+So I can construct a mesh structure and invoke this operator to convert it to a BMesh.</p>
+
+<p>But there is another possible solution: I can write a new BMesh operator
+that constructs the mesh directly.</p>
+
+<p>I will try my ideas out in coming posts.</p>
+
+
+  <hr>
+  
+  
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'learnblenderdev';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html">
+            Fix mesh grid indexing in 3D dual contouring
+            <small>25 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html">
+            Learn how Blender's modifier system works (part 2)
+            <small>25 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html">
+            Preliminary 3D dual contouring
+            <small>24 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>
