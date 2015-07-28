@@ -6,16 +6,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Learn Blender Development</title>
-  <meta name="description" content="A blog on scripting and extending of Blender.
-">
+  <title>Discrete Gauss-Bonnet theorem in Blender</title>
+  <meta name="description" content="I watched this video from Keenan Crane this morning.The discrete Gauss-Bonnet theorem impresses me so muchand I think I can illustrate it in Blender scripting.">
 
   <link rel="shortcut icon" href="/learnblenderdev-site/public/favicon.ico">
 
   <link rel="stylesheet" href="/learnblenderdev-site/css/main.css">
-  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/page2/">
+  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/2015/07/28/discrete-gauss-bonnet-theorem.html">
   <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" />
 
+  
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 </head>
 
@@ -65,63 +66,76 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <div class="post">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title">Discrete Gauss-Bonnet theorem in Blender</h1>
+    <p class="post-meta">Jul 28, 2015</p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Mar 28, 2015</span>
+  <article class="post-content">
+    <p>I watched <a href="https://www.youtube.com/watch?v=Mcal5Cy7r4E">this video</a> from Keenan Crane this morning.
+The discrete Gauss-Bonnet theorem impresses me so much
+and I think I can illustrate it in Blender scripting.</p>
 
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/28/write-first-blender-operator.html">Write first Blender operator</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 20, 2015</span>
+<p>The discrete Gauss-Bonnet theorem(quoted from <a href="http://brickisland.net/cs177fa12/?p=51">here</a>):</p>
 
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html">Tips on tracing Blender system</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 19, 2015</span>
+<p>Consider a (connected, orientable) simplicial surface \( \mathbf{K} \)
+with finitely many vertices \( \mathbf{V} \),
+edges \( \mathbf{E} \) and faces \( \mathbf{F} \).
+A discrete analog of the Gauss-Bonnet theorem holds for simplicial surfaces, namely</p>
 
-        <h2>
-          <a class="post-link" href="/learnblenderdev-site/2015/03/19/blender-as-module.html">Use Blender as Python module</a>
-        </h2>
-      </li>
-    
-  </ul>
+<script type="math/tex; mode=display">
+\sum_{v \in \mathbf{V}} d(v) = 2 \pi \chi
+</script>
 
-  <!-- Pagination links -->
+<p>where \( \chi = |\mathbf{V}| - |\mathbf{E}| + |\mathbf{F}|\) is the <em>Euler characteristic</em> of the surface,
+and \( d(v) \) is the <em>angle defect</em>:</p>
+
+<script type="math/tex; mode=display">
+d(v) = 2 \pi - \sum_{f \in \mathbf{F}_v} \angle_f(v)
+</script>
+
+<p>where \( \mathbf{F}_v \) is the faces containing \( v \) and
+\( \angle_f(v) \) is the interior angle of the face \( f \) at vertex \( v \).</p>
+
+<p>The implementation is straightforward from the above theorem statements.
+I put my source code <a href="https://gist.github.com/thebusytypist/cffbdb3f695487261490">on the gist</a>.
+You can run it as a Blender operator. And remember to check Blender’s info view for results.</p>
+
+<p>There is one thing worthing noting.
+In my first try of implementing this operator,
+I traverse <code>link_edges</code> for each vertex to calculate interior angles,
+expecting that the adjacent edges are stored in <code>link_edges</code> sequence.</p>
+
+<p>However this does not work as expected. The edges in <code>link_edges</code> are not arranged in any specific order(neither clock-wise nor counter-clock-wise). Therefore I can not make any assumption on it.</p>
+
+<p>Then I try another approach: I traverse faces in <code>link_faces</code> for each vertex,
+and find the adjacent edges from the face.
+This approach works for me.</p>
+
+<p>I kept both implementations(<code>AngleDefects</code> and <code>AngleDefects2</code>) in my source code,
+so you can play around with them.</p>
+
+  </article>
+
+  <hr>
   
-  <div class="pagination">
-    
-      <a href="/learnblenderdev-site/index.html">&laquo; Prev</a>
-    
-
-    
-      
-        <a href="/learnblenderdev-site/index.html">1</a>
-      
-    
-      
-        <em>2</em>
-      
-    
-
-    
-      <span>Next &raquo;</span>
-    
-  </div>
   
-
-  <p class="rss-subscribe">subscribe <a href="/learnblenderdev-site/feed.xml">via RSS</a></p>
-
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'learnblenderdev';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
 </div>
 
       </div>

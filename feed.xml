@@ -6,9 +6,65 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 26 Jul 2015 17:15:13 +0800</pubDate>
-    <lastBuildDate>Sun, 26 Jul 2015 17:15:13 +0800</lastBuildDate>
+    <pubDate>Tue, 28 Jul 2015 18:17:28 +0800</pubDate>
+    <lastBuildDate>Tue, 28 Jul 2015 18:17:28 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Discrete Gauss-Bonnet theorem in Blender</title>
+        <description>&lt;p&gt;I watched &lt;a href=&quot;https://www.youtube.com/watch?v=Mcal5Cy7r4E&quot;&gt;this video&lt;/a&gt; from Keenan Crane this morning.
+The discrete Gauss-Bonnet theorem impresses me so much
+and I think I can illustrate it in Blender scripting.&lt;/p&gt;
+
+&lt;p&gt;The discrete Gauss-Bonnet theorem(quoted from &lt;a href=&quot;http://brickisland.net/cs177fa12/?p=51&quot;&gt;here&lt;/a&gt;):&lt;/p&gt;
+
+&lt;p&gt;Consider a (connected, orientable) simplicial surface \( \mathbf{K} \)
+with finitely many vertices \( \mathbf{V} \),
+edges \( \mathbf{E} \) and faces \( \mathbf{F} \).
+A discrete analog of the Gauss-Bonnet theorem holds for simplicial surfaces, namely&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+\sum_{v \in \mathbf{V}} d(v) = 2 \pi \chi
+&lt;/script&gt;
+
+&lt;p&gt;where \( \chi = |\mathbf{V}| - |\mathbf{E}| + |\mathbf{F}|\) is the &lt;em&gt;Euler characteristic&lt;/em&gt; of the surface,
+and \( d(v) \) is the &lt;em&gt;angle defect&lt;/em&gt;:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+d(v) = 2 \pi - \sum_{f \in \mathbf{F}_v} \angle_f(v)
+&lt;/script&gt;
+
+&lt;p&gt;where \( \mathbf{F}_v \) is the faces containing \( v \) and
+\( \angle_f(v) \) is the interior angle of the face \( f \) at vertex \( v \).&lt;/p&gt;
+
+&lt;p&gt;The implementation is straightforward from the above theorem statements.
+I put my source code &lt;a href=&quot;https://gist.github.com/thebusytypist/cffbdb3f695487261490&quot;&gt;on the gist&lt;/a&gt;.
+You can run it as a Blender operator. And remember to check Blender’s info view for results.&lt;/p&gt;
+
+&lt;p&gt;There is one thing worthing noting.
+In my first try of implementing this operator,
+I traverse &lt;code&gt;link_edges&lt;/code&gt; for each vertex to calculate interior angles,
+expecting that the adjacent edges are stored in &lt;code&gt;link_edges&lt;/code&gt; sequence.&lt;/p&gt;
+
+&lt;p&gt;However this does not work as expected. The edges in &lt;code&gt;link_edges&lt;/code&gt; are not arranged in any specific order(neither clock-wise nor counter-clock-wise). Therefore I can not make any assumption on it.&lt;/p&gt;
+
+&lt;p&gt;Then I try another approach: I traverse faces in &lt;code&gt;link_faces&lt;/code&gt; for each vertex,
+and find the adjacent edges from the face.
+This approach works for me.&lt;/p&gt;
+
+&lt;p&gt;I kept both implementations(&lt;code&gt;AngleDefects&lt;/code&gt; and &lt;code&gt;AngleDefects2&lt;/code&gt;) in my source code,
+so you can play around with them.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 28 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/28/discrete-gauss-bonnet-theorem.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/28/discrete-gauss-bonnet-theorem.html</guid>
+        
+        <category>blender-scripting</category>
+        
+        <category>mathematics</category>
+        
+        
+      </item>
     
       <item>
         <title>Fix mesh grid indexing in 3D dual contouring</title>
@@ -806,48 +862,6 @@ I expect following question to be answered:&lt;/p&gt;
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/30/plan-next-practice-project.html</guid>
         
         <category>blender-coding</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Add properties for operator</title>
-        <description>&lt;p&gt;It is easy to define properties for an operator
-and get values of those properties during the execution.
-&lt;a href=&quot;http://wiki.blender.org/index.php/Dev:2.5/Source/Architecture/RNA&quot;&gt;This page&lt;/a&gt;
-provides a detailed introduction for this task.
-As a summary, you can just search for property definition functions
-in the file &lt;code&gt;rna_define.h&lt;/code&gt;, and property access functions
-in the file &lt;code&gt;rna_access.h&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;I put an example
-&lt;a href=&quot;https://github.com/thebusytypist/BlenderExtraOperators/tree/master/EchoProperties&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;More than defining properties by their value types(&lt;code&gt;int&lt;/code&gt;s, &lt;code&gt;float&lt;/code&gt;s, &lt;code&gt;string&lt;/code&gt;s, etc.),
-you can also assign a sub-type for a property.&lt;/p&gt;
-
-&lt;p&gt;A sub-type can supply usefull informations for the editor’s user interface.
-In the above example,
-I assign a string property with a sub-type of &lt;code&gt;PROP_FILEPATH&lt;/code&gt;.
-The &lt;code&gt;PROP_FILEPATH&lt;/code&gt; will make the UI add an extra file browse button
-in addition to the widgets of a plain string property.&lt;/p&gt;
-
-&lt;p&gt;In the file &lt;code&gt;rna_define.h&lt;/code&gt; Blender system provides many utilities
-to define properties with sub-type.
-For sub-type &lt;code&gt;PROP_FILEPATH&lt;/code&gt; I use &lt;code&gt;RNA_def_string_file_path&lt;/code&gt;.
-Within this function you can see a call to &lt;code&gt;RNA_def_property&lt;/code&gt;
-which indicates the sub-type for our property:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RNA_def_property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cont&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;identifier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PROP_STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PROP_FILEPATH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-</description>
-        <pubDate>Sat, 28 Mar 2015 19:56:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/03/28/add-properties-for-operator.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/28/add-properties-for-operator.html</guid>
-        
-        <category>blender-coding</category>
-        
-        <category>operator</category>
         
         
       </item>
