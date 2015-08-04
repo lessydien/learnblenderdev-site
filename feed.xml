@@ -6,9 +6,243 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 28 Jul 2015 18:17:28 +0800</pubDate>
-    <lastBuildDate>Tue, 28 Jul 2015 18:17:28 +0800</lastBuildDate>
+    <pubDate>Tue, 04 Aug 2015 19:22:33 +0800</pubDate>
+    <lastBuildDate>Tue, 04 Aug 2015 19:22:33 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Learn how Blender&#39;s modifier system works (part 3)</title>
+        <description>&lt;p&gt;In this post I am going to implement a trivial modifier
+to show how to extend Blender by adding custom modifiers.&lt;/p&gt;
+
+&lt;p&gt;My implementation is based on the tagged version &lt;code&gt;v2.75a&lt;/code&gt;.
+To try it out,
+you can checkout that tag, branch from that,
+and apply &lt;a href=&quot;https://gist.github.com/thebusytypist/a2f950fc26ee36957cdd&quot;&gt;my patch&lt;/a&gt;.
+You are also encouraged to follow the patch file commit by commit
+to see how each step is done.&lt;/p&gt;
+
+&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#overview&quot;&gt;Overview&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#task-statements&quot;&gt;Task statements&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#add-skeleton-code&quot;&gt;Add skeleton code&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#register-the-new-modifier-to-system&quot;&gt;Register the new modifier to system&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#implement-the-modifier&quot;&gt;Implement the modifier&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#expose-modifier-to-user-interface&quot;&gt;Expose modifier to user interface&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#add-parameters-to-modifier&quot;&gt;Add parameters to modifier&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#footnotes&quot;&gt;Footnotes&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;
+&lt;p&gt;There has been already a good tutorial
+&lt;a href=&quot;http://wiki.blender.org/index.php/User:Enjalot/Creating_a_custom_modifier&quot;&gt;on the Blender’s wiki&lt;/a&gt;.
+It covers almost all about Blender modifier development.
+But it does not have many words on &lt;em&gt;why&lt;/em&gt; a particular step is done.&lt;/p&gt;
+
+&lt;p&gt;In this post I try to supply more explanations on the mechanism behind every step we will take,
+and organize the whole process in a more structured way.
+Besides, I will provide some topics which it does not cover, such as modifier parameter.&lt;/p&gt;
+
+&lt;h2 id=&quot;task-statements&quot;&gt;Task statements&lt;/h2&gt;
+&lt;p&gt;This trivial modifier will generate a &lt;a href=&quot;https://en.wikipedia.org/wiki/Tetrahedron&quot;&gt;tetrahedron&lt;/a&gt;
+at the location of one object.
+And we are able to set a &lt;code&gt;scale&lt;/code&gt; parameter through modifier’s panel
+to control the size of the tetrahedron.&lt;/p&gt;
+
+&lt;p&gt;Let us call this modifier “Tetrahedron”.&lt;/p&gt;
+
+&lt;h2 id=&quot;add-skeleton-code&quot;&gt;Add skeleton code&lt;/h2&gt;
+&lt;p&gt;We first define the data structure which is going to be passed to the modifier.
+This is done by adding following to the file &lt;code&gt;source/blender/makesdna/DNA_modifier_types.h&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/* Tetrahedron modifier */&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TetrahedronModifierData&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ModifierData&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modifier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TetrahedronModifierData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In the above code we make a ‘derived’ class of &lt;code&gt;ModifierData&lt;/code&gt;.
+This structure will be parsed by Blender’s reflection system(a.k.a the DNA and RNA infrastructure) later.&lt;/p&gt;
+
+&lt;p&gt;Then we define the &lt;code&gt;ModifierTypeInfo&lt;/code&gt; for the Tetrahedron modifier in a new file &lt;code&gt;MOD_tetrahedron.c&lt;/code&gt;.
+In this step I just make a skeleton of this modifier. The blanks will be filled later.&lt;/p&gt;
+
+&lt;p&gt;Finally, we include the new modifier into the build system by registering &lt;code&gt;MOD_tetrahedron.c&lt;/code&gt;
+into the build script &lt;code&gt;source/blender/modifiers/CMakeLists.txt&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;You may refer to &lt;a href=&quot;/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html&quot;&gt;part 2&lt;/a&gt;
+of these series for discussion of &lt;code&gt;ModifierData&lt;/code&gt; and &lt;code&gt;ModifierTypeInfo&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;register-the-new-modifier-to-system&quot;&gt;Register the new modifier to system&lt;/h2&gt;
+&lt;p&gt;Now we move on to register our new modifier so the Blender modifier system can find it.&lt;/p&gt;
+
+&lt;p&gt;At the starting of Blender, it initializes mappings from &lt;code&gt;ModifierType&lt;/code&gt; to &lt;code&gt;ModifierTypeInfo&lt;/code&gt;&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.
+Whenever a modifier is requested by user,
+Blender will use the &lt;code&gt;ModifierType&lt;/code&gt; as a key to retrieve the desired &lt;code&gt;ModifierTypeInfo&lt;/code&gt;&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;p&gt;We first create a new entry in &lt;code&gt;ModifierType&lt;/code&gt; enum by &lt;em&gt;appending&lt;/em&gt; &lt;code&gt;eModifierType_Tetrahedron = 52,&lt;/code&gt;
+into the &lt;code&gt;enum ModifierType&lt;/code&gt;.
+As you already noticed, new modifier type must be &lt;em&gt;appended&lt;/em&gt; to &lt;code&gt;ModifierType&lt;/code&gt;.
+This is because only the integer value of &lt;code&gt;ModifierType&lt;/code&gt; is serialized,
+any change in &lt;code&gt;ModifierType&lt;/code&gt; enum that failed to preserve the order may cause an incorrect deserialization of modifiers in previously saved Blender files.&lt;/p&gt;
+
+&lt;p&gt;After that we link the new &lt;code&gt;ModifierTypeInfo&lt;/code&gt; to our new &lt;code&gt;ModifierType&lt;/code&gt; in function &lt;code&gt;modifier_type_init&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;INIT_TYPE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This constructs the mapping from &lt;code&gt;ModifierType&lt;/code&gt; to &lt;code&gt;ModifierTypeInfo&lt;/code&gt; for Tetrahedron modifier.&lt;/p&gt;
+
+&lt;p&gt;Finally we provide declaration of Tetrahedron’s &lt;code&gt;ModifierTypeInfo&lt;/code&gt;
+in file &lt;code&gt;source/blender/modifiers/MOD_modifiertypes.h&lt;/code&gt; so the initializer can see it:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;extern&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ModifierTypeInfo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modifierType_Tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;implement-the-modifier&quot;&gt;Implement the modifier&lt;/h2&gt;
+&lt;p&gt;Now we go on to fill the functions in &lt;code&gt;MOD_tetrahedron.c&lt;/code&gt; with actual implementation.&lt;/p&gt;
+
+&lt;p&gt;As we discussed in &lt;a href=&quot;/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html&quot;&gt;part 2&lt;/a&gt;
+of these series, we construct a &lt;code&gt;DerivedMesh&lt;/code&gt; and pass it through the modifiers stack.
+Please look at the source code for details.&lt;/p&gt;
+
+&lt;h2 id=&quot;expose-modifier-to-user-interface&quot;&gt;Expose modifier to user interface&lt;/h2&gt;
+&lt;p&gt;Now our Tetrahedron modifier is almost finished.
+We still have to expose our modifier to the user interface
+so one user can add a modifier through the modifier panel
+or by executing &lt;code&gt;bpy.ops.object.modifier_add&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This task can be done through Blender’s RNA system.&lt;/p&gt;
+
+&lt;p&gt;Given a &lt;code&gt;ModifierType&lt;/code&gt;,
+the RNA system should be able to “dynamic cast” a &lt;code&gt;ModifierType&lt;/code&gt; to the “derived” one.
+We add following code in the function &lt;code&gt;rna_Modifier_refine&lt;/code&gt;&lt;sup id=&quot;fnref:3&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;eModifierType_Tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RNA_TetrahedronModifier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;An icon and description used for “Add Modifier” dropdown menu can be put in the &lt;code&gt;modifier_type_items&lt;/code&gt; array&lt;sup id=&quot;fnref:3:1&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eModifierType_Tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;TETRAHEDRON&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICON_MOD_BUILD&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Tetrahedron&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And we also provide similar informations for the modifier panel:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rna_def_modifier_tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BlenderRNA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;brna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;StructRNA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;PropertyRNA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RNA_def_struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;brna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;TetrahedronModifier&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Modifier&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_struct_ui_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Tetrahedron Modifier&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Generate Tetrahedron&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_struct_sdna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;TetrahedronModifierData&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_struct_ui_icon&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICON_MOD_BUILD&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;For simplicity I use &lt;code&gt;ICON_MOD_BUILD&lt;/code&gt; here.&lt;/p&gt;
+
+&lt;p&gt;Remember to add above function to &lt;code&gt;RNA_def_modifier&lt;/code&gt;&lt;sup id=&quot;fnref:3:2&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt; in order to execute it.&lt;/p&gt;
+
+&lt;p&gt;Currently we do not have parameters in the Tetrahedron modifier.
+So we just provide a dummy panel in the Python function &lt;code&gt;DATA_PT_modifiers.draw&lt;/code&gt;&lt;sup id=&quot;fnref:5&quot;&gt;&lt;a href=&quot;#fn:5&quot; class=&quot;footnote&quot;&gt;4&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TETRAHEDRON&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ob&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;md&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Comming soon.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Optionally, you can also customize your modifier icon in the outline view&lt;sup id=&quot;fnref:4&quot;&gt;&lt;a href=&quot;#fn:4&quot; class=&quot;footnote&quot;&gt;5&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;eModifierType_Tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;UI_icon_draw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICON_MOD_BUILD&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;add-parameters-to-modifier&quot;&gt;Add parameters to modifier&lt;/h2&gt;
+&lt;p&gt;Now you can build your costomized Blender and try the Tetrahedron modifier.&lt;/p&gt;
+
+&lt;p&gt;Sometimes we also want to pass parameters through modifier panel.&lt;/p&gt;
+
+&lt;p&gt;For example, we can put a &lt;code&gt;scale&lt;/code&gt; parameter in &lt;code&gt;TetrahedronModifierdata&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/* Tetrahedron modifier */&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TetrahedronModifierData&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ModifierData&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modifier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scale&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pad&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TetrahedronModifierData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;While you are implementing the modifier, you can read this parameter as below:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;TetrahedronModifierData&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tmd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TetrahedronModifierData&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;md&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scale&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tmd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scale&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that we should keep the structure size be multiples of 8 bytes
+according to &lt;a href=&quot;http://wiki.blender.org/index.php/Dev:Source/Architecture/SDNA_Notes&quot;&gt;this wiki page&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;It is also required that this parameter definition should be exported to interface using RNA.
+We revise the previous RNA property/struct definition as below:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rna_def_modifier_tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BlenderRNA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;brna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;StructRNA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;PropertyRNA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RNA_def_struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;brna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;TetrahedronModifier&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Modifier&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_struct_ui_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Tetrahedron Modifier&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Generate Tetrahedron&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_struct_sdna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;TetrahedronModifierData&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_struct_ui_icon&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICON_MOD_BUILD&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RNA_def_property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;scale&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PROP_FLOAT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PROP_FACTOR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_property_float_sdna&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;scale&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_property_range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;100.0f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_property_ui_range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;100.0f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_property_ui_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Scale&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Scale of the tetrahedron&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_def_property_update&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;rna_Modifier_update&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that we provide the same string &lt;code&gt;&quot;scale&quot;&lt;/code&gt; for both &lt;code&gt;RNA_def_property&lt;/code&gt; and &lt;code&gt;RNA_def_property_float_sdna&lt;/code&gt;.
+But they have different meanings.&lt;/p&gt;
+
+&lt;p&gt;The first &lt;code&gt;&quot;scale&quot;&lt;/code&gt; for &lt;code&gt;RNA_def_property&lt;/code&gt; is the field name to be exported in Python.
+The second is the name of corresponding struct member in C++.&lt;/p&gt;
+
+&lt;p&gt;Finally we go on to revise the panel appearance in Python:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TETRAHEDRON&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ob&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;md&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;md&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;scale&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now the Tetrahedron modifier is finished.
+And it also works with other modifiers correctly.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/tetrahedron-array-modifiers.png&quot; alt=&quot;Tetrahedron and Array&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;This happens in the function &lt;code&gt;modifier_type_init&lt;/code&gt;(file &lt;code&gt;source/blender/modifiers/intern/MOD_util.c&lt;/code&gt;). &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot;&gt;
+      &lt;p&gt;This happens in the function &lt;code&gt;modifierType_getInfo&lt;/code&gt;(file &lt;code&gt;source/blender/blenkernel/intern/modifier.c&lt;/code&gt;). &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot;&gt;
+      &lt;p&gt;This is in the file &lt;code&gt;source/blender/makesrna/intern/rna_modifier.c&lt;/code&gt;. &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:3:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt; &lt;a href=&quot;#fnref:3:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:5&quot;&gt;
+      &lt;p&gt;This is in the file &lt;code&gt;release/scripts/startup/bl_ui/properties_data_modifier.py&lt;/code&gt;. &lt;a href=&quot;#fnref:5&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:4&quot;&gt;
+      &lt;p&gt;This is in the file &lt;code&gt;source/blender/editors/space_outliner/outliner_draw.c&lt;/code&gt;. &lt;a href=&quot;#fnref:4&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Tue, 04 Aug 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/04/how-modifier-system-works-part-3.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/04/how-modifier-system-works-part-3.html</guid>
+        
+        <category>blender-coding</category>
+        
+        <category>modifier</category>
+        
+        
+      </item>
     
       <item>
         <title>Discrete Gauss-Bonnet theorem in Blender</title>
@@ -809,59 +1043,6 @@ that constructs the mesh directly.&lt;/p&gt;
         <category>blender-coding</category>
         
         <category>operator</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Plan next practice project</title>
-        <description>&lt;p&gt;As my next practice project for learning Blender development,
-I plan to write an operator
-which generates mesh
-for isosurfaces of an implicit function.
-This is also called contouring.
-Many techniques, such as
-&lt;a href=&quot;http://en.wikipedia.org/wiki/Marching_cubes&quot;&gt;Marching Cubes&lt;/a&gt;
-and
-&lt;a href=&quot;http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf&quot;&gt;Dual Contouring&lt;/a&gt;,
-can be used for this task.&lt;/p&gt;
-
-&lt;p&gt;Currently I have only a very general idea for this project.
-Some parts of it have not been designed.
-For example,
-questions like “how to input the implicit function to our operator?”
-have not been answered.
-If I choose to accept symbolic representation of those implicit function
-I have to write a parser for that.
-Or, I can use a fixed form of implicit function with some variable coefficients.
-In this way the parsing can be really easy but we lose too much flexibility.
-I think I need to consider these questions at a later time.&lt;/p&gt;
-
-&lt;p&gt;In the comming post,
-I will do an analysis on the operator
-&lt;code&gt;MESH_OT_primitive_cube_add&lt;/code&gt;.
-This operator illustrates many usefull informations
-(such as the MVC model in Blender, the BMesh system, etc.) for me
-to write my contouring operator.
-More over, it is not involved with too much theoretical background
-of the BMesh data structure, so I think it should be not hard to read.&lt;/p&gt;
-
-&lt;p&gt;By looking closely at its source code
-I expect following question to be answered:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;How is an object linked to the scene?&lt;/li&gt;
-  &lt;li&gt;How is the mesh data(i.e. vertices, edges, faces) set?&lt;/li&gt;
-  &lt;li&gt;How is the view get notified to update itself?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;That is all for today. See you in next post.&lt;/p&gt;
-</description>
-        <pubDate>Mon, 30 Mar 2015 00:00:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/03/30/plan-next-practice-project.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/03/30/plan-next-practice-project.html</guid>
-        
-        <category>blender-coding</category>
         
         
       </item>
