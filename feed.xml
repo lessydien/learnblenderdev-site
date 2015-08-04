@@ -6,8 +6,8 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 04 Aug 2015 19:22:33 +0800</pubDate>
-    <lastBuildDate>Tue, 04 Aug 2015 19:22:33 +0800</lastBuildDate>
+    <pubDate>Wed, 05 Aug 2015 07:29:10 +0800</pubDate>
+    <lastBuildDate>Wed, 05 Aug 2015 07:29:10 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -29,7 +29,7 @@ to see how each step is done.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;#register-the-new-modifier-to-system&quot;&gt;Register the new modifier to system&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#implement-the-modifier&quot;&gt;Implement the modifier&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#expose-modifier-to-user-interface&quot;&gt;Expose modifier to user interface&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#add-parameters-to-modifier&quot;&gt;Add parameters to modifier&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#add-parameters-to-modifieroptional&quot;&gt;Add parameters to modifier(optional)&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#footnotes&quot;&gt;Footnotes&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -77,19 +77,17 @@ of these series for discussion of &lt;code&gt;ModifierData&lt;/code&gt; and &lt;
 
 &lt;p&gt;At the starting of Blender, it initializes mappings from &lt;code&gt;ModifierType&lt;/code&gt; to &lt;code&gt;ModifierTypeInfo&lt;/code&gt;&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.
 Whenever a modifier is requested by user,
-Blender will use the &lt;code&gt;ModifierType&lt;/code&gt; as a key to retrieve the desired &lt;code&gt;ModifierTypeInfo&lt;/code&gt;&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+Blender uses the &lt;code&gt;ModifierType&lt;/code&gt; as a key to retrieve the desired &lt;code&gt;ModifierTypeInfo&lt;/code&gt;&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 
 &lt;p&gt;We first create a new entry in &lt;code&gt;ModifierType&lt;/code&gt; enum by &lt;em&gt;appending&lt;/em&gt; &lt;code&gt;eModifierType_Tetrahedron = 52,&lt;/code&gt;
 into the &lt;code&gt;enum ModifierType&lt;/code&gt;.
 As you already noticed, new modifier type must be &lt;em&gt;appended&lt;/em&gt; to &lt;code&gt;ModifierType&lt;/code&gt;.
 This is because only the integer value of &lt;code&gt;ModifierType&lt;/code&gt; is serialized,
-any change in &lt;code&gt;ModifierType&lt;/code&gt; enum that failed to preserve the order may cause an incorrect deserialization of modifiers in previously saved Blender files.&lt;/p&gt;
+any change in &lt;code&gt;ModifierType&lt;/code&gt; enum that failed to preserve its original integer value will cause an incorrect deserialization of modifiers in previously saved Blender files.&lt;/p&gt;
 
-&lt;p&gt;After that we link the new &lt;code&gt;ModifierTypeInfo&lt;/code&gt; to our new &lt;code&gt;ModifierType&lt;/code&gt; in function &lt;code&gt;modifier_type_init&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;After that we construct a new mapping from &lt;code&gt;ModifierType&lt;/code&gt; to &lt;code&gt;ModifierTypeInfo&lt;/code&gt; in function &lt;code&gt;modifier_type_init&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;INIT_TYPE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This constructs the mapping from &lt;code&gt;ModifierType&lt;/code&gt; to &lt;code&gt;ModifierTypeInfo&lt;/code&gt; for Tetrahedron modifier.&lt;/p&gt;
 
 &lt;p&gt;Finally we provide declaration of Tetrahedron’s &lt;code&gt;ModifierTypeInfo&lt;/code&gt;
 in file &lt;code&gt;source/blender/modifiers/MOD_modifiertypes.h&lt;/code&gt; so the initializer can see it:&lt;/p&gt;
@@ -150,7 +148,7 @@ So we just provide a dummy panel in the Python function &lt;code&gt;DATA_PT_modi
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;eModifierType_Tetrahedron&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;UI_icon_draw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICON_MOD_BUILD&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;add-parameters-to-modifier&quot;&gt;Add parameters to modifier&lt;/h2&gt;
+&lt;h2 id=&quot;add-parameters-to-modifieroptional&quot;&gt;Add parameters to modifier(optional)&lt;/h2&gt;
 &lt;p&gt;Now you can build your costomized Blender and try the Tetrahedron modifier.&lt;/p&gt;
 
 &lt;p&gt;Sometimes we also want to pass parameters through modifier panel.&lt;/p&gt;
