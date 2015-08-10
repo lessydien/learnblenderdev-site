@@ -6,19 +6,13 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 10 Aug 2015 10:32:48 +0800</pubDate>
-    <lastBuildDate>Mon, 10 Aug 2015 10:32:48 +0800</lastBuildDate>
+    <pubDate>Mon, 10 Aug 2015 10:37:40 +0800</pubDate>
+    <lastBuildDate>Mon, 10 Aug 2015 10:37:40 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
-        <title>Notes On Construction Of Derived Mesh</title>
-        <description>&lt;p&gt;layout:     post
-title:      “Notes on construction of DerivedMesh”
-tags:       blender-coding modifier
-comments:   true
-—&lt;/p&gt;
-
-&lt;p&gt;Today I make a minor update on
+        <title>Notes on construction of DerivedMesh</title>
+        <description>&lt;p&gt;Today I make a minor update on
 my &lt;a href=&quot;https://gist.github.com/thebusytypist/a2f950fc26ee36957cdd&quot;&gt;Tetrahedron modifier&lt;/a&gt;.
 Loops and faces are constructed in order to get a solid tetrahedron mesh.&lt;/p&gt;
 
@@ -44,6 +38,10 @@ and released using &lt;code&gt;BM_mesh_free&lt;/code&gt;.&lt;/p&gt;
         <pubDate>Mon, 10 Aug 2015 00:00:00 +0800</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/10/notes-on-construction-of-derived-mesh.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/10/notes-on-construction-of-derived-mesh.html</guid>
+        
+        <category>blender-coding</category>
+        
+        <category>modifier</category>
         
         
       </item>
