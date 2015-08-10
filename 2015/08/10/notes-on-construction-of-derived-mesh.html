@@ -1,0 +1,28 @@
+<p>layout:     post
+title:      “Notes on construction of DerivedMesh”
+tags:       blender-coding modifier
+comments:   true
+—</p>
+
+<p>Today I make a minor update on
+my <a href="https://gist.github.com/thebusytypist/a2f950fc26ee36957cdd">Tetrahedron modifier</a>.
+Loops and faces are constructed in order to get a solid tetrahedron mesh.</p>
+
+<p>In the Tetrahedron modifier,
+firstly a <code>DerivedMesh</code> with desired count of vertices, loops, and faces is allocated
+using <code>CDDM_new</code>,
+then vertices, loops and faces data are filled into <code>DerivedMesh</code>
+using functions <code>CDDM_get_verts</code>, <code>CDDM_get_loops</code>, and <code>CDDM_get_polys</code>.</p>
+
+<p>This is a common approach to construct <code>DerivedMesh</code> from scratch.
+The similar method can also be seen in Remesh modifier.</p>
+
+<p>You can also use BMesh tools to construct <code>DerivedMesh</code> in a modifier.
+This is usually seen in modifiers whose task is to refine parts of mesh.
+A typical example is Bevel modifier.</p>
+
+<p>In this approach, a BMesh object has to be constructed using <code>DM_to_bmesh</code>,
+then followed by desired BMesh operations.
+After all operations have finished,
+the BMesh object gets converted to result <code>DerivedMesh</code> using <code>CDDM_from_bmesh</code>,
+and released using <code>BM_mesh_free</code>.</p>

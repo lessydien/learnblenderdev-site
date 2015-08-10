@@ -6,9 +6,47 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 05 Aug 2015 07:29:10 +0800</pubDate>
-    <lastBuildDate>Wed, 05 Aug 2015 07:29:10 +0800</lastBuildDate>
+    <pubDate>Mon, 10 Aug 2015 10:32:48 +0800</pubDate>
+    <lastBuildDate>Mon, 10 Aug 2015 10:32:48 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Notes On Construction Of Derived Mesh</title>
+        <description>&lt;p&gt;layout:     post
+title:      “Notes on construction of DerivedMesh”
+tags:       blender-coding modifier
+comments:   true
+—&lt;/p&gt;
+
+&lt;p&gt;Today I make a minor update on
+my &lt;a href=&quot;https://gist.github.com/thebusytypist/a2f950fc26ee36957cdd&quot;&gt;Tetrahedron modifier&lt;/a&gt;.
+Loops and faces are constructed in order to get a solid tetrahedron mesh.&lt;/p&gt;
+
+&lt;p&gt;In the Tetrahedron modifier,
+firstly a &lt;code&gt;DerivedMesh&lt;/code&gt; with desired count of vertices, loops, and faces is allocated
+using &lt;code&gt;CDDM_new&lt;/code&gt;,
+then vertices, loops and faces data are filled into &lt;code&gt;DerivedMesh&lt;/code&gt;
+using functions &lt;code&gt;CDDM_get_verts&lt;/code&gt;, &lt;code&gt;CDDM_get_loops&lt;/code&gt;, and &lt;code&gt;CDDM_get_polys&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This is a common approach to construct &lt;code&gt;DerivedMesh&lt;/code&gt; from scratch.
+The similar method can also be seen in Remesh modifier.&lt;/p&gt;
+
+&lt;p&gt;You can also use BMesh tools to construct &lt;code&gt;DerivedMesh&lt;/code&gt; in a modifier.
+This is usually seen in modifiers whose task is to refine parts of mesh.
+A typical example is Bevel modifier.&lt;/p&gt;
+
+&lt;p&gt;In this approach, a BMesh object has to be constructed using &lt;code&gt;DM_to_bmesh&lt;/code&gt;,
+then followed by desired BMesh operations.
+After all operations have finished,
+the BMesh object gets converted to result &lt;code&gt;DerivedMesh&lt;/code&gt; using &lt;code&gt;CDDM_from_bmesh&lt;/code&gt;,
+and released using &lt;code&gt;BM_mesh_free&lt;/code&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 10 Aug 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/10/notes-on-construction-of-derived-mesh.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/10/notes-on-construction-of-derived-mesh.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Learn how Blender&#39;s modifier system works (part 3)</title>
@@ -758,285 +796,6 @@ and trigger a notification.&lt;/p&gt;
         <pubDate>Sun, 05 Apr 2015 00:00:00 +0800</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/04/05/construct-bmesh-from-mesh.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/04/05/construct-bmesh-from-mesh.html</guid>
-        
-        <category>blender-coding</category>
-        
-        <category>operator</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Analyze the cube adding operator</title>
-        <description>&lt;p&gt;(The revision of Blender used for analysis is
-&lt;code&gt;bacdfc70e2109711eeecef122cf408e6803990ca&lt;/code&gt;)&lt;/p&gt;
-
-&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;
-&lt;p&gt;I assume you have already used “cube adding” before
-(By pressing &lt;code&gt;Shift + A&lt;/code&gt;, and choosing the &lt;code&gt;Cube&lt;/code&gt; item in the &lt;code&gt;Mesh&lt;/code&gt; sub-menu).
-And from previous posts we are already familiar with
-the operator registration process.
-So in this post, I will focus on the execution of this operator,
-i.e. the function &lt;code&gt;add_primitive_cube_exec&lt;/code&gt;(file &lt;code&gt;editmesh_add.c&lt;/code&gt;).&lt;/p&gt;
-
-&lt;p&gt;In the following sections,
-we will have a look at the operator from the view of MVC pattern first.
-Then we dive into the BMesh system to see how the actual mesh data is constructed.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;TL;DR&lt;/strong&gt; There is also a summary section in the end for you if you just want to see which functions are required for writing your own operators.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-mvc-pattern-in-blender&quot;&gt;The MVC pattern in Blender&lt;/h2&gt;
-&lt;p&gt;Speaking with the theory of &lt;a href=&quot;http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller&quot;&gt;MVC&lt;/a&gt; pattern,
-a successfully executed action usually experiences following steps:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;When a user triggers some events,
-the controller translates those raw events into a series of commands,
-which can be understood by the model.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;When the model receives the commands from controller,
-it will modify itself according to those commands.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;After the model finished the modification(or some progress has been made),
-it notifies the view for an (visual)update for user.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Now let us see how are these MVC concepts implemented in Blender.&lt;/p&gt;
-
-&lt;p&gt;The controller part is simple in this case.
-The clicking on menu item can be directly translated to the commands for models.
-I will discuss the controller later
-in more depth for those complicated cases(i.e. the modal operator).&lt;/p&gt;
-
-&lt;p&gt;The view part of Blender
-involves with how to represent models in graphic API draw calls.
-I do not want to spend much time on this for now.
-Actually we rarely need to touch this layer for writing operators.&lt;/p&gt;
-
-&lt;p&gt;The model part is today’s main topic.
-In Blender, 3D objects, such as meshes, lights, cameras,
-are managed under a &lt;em&gt;scene&lt;/em&gt; object.
-For every object in the scene, there is data with specific type stored
-in it.
-In our case, the cube we are going to create is
-an object containing mesh data.
-Now the whole process is clear: we create an object first,
-then link it to the scene,
-and finally fill mesh data into it.&lt;/p&gt;
-
-&lt;p&gt;The object creation takes place in function &lt;code&gt;ED_object_add_type&lt;/code&gt;(file &lt;code&gt;editmesh_add.c&lt;/code&gt;).
-And the function &lt;code&gt;BKE_object_add&lt;/code&gt; links the newly created object to the scene.
-The trace of object linking is shown below(the latest function invocation comes first):&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ED_object_add_type(bContext * C, int type, const float * loc, const float * rot, bool enter_editmode, unsigned int layer) Line 409
-make_prim_init(bContext * C, const unsigned char * idname, float * dia, float[4] * mat, bool * was_editmode, const float * loc, const float * rot, const unsigned int layer) Line 65
-add_primitive_cube_exec(bContext * C, wmOperator * op) Line 155
-wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRNA * properties, ReportList * reports, const bool poll_only) Line 1048
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;While the object with mesh data is being created, the model send notifications to the view using function &lt;code&gt;WM_event_add_notifier&lt;/code&gt;(defined in file &lt;code&gt;wm_event_system.c&lt;/code&gt;).
-There will be multiple notifications for different objects during the operator execution. 
-One of them is for the scene, and that notification is sent from &lt;code&gt;make_prim_init&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;n&quot;&gt;WM_event_add_notifier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NC_SCENE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ND_LAYER_CONTENT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scene&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;The abbreviation &lt;code&gt;NC&lt;/code&gt; in &lt;code&gt;NC_SCENE&lt;/code&gt; means “notification category”,
-and the &lt;code&gt;ND&lt;/code&gt; in &lt;code&gt;ND_LAYER_CONTENT&lt;/code&gt; stands for “notification data”.
-All of these enumerator definitions can be found in the file &lt;code&gt;WM_types.h&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Another notification is for the newly created object, and that is sent from &lt;code&gt;make_prim_finish&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;n&quot;&gt;WM_event_add_notifier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NC_OBJECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ND_DRAW&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;obedit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;I list the call stack of this notification from &lt;code&gt;make_prim_finish&lt;/code&gt; below:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;WM_event_add_notifier(const bContext * C, unsigned int type, void * reference) Line 164
-make_prim_finish(bContext * C, Object * obedit, bool was_editmode, int enter_editmode) Line 96
-add_primitive_cube_exec(bContext * C, wmOperator * op) Line 167
-wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRNA * properties, ReportList * reports, const bool poll_only) Line 1048
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This then finishes the execution of cube adding operator.&lt;/p&gt;
-
-&lt;p&gt;Let me remind you that there are also many other interesting things
-in &lt;code&gt;add_primitive_cube_exec&lt;/code&gt; but I did not mention them.
-To name a few of them:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Operator properties access in &lt;code&gt;ED_object_add_generic_get_opts&lt;/code&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Editing mode toggling. The &lt;code&gt;ED_object_editmode_enter&lt;/code&gt;(called in &lt;code&gt;make_prim_init&lt;/code&gt;)
-and &lt;code&gt;ED_object_editmode_exit&lt;/code&gt;(called in &lt;code&gt;make_prim_finish&lt;/code&gt;) are used.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Dependency graph. In &lt;code&gt;ED_object_add_type&lt;/code&gt;
-I saw some functions with prefix &lt;code&gt;DAG_&lt;/code&gt;. They are for the dependency graph.
-The dependency graph is an important feature emerged from recent Blender development.
-I will cover this topic in later posts.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Every topic from above worths an in-depth exploration.&lt;/p&gt;
-
-&lt;p&gt;Until now we have discussed all but the mesh data filling.
-I leave this to the next section.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-bmesh-system&quot;&gt;The BMesh system&lt;/h2&gt;
-&lt;p&gt;In history there was a huge refactoring on mesh implementation.
-The original mesh sub-system was replaced by
-&lt;a href=&quot;http://wiki.blender.org/index.php/Dev:2.6/Source/Modeling/BMesh/Design&quot;&gt;BMesh&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The BMesh sub-system is too complicated for such a simple operator as cube adding.
-But I think it is a good chance for us
-to learn the mechanism behind the BMesh from this simple case.&lt;/p&gt;
-
-&lt;p&gt;After a search on the web I find this
-&lt;a href=&quot;http://wiki.blender.org/index.php/Dev:2.6/Source/Modeling/BMesh/Design&quot;&gt;design document&lt;/a&gt; for BMesh.
-I suggest to read it later for a more complete understanding of BMesh system, especially the algorithm part if you want to do some extension for it.&lt;/p&gt;
-
-&lt;p&gt;Another excellent material on BMesh is in the header file &lt;code&gt;bmesh.h&lt;/code&gt;. It covers some practical concepts, such as flags, slots, etc.
-I think it can be used as a manual on how to use BMesh.&lt;/p&gt;
-
-&lt;p&gt;Now let us start with some basic concepts.&lt;/p&gt;
-
-&lt;p&gt;BMesh system contains a collection of operators(they are BMesh operators which start with prefix of &lt;code&gt;bmo_&lt;/code&gt;, not the Blender operators we saw before), which can be composed to build desired functionality.&lt;/p&gt;
-
-&lt;p&gt;The data which these BMesh operators manipulate, is called &lt;em&gt;slots&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;A slot(&lt;code&gt;BMOpSlot&lt;/code&gt;, file &lt;code&gt;bmesh_operator_api.h&lt;/code&gt;) is associated with a slot type(e.g. booleans, integers, or floats).
-This type directs a BMesh operator how to read the value from slots.&lt;/p&gt;
-
-&lt;p&gt;A BMesh operator(&lt;code&gt;BMOperator&lt;/code&gt;, file &lt;code&gt;bmesh_operator_api.h&lt;/code&gt;)
-owns two kinds of slots: one is for input, and the other is for output. There is a limit on the slots capacity, which is defined by &lt;code&gt;BMO_OP_MAX_SLOTS&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Before invocation, every BMesh operator is initialized by some meta information, such as “how many slots will be used?” and “which types are these slots?”. This meta information is stored in &lt;code&gt;BMOpDefine&lt;/code&gt; structure. And all &lt;code&gt;BMOpDefine&lt;/code&gt;s are arranged in an array called &lt;code&gt;bmo_opdefines&lt;/code&gt;(file &lt;code&gt;bmesh_opdefines.c&lt;/code&gt;).
-Note that every &lt;code&gt;BMOpDefine&lt;/code&gt; also has a name. You can use this name as a key to search for the meta information about one BMesh operator in &lt;code&gt;bmo_opdefines&lt;/code&gt; array.&lt;/p&gt;
-
-&lt;p&gt;Let us now examine how this is implemented in Blender.&lt;/p&gt;
-
-&lt;p&gt;We start from the function &lt;code&gt;EDBM_op_call_and_selectf&lt;/code&gt;,
-which is the entry point to the BMesh system:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EDBM_op_call_and_selectf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;em&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;verts.out&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;s&quot;&gt;&amp;quot;create_cube matrix=%m4 size=%f&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RNA_float_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;op&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;radius&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;2.0f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OPERATOR_CANCELLED&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;The third argument &lt;code&gt;&quot;verts.out&quot;&lt;/code&gt; is the name of the output slot;
-the argument in C-style format string(the fifth argument)
-gives the name of BMesh operator which is going to be executed
-and indicates the input format for the input slots.
-The slots names, &lt;code&gt;verts.out&lt;/code&gt;, &lt;code&gt;matrix&lt;/code&gt;, and &lt;code&gt;size&lt;/code&gt;
-are the ones you specified in BMesh operator definitions(&lt;code&gt;bmo_opdefines&lt;/code&gt; array).&lt;/p&gt;
-
-&lt;p&gt;Now we step inside the function &lt;code&gt;EDBM_op_call_and_selectf&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;The first function we encounter is &lt;code&gt;BMO_op_vinitf&lt;/code&gt;.
-This function is a parser of the C-style format string.
-It gets the name of BMesh operator,
-and reads the variadic arguments into input slots.
-In this cube adding case,
-the operator name is &lt;code&gt;&quot;create_cube&quot;&lt;/code&gt;.
-Then a 4x4 matrix and a single float are read into the input slots.
-When this function returns, the BMesh operator is successfully constructed.&lt;/p&gt;
-
-&lt;p&gt;The next function &lt;code&gt;BMO_op_exec&lt;/code&gt; executes the BMesh operator.
-In the function &lt;code&gt;bmo_create_cube_exec&lt;/code&gt; you can see the
-vertices get filled, and faces get constructed.
-The output slots are also allocated and filled here
-inside the function &lt;code&gt;BMO_slot_buffer_from_enabled_flag&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;I list the call stack below:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;blender-app.exe!bmo_create_cube_exec(BMesh * bm, BMOperator * op) Line 667
-blender-app.exe!BMO_op_exec(BMesh * bm, BMOperator * op) Line 219
-blender-app.exe!EDBM_op_call_and_selectf(BMEditMesh * em, wmOperator * op, const unsigned char * select_slot_out, const bool select_extend, const unsigned char * fmt, ...) Line 294
-blender-app.exe!add_primitive_cube_exec(bContext * C, wmOperator * op) Line 161
-blender-app.exe!wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRNA * properties, ReportList * reports, const bool poll_only) Line 1048
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Inside the function &lt;code&gt;BMO_slot_buffer_from_enabled_flag&lt;/code&gt;,
-there are two concepts you have to understand.
-One is the header type, which are some properties about the BMesh elements themselves, such as “Is this a vertex, a face, a loop, or an edge?”.
-The other is the tool flags, which are some configurations about the BMesh operator being executed.&lt;/p&gt;
-
-&lt;p&gt;After the BMesh operator execution is finished,
-we return to the function &lt;code&gt;EDBM_op_call_and_selectf&lt;/code&gt;.
-The &lt;code&gt;BMO_slot_buffer_hflag_enable&lt;/code&gt; will use the output slots to mark the newly created vertices selected.&lt;/p&gt;
-
-&lt;p&gt;Finally we end the BMesh operator execution with &lt;code&gt;EDBM_op_finish&lt;/code&gt;, which dereferences the mesh data we are working on.&lt;/p&gt;
-
-&lt;h2 id=&quot;summary&quot;&gt;Summary&lt;/h2&gt;
-&lt;p&gt;Here is a short summary of functions which you need to call in your own mesh operator:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Use &lt;code&gt;ED_object_add_type&lt;/code&gt; to create object.&lt;/li&gt;
-  &lt;li&gt;Link your object to the scene with &lt;code&gt;BKE_object_add&lt;/code&gt;.&lt;/li&gt;
-  &lt;li&gt;Use &lt;code&gt;WM_event_add_notifier&lt;/code&gt; to emit a specific notification.
-Refer to the file &lt;code&gt;WM_types.h&lt;/code&gt; for notification categories and types.&lt;/li&gt;
-  &lt;li&gt;Call specific BMesh operator to manipulate mesh data.
-You can find BMesh operator specifications(including operator name, input and output slots names, etc.)
-in &lt;code&gt;bmo_opdefines&lt;/code&gt; array(file &lt;code&gt;bmesh_opdefines.c&lt;/code&gt;).&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;some-random-notes-and-remained-questions&quot;&gt;Some random notes and remained questions&lt;/h2&gt;
-&lt;p&gt;I think there are a lot of things and details I did not cover in this post.
-And there are also many questions for me to work on.
-I list some of them below.&lt;/p&gt;
-
-&lt;h3 id=&quot;the-event-system-and-notifications&quot;&gt;The event system and notifications&lt;/h3&gt;
-&lt;p&gt;I used to believe that in a GUI framework written in real time graphics API like OpenGL,
-the views(I mean the window renderer) refresh itself in a 60 FPS rate.
-Hence the models need not to send notifications manually to the view to trigger a refresh.&lt;/p&gt;
-
-&lt;p&gt;And I thought the only possible need for a notification is that
-there are some other models depending on the modified parts.
-So the manually triggered notification
-should be only for the dependency resolving.&lt;/p&gt;
-
-&lt;p&gt;But after reading the source code of Blender,
-I noticed the mandatory function call to &lt;code&gt;WM_event_add_notifier&lt;/code&gt; in operators.
-It seems that I was wrong.&lt;/p&gt;
-
-&lt;h3 id=&quot;reduce-operator-looking-up-by-string-interning&quot;&gt;Reduce operator looking up by string interning&lt;/h3&gt;
-&lt;p&gt;The BMesh operator is indexed by their names.
-While you are request one BMesh operator’s definition,
-you have to perform a linear search(in function &lt;code&gt;BMO_opcode_from_opname&lt;/code&gt;) on these names.&lt;/p&gt;
-
-&lt;p&gt;This linear search happens twice in the function &lt;code&gt;BMO_op_vinitf&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;It would be better to pass index of the operator across functions
-to reduce the linear search.&lt;/p&gt;
-
-&lt;p&gt;More over, for a static string mapping
-(that is, a mapping defined in compile time and remains constant during runtime),
-this search can be reduced to constant time using &lt;a href=&quot;http://en.wikipedia.org/wiki/String_interning&quot;&gt;string interning&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h3 id=&quot;do-i-have-to-add-new-operators-to-bmesh&quot;&gt;Do I have to add new operators to BMesh?&lt;/h3&gt;
-&lt;p&gt;For my proposed project in previous post,
-I am going to construct mesh dynamically.&lt;/p&gt;
-
-&lt;p&gt;I briefly browsed the BMesh operators list and found the
-&lt;code&gt;bmo_mesh_to_bmesh_def&lt;/code&gt;.
-So I can construct a mesh structure and invoke this operator to convert it to a BMesh.&lt;/p&gt;
-
-&lt;p&gt;But there is another possible solution: I can write a new BMesh operator
-that constructs the mesh directly.&lt;/p&gt;
-
-&lt;p&gt;I will try my ideas out in coming posts.&lt;/p&gt;
-</description>
-        <pubDate>Wed, 01 Apr 2015 00:00:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html</guid>
         
         <category>blender-coding</category>
         
