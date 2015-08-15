@@ -6,9 +6,307 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 12 Aug 2015 21:00:36 +0800</pubDate>
-    <lastBuildDate>Wed, 12 Aug 2015 21:00:36 +0800</lastBuildDate>
+    <pubDate>Sat, 15 Aug 2015 09:05:25 +0800</pubDate>
+    <lastBuildDate>Sat, 15 Aug 2015 09:05:25 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Add a custom property editor panel</title>
+        <description>&lt;p&gt;I start with adding a custom property editor panel to realize my plan
+stated in the
+&lt;a href=&quot;/learnblenderdev-site/2015/08/12/use-blender-as-a-research-platform.html&quot;&gt;previous post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The patch file for a sample property editor can be found &lt;a href=&quot;https://gist.github.com/thebusytypist/68173569e311ae5b01ed&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#task-statements&quot;&gt;Task statements&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#overview-of-our-approach&quot;&gt;Overview of our approach&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#define-a-new-panel&quot;&gt;Define a new panel&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#draw-button-on-header&quot;&gt;Draw button on header&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#understand-spacebuts&quot;&gt;Understand SpaceButs&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#render&quot;&gt;Render&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#draw-panels&quot;&gt;Draw panels&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#some-extra-notes&quot;&gt;Some extra notes&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#footnotes&quot;&gt;Footnotes&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;task-statements&quot;&gt;Task statements&lt;/h2&gt;
+&lt;p&gt;There are several predefined property editors in Blender’s properties view,
+such as Render, Render Layers, Scene, World, Object, etc.&lt;/p&gt;
+
+&lt;p&gt;Sometimes I want to add new features for an element in Blender and provide user interfaces for user to edit its properties.&lt;/p&gt;
+
+&lt;p&gt;One approach is to write Python scripts to create custom property panels.
+But these custom panels are confined in predefined property editors.&lt;/p&gt;
+
+&lt;p&gt;For consistency and clarity, we want to group logically related panels in a separate property editor.&lt;/p&gt;
+
+&lt;p&gt;We call this new property editor “Simulation”. Here is a screenshot of it:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/simulation-property-editor-panel.png&quot; alt=&quot;Custom property editor panel&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;For simplicity I use &lt;code&gt;ICON_ANIM&lt;/code&gt; as its icon.&lt;/p&gt;
+
+&lt;h2 id=&quot;overview-of-our-approach&quot;&gt;Overview of our approach&lt;/h2&gt;
+&lt;p&gt;Firstly we will define a new property editor named Simulation in Blender system.
+Then we register it to UI system in order to make its button appear on the header of properties view.
+Finally we draw the body of Simulation panel when it is activated.&lt;/p&gt;
+
+&lt;h2 id=&quot;define-a-new-panel&quot;&gt;Define a new panel&lt;/h2&gt;
+&lt;p&gt;A new item of &lt;code&gt;eSpaceButtons_Context&lt;/code&gt;&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; should be defined:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eSpaceButtons_Context&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_RENDER&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_SCENE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_WORLD&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_OBJECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_DATA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_MATERIAL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_TEXTURE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_PARTICLE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_PHYSICS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_BONE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_MODIFIER&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_CONSTRAINT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_BONE_CONSTRAINT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_RENDER_LAYER&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_SIMULATION&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    
+    &lt;span class=&quot;cm&quot;&gt;/* always as last... */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BCONTEXT_TOT&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eSpaceButtons_Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Also some meta information(description text, icon, etc) should be provided in
+&lt;code&gt;buttons_context_items&lt;/code&gt;&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BCONTEXT_SIMULATION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;SIMULATION&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICON_ANIM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Simulation&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Simulation&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;draw-button-on-header&quot;&gt;Draw button on header&lt;/h2&gt;
+&lt;p&gt;The source code for properties view are located in the folder
+&lt;code&gt;source/blender/editors/space_buttons&lt;/code&gt;.
+After a brief search inside this folder
+we can locate the area(or region) definition function &lt;code&gt;ED_spacetype_buttons&lt;/code&gt;
+in the file &lt;code&gt;space_buttons.c&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ED_spacetype_buttons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;
+    
+    &lt;span class=&quot;cm&quot;&gt;/* regions: header */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;art&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MEM_callocN&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ARegionType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;spacetype buttons region&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;art&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regionid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RGN_TYPE_HEADER&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;art&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prefsizey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HEADERY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;art&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keymapflag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ED_KEYMAP_UI&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ED_KEYMAP_VIEW2D&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ED_KEYMAP_FRAMES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ED_KEYMAP_HEADER&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;art&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buttons_header_area_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;art&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;draw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buttons_header_area_draw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;BLI_addhead&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;st&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regiontypes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;art&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;BKE_spacetype_register&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;st&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;For buttons rendering we focus on the header area.
+We can see the actual header rendering are registered as function &lt;code&gt;buttons_header_area_draw&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;buttons_header_area_draw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARegion&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;SpaceButs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CTX_wm_space_buts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* Needed for RNA to get the good values! */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;buttons_context_compute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;ED_region_header&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code&gt;ED_region_header&lt;/code&gt; function performs the UI rendering.
+But what does function &lt;code&gt;buttons_context_compute&lt;/code&gt; do?&lt;/p&gt;
+
+&lt;h3 id=&quot;understand-spacebuts&quot;&gt;Understand SpaceButs&lt;/h3&gt;
+&lt;p&gt;Let me distill the essential parts of function &lt;code&gt;buttons_context_compute&lt;/code&gt; here:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;buttons_context_compute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SpaceButs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ButsContextPath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;PointerRNA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pflag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* for each context, see if we can compute a valid path to it, if&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * this is the case, we know we have to display the button */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BCONTEXT_TOT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buttons_context_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pflag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+            &lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* always try to use the tab that was explicitly&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * set to the user, so that once that context comes&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * back, the tab is activated again */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mainb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mainbuser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pathflag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code&gt;SpaceButs&lt;/code&gt; structure records the state of each property editors.
+In particular,&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code&gt;path&lt;/code&gt; contains the current available components(such as mesh data, particle systems, etc) of an object.
+It gets its name since a serial hierarchy from the root scene to the corresponding component will be rendered later.
+It looks like &lt;img src=&quot;/learnblenderdev-site/assets/path-in-properties-view.png&quot; alt=&quot;Path of components in properties view&quot; /&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code&gt;mainb&lt;/code&gt; is the index of current property editor(or context in the source code).
+It has the same integer value of corresponding item in &lt;code&gt;eSpaceButtons_Context&lt;/code&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code&gt;mainbuser&lt;/code&gt; is the index of desired property editor from user.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code&gt;pathflag&lt;/code&gt; is a bit fields indicating which property editor is available for current object.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now we can understand what &lt;code&gt;buttons_context_compute&lt;/code&gt; does:
+it loops through all property editors and record available ones to the &lt;code&gt;pathflag&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;render&quot;&gt;Render&lt;/h3&gt;
+&lt;p&gt;We simply turn on the corresponding bit in &lt;code&gt;pathflag&lt;/code&gt; to mark our new property editor available for header rendering:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/* Always include BCONTEXT_SIMULATION */&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BCONTEXT_SIMULATION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;However you still cannot see our new button now.&lt;/p&gt;
+
+&lt;p&gt;This problem took me some time in my first try
+since the panel rendering process is rather complicated: it gets issued in C++ side,
+then goes into Python script, and finally calls back to C++ side for OpenGL rendering.
+It is really hard to trace the execution due to the discontinuous call stack.&lt;/p&gt;
+
+&lt;p&gt;But remember that the &lt;code&gt;pathflag&lt;/code&gt; indicates which editor is available?
+I conjecture that any rendering code may refer to the variable &lt;code&gt;pathflag&lt;/code&gt; for available editors.
+Through a search of &lt;code&gt;pathflag&lt;/code&gt; I finally find the solution.&lt;/p&gt;
+
+&lt;p&gt;An enum item should be added for each available editor.
+So I should add this in function &lt;code&gt;rna_SpaceProperties_context_itemf&lt;/code&gt;&lt;sup id=&quot;fnref:2:1&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pathflag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BCONTEXT_SIMULATION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RNA_enum_items_add_value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;totitem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buttons_context_items&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BCONTEXT_SIMULATION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Let us have a look at its stack trace. It is hard to trace through that Python part:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;blender-app.exe!rna_SpaceProperties_context_itemf
+blender-app.exe!RNA_property_enum_items
+blender-app.exe!RNA_property_enum_items_gettexted
+blender-app.exe!ui_item_enum_expand
+blender-app.exe!uiItemFullR
+blender-app.exe!rna_uiItemR
+blender-app.exe!UILayout_prop_call
+blender-app.exe!RNA_function_call
+blender-app.exe!pyrna_func_call
+python34_d.dll!56c7de81
+[Frames below may be incorrect and/or missing, no symbols loaded for python34_d.dll]    
+python34_d.dll!56d99f5c
+python34_d.dll!56d999ed
+python34_d.dll!56d9742d
+python34_d.dll!56d92f31
+python34_d.dll!56cc1dc5
+python34_d.dll!56c7de81
+blender-app.exe!bpy_class_call
+blender-app.exe!header_draw
+blender-app.exe!ED_region_header
+blender-app.exe!buttons_header_area_draw
+blender-app.exe!ED_region_do_draw
+blender-app.exe!wm_method_draw_triple
+blender-app.exe!wm_draw_update
+blender-app.exe!ghost_event_proc
+blender-app.exe!GHOST_CallbackEventConsumer::processEvent
+blender-app.exe!GHOST_EventManager::dispatchEvent
+blender-app.exe!GHOST_EventManager::dispatchEvent
+blender-app.exe!GHOST_EventManager::dispatchEvents
+blender-app.exe!GHOST_System::dispatchEvents
+blender-app.exe!GHOST_DispatchEvents
+blender-app.exe!wm_window_process_events
+blender-app.exe!WM_main
+blender-app.exe!main
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;draw-panels&quot;&gt;Draw panels&lt;/h2&gt;
+&lt;p&gt;Now the new property editor button appears on the header of property view.
+We move on to render panels inside it.&lt;/p&gt;
+
+&lt;p&gt;The panel user interface is defined in Python.
+You can refer to scripts in &lt;code&gt;release/scripts/startup/bl_ui&lt;/code&gt; for examples.&lt;/p&gt;
+
+&lt;p&gt;Mine is here:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SimulationButtonsPanel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;bl_space_type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;PROPERTIES&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;bl_region_type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;WINDOW&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;bl_context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;simulation&amp;quot;&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SIMULATION_PT_context_simulation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SimulationButtonsPanel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Panel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;bl_label&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;bl_options&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;HIDE_HEADER&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;draw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;SimulationPanel.draw&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Coming soon.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that I use &lt;code&gt;&quot;simulation&quot;&lt;/code&gt; for &lt;code&gt;bl_context&lt;/code&gt;.
+This tells Blender we want to put this panel under the Simulation context.&lt;/p&gt;
+
+&lt;p&gt;The C++ side of Blender also have to use this string to dispatch UI rendering to Python.
+Therefore we add following code in the function &lt;code&gt;buttons_main_area_draw&lt;/code&gt;&lt;sup id=&quot;fnref:3&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mainb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BCONTEXT_SIMULATION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ED_region_panels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vertical&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;simulation&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sbuts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mainb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;some-extra-notes&quot;&gt;Some extra notes&lt;/h2&gt;
+&lt;p&gt;In this post we just turn on a bit of &lt;code&gt;pathflag&lt;/code&gt; to force our custom panel appear in the user interface.
+In a real life situation a data block should be defined and a valid path to that block reveals the corresponding bit of &lt;code&gt;pathflag&lt;/code&gt;.
+I leave this for future works.&lt;/p&gt;
+
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;It is in the file &lt;code&gt;source/blender/makesdna/DNA_space_types.h&lt;/code&gt;. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot;&gt;
+      &lt;p&gt;It is in the file &lt;code&gt;source/blender/makesrna/intern/rna_space.c&lt;/code&gt;. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:2:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot;&gt;
+      &lt;p&gt;It is in the file &lt;code&gt;source/blender/editors/space_buttons/space_buttons.c&lt;/code&gt;. &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sat, 15 Aug 2015 00:00:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/15/add-a-custom-property-editor-panel.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/15/add-a-custom-property-editor-panel.html</guid>
+        
+        <category>blender-coding</category>
+        
+        <category>user-interface</category>
+        
+        
+      </item>
     
       <item>
         <title>Use Blender as a research platform</title>
@@ -704,50 +1002,6 @@ I do not find a solution yet.&lt;/p&gt;
         <pubDate>Wed, 22 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/22/revise-2d-dual-contouring.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/22/revise-2d-dual-contouring.html</guid>
-        
-        <category>blender-scripting</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>2D dual contouring in Blender script</title>
-        <description>&lt;p&gt;After a long break I begin to implement 2D dual contouring today.
-This is the result I achieved:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/heart-function-2d-dc.png&quot; alt=&quot;2D dual contouring of heart function&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;My implementation is based on
-&lt;a href=&quot;http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf&quot;&gt;Dual Contouring of Hermite Data&lt;/a&gt;
-and
-&lt;a href=&quot;http://www.cs.berkeley.edu/~jrs/meshpapers/SchaeferWarren2.pdf&quot;&gt;Dual Contouring: “The Secret Sauce”&lt;/a&gt;.
-The source code of this tool can be found
-&lt;a href=&quot;https://gist.github.com/thebusytypist/1d1c9db590670def874e&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;You can edit the &lt;code&gt;Function&lt;/code&gt; parameter to contour other kinds of geometry.
-The input of &lt;code&gt;Function&lt;/code&gt; parameter should be a 2D distance field function.
-Its zero isopleth will be contoured. 
-You may find &lt;a href=&quot;http://iquilezles.org/www/articles/distfunctions/distfunctions.htm&quot;&gt;this page&lt;/a&gt; useful.&lt;/p&gt;
-
-&lt;p&gt;There are also some details worth noting.
-I use &lt;code&gt;numpy.linalg.pinv&lt;/code&gt; to solve linear system.
-According to numpy’s document, &lt;code&gt;pinv&lt;/code&gt; computes the Moore-Penrose pseudo-inverse of a matrix.
-Hence when we are given a linear system which is rank deficient,
-the solution is minimized to the origin.
-This may lead to a vertex outside its bounding square.
-In this implementation I use the mass point translation approach to resolve this problem.&lt;/p&gt;
-
-&lt;p&gt;This tool is tested on some simple cases and most of them works well.
-But there is a problem when the isopleth hits the grid point.
-In this case the common intersection point will be used by four adjacent squares
-and then have four vertices generated.
-This makes the shape’s topology incorrect.
-A slight displacement may alleviate this problem.
-But I am looking for a more robust solution.&lt;/p&gt;
-</description>
-        <pubDate>Thu, 16 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/16/bpy-2d-dual-contouring.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/16/bpy-2d-dual-contouring.html</guid>
         
         <category>blender-scripting</category>
         
