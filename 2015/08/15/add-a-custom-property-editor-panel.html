@@ -168,7 +168,7 @@ in the file <code>space_buttons.c</code>:</p>
 <span class="p">}</span></code></pre></div>
 
 <p>For buttons rendering we focus on the header area.
-We can see the actual header rendering are registered as function <code>buttons_header_area_draw</code>:</p>
+We can see the actual header rendering is registered as function <code>buttons_header_area_draw</code>:</p>
 
 <div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">static</span> <span class="kt">void</span> <span class="nf">buttons_header_area_draw</span><span class="p">(</span><span class="k">const</span> <span class="n">bContext</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="n">ARegion</span> <span class="o">*</span><span class="n">ar</span><span class="p">)</span>
 <span class="p">{</span>
@@ -240,7 +240,7 @@ It has the same integer value of corresponding item in <code>eSpaceButtons_Conte
 </ul>
 
 <p>Now we can understand what <code>buttons_context_compute</code> does:
-it loops through all property editors and record available ones to the <code>pathflag</code>.</p>
+it loops through all property editors and records available ones to the <code>pathflag</code>.</p>
 
 <h3 id="render">Render</h3>
 <p>We simply turn on the corresponding bit in <code>pathflag</code> to mark our new property editor available for header rendering:</p>

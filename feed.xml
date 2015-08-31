@@ -6,9 +6,34 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 16 Aug 2015 09:42:45 +0800</pubDate>
-    <lastBuildDate>Sun, 16 Aug 2015 09:42:45 +0800</lastBuildDate>
+    <pubDate>Mon, 31 Aug 2015 10:20:53 +0800</pubDate>
+    <lastBuildDate>Mon, 31 Aug 2015 10:20:53 +0800</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
+    
+      <item>
+        <title>Transform UV coordinates to world space</title>
+        <description>&lt;p&gt;While I am learning some concepts from (discrete)differential geometry,
+I find it intuitive to visualize them on the mesh as various hues.
+For this job I need to locate the corresponding position on the mesh
+for each given UV coordinate.&lt;/p&gt;
+
+&lt;p&gt;I write &lt;a href=&quot;https://gist.github.com/thebusytypist/672bfd018864b023f76c&quot;&gt;an operator&lt;/a&gt;
+to illustrate how this can be done using &lt;code&gt;barycentric_transform&lt;/code&gt; and &lt;code&gt;intersect_point_tri_2d&lt;/code&gt; functions.
+Almost all of this implementation is learned from CoDEmanX’s answer
+in &lt;a href=&quot;http://blenderartists.org/forum/showthread.php?379027-Get-3D-location-of-mesh-surface-point-from-UV-Parameter&quot;&gt;this BlenderArtists post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Later I will rewrite this in C for optimal performance.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 31 Aug 2015 09:44:00 +0800</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/31/transform-uv-coordinates-to-world-space.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/31/transform-uv-coordinates-to-world-space.html</guid>
+        
+        <category>blender-scripting</category>
+        
+        <category>operator</category>
+        
+        
+      </item>
     
       <item>
         <title>Add a custom property editor panel</title>
@@ -108,7 +133,7 @@ in the file &lt;code&gt;space_buttons.c&lt;/code&gt;:&lt;/p&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;For buttons rendering we focus on the header area.
-We can see the actual header rendering are registered as function &lt;code&gt;buttons_header_area_draw&lt;/code&gt;:&lt;/p&gt;
+We can see the actual header rendering is registered as function &lt;code&gt;buttons_header_area_draw&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;buttons_header_area_draw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARegion&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -180,7 +205,7 @@ It has the same integer value of corresponding item in &lt;code&gt;eSpaceButtons
 &lt;/ul&gt;
 
 &lt;p&gt;Now we can understand what &lt;code&gt;buttons_context_compute&lt;/code&gt; does:
-it loops through all property editors and record available ones to the &lt;code&gt;pathflag&lt;/code&gt;.&lt;/p&gt;
+it loops through all property editors and records available ones to the &lt;code&gt;pathflag&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h3 id=&quot;render&quot;&gt;Render&lt;/h3&gt;
 &lt;p&gt;We simply turn on the corresponding bit in &lt;code&gt;pathflag&lt;/code&gt; to mark our new property editor available for header rendering:&lt;/p&gt;
@@ -956,54 +981,6 @@ the &lt;code&gt;ModifierTypeInfo&lt;/code&gt; is the common interface that modif
         <category>blender-coding</category>
         
         <category>modifier</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Some updates on my 2D dual contouring script</title>
-        <description>&lt;p&gt;I test more cases with my 2D dual contouring script. Here are some updates.&lt;/p&gt;
-
-&lt;h2 id=&quot;touching-vertex&quot;&gt;Touching vertex&lt;/h2&gt;
-
-&lt;p&gt;When the isopleth hits the grid vertex, duplicated vertices may be generated.
-See figure below.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/dc-touching-vertex.svg&quot; alt=&quot;Touching vertex&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The touching grid point(the black one) will have duplicated vertices generated in the red cells.
-Then these vertices will overlap at the black grid point.&lt;/p&gt;
-
-&lt;p&gt;My solution is to omit the edge which has one side with zero value and the other side with positive value. I mark this kind of edges with bold black color in the figure.&lt;/p&gt;
-
-&lt;h2 id=&quot;solution-outside-the-cell&quot;&gt;Solution outside the cell&lt;/h2&gt;
-
-&lt;p&gt;Sometimes a solution of pseudoinverse will be outside the cell:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/dc-vertex-outside-cube.svg&quot; alt=&quot;Solution outside the cell&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Here is a sample data set:
-The first intersection is &lt;code&gt;(0.17391304, -0.84122239)&lt;/code&gt; with normal vector &lt;code&gt;(0.27874198, -0.41094215)&lt;/code&gt;;
-The second intersection is &lt;code&gt;(0.26083516, -0.7826087)&lt;/code&gt; with normal vector &lt;code&gt;(0.40979725, -0.60430874)&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;In this case I simply set the solution to the center of the cell.&lt;/p&gt;
-
-&lt;h2 id=&quot;incorrect-topology&quot;&gt;Incorrect topology&lt;/h2&gt;
-
-&lt;p&gt;Currently I construct edges from one grid cell to its four adjacent neighbors. This approach will generate incorrect topology when it encounters sharp features.&lt;/p&gt;
-
-&lt;p&gt;Here is an example of upper part of heart function:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/2d-dc-incorrect-topology.svg&quot; alt=&quot;Incorrect topology in heart function&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The red part forms an incorrect “bridge”-like mesh.
-I do not find a solution yet.&lt;/p&gt;
-</description>
-        <pubDate>Wed, 22 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/22/revise-2d-dual-contouring.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/22/revise-2d-dual-contouring.html</guid>
-        
-        <category>blender-scripting</category>
         
         
       </item>
