@@ -6,8 +6,8 @@
 </description>
     <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
     <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 31 Aug 2015 11:03:15 +0800</pubDate>
-    <lastBuildDate>Mon, 31 Aug 2015 11:03:15 +0800</lastBuildDate>
+    <pubDate>Sat, 12 Sep 2015 09:10:50 -0700</pubDate>
+    <lastBuildDate>Sat, 12 Sep 2015 09:10:50 -0700</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
@@ -23,9 +23,9 @@ In the next two weeks I will spend some time on enrollment.&lt;/p&gt;
 
 &lt;p&gt;Thank you for reading.&lt;/p&gt;
 </description>
-        <pubDate>Mon, 31 Aug 2015 10:42:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/31/move-blender-extensions-from-gist-to-github.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/31/move-blender-extensions-from-gist-to-github.html</guid>
+        <pubDate>Sun, 30 Aug 2015 19:42:00 -0700</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/30/move-blender-extensions-from-gist-to-github.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/30/move-blender-extensions-from-gist-to-github.html</guid>
         
         <category>general</category>
         
@@ -46,9 +46,9 @@ in &lt;a href=&quot;http://blenderartists.org/forum/showthread.php?379027-Get-3D
 
 &lt;p&gt;Later I will rewrite this in C for optimal performance.&lt;/p&gt;
 </description>
-        <pubDate>Mon, 31 Aug 2015 09:44:00 +0800</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/31/transform-uv-coordinates-to-world-space.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/31/transform-uv-coordinates-to-world-space.html</guid>
+        <pubDate>Sun, 30 Aug 2015 18:44:00 -0700</pubDate>
+        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/30/transform-uv-coordinates-to-world-space.html</link>
+        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/30/transform-uv-coordinates-to-world-space.html</guid>
         
         <category>blender-scripting</category>
         
@@ -344,7 +344,7 @@ I leave this for future works.&lt;/p&gt;
   &lt;/ol&gt;
 &lt;/div&gt;
 </description>
-        <pubDate>Sat, 15 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Sat, 15 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/15/add-a-custom-property-editor-panel.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/15/add-a-custom-property-editor-panel.html</guid>
         
@@ -414,7 +414,7 @@ but it would be more clear if we group logical related properties in a separate 
   &lt;/li&gt;
 &lt;/ul&gt;
 </description>
-        <pubDate>Wed, 12 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Wed, 12 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/12/use-blender-as-a-research-platform.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/12/use-blender-as-a-research-platform.html</guid>
         
@@ -448,7 +448,7 @@ After all operations have finished,
 the BMesh object gets converted to result &lt;code&gt;DerivedMesh&lt;/code&gt; using &lt;code&gt;CDDM_from_bmesh&lt;/code&gt;,
 and released using &lt;code&gt;BM_mesh_free&lt;/code&gt;.&lt;/p&gt;
 </description>
-        <pubDate>Mon, 10 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Mon, 10 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/10/notes-on-construction-of-derived-mesh.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/10/notes-on-construction-of-derived-mesh.html</guid>
         
@@ -680,7 +680,7 @@ And it also works with other modifiers correctly.&lt;/p&gt;
   &lt;/ol&gt;
 &lt;/div&gt;
 </description>
-        <pubDate>Tue, 04 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Tue, 04 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/04/how-modifier-system-works-part-3.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/04/how-modifier-system-works-part-3.html</guid>
         
@@ -736,7 +736,7 @@ This approach works for me.&lt;/p&gt;
 &lt;p&gt;I kept both implementations(&lt;code&gt;AngleDefects&lt;/code&gt; and &lt;code&gt;AngleDefects2&lt;/code&gt;) in my source code,
 so you can play around with them.&lt;/p&gt;
 </description>
-        <pubDate>Tue, 28 Jul 2015 00:00:00 +0800</pubDate>
+        <pubDate>Tue, 28 Jul 2015 00:00:00 -0700</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/28/discrete-gauss-bonnet-theorem.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/28/discrete-gauss-bonnet-theorem.html</guid>
         
@@ -779,7 +779,7 @@ needs to be indexed from the mesh grid using &lt;code&gt;s[y, x, z]&lt;/code&gt;
 &lt;p&gt;The source code of this script can be found &lt;a href=&quot;https://gist.github.com/thebusytypist/b043745a6d7712998485&quot;&gt;here&lt;/a&gt;.
 It still has some topology issues to be resolved.&lt;/p&gt;
 </description>
-        <pubDate>Sat, 25 Jul 2015 17:57:00 +0800</pubDate>
+        <pubDate>Sat, 25 Jul 2015 02:57:00 -0700</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</guid>
         
@@ -890,7 +890,7 @@ For example:&lt;/p&gt;
 except that the dependency graph related functions in a modifier implementation.
 I leave these things to future posts.&lt;/p&gt;
 </description>
-        <pubDate>Sat, 25 Jul 2015 00:00:00 +0800</pubDate>
+        <pubDate>Sat, 25 Jul 2015 00:00:00 -0700</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html</guid>
         
@@ -911,7 +911,7 @@ I guess my intersection solver fails and causes infinite loop.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/preliminary-3d-dc.png&quot; alt=&quot;Preliminary 3D dual contouring&quot; /&gt;&lt;/p&gt;
 </description>
-        <pubDate>Fri, 24 Jul 2015 00:00:00 +0800</pubDate>
+        <pubDate>Fri, 24 Jul 2015 00:00:00 -0700</pubDate>
         <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html</link>
         <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html</guid>
         
