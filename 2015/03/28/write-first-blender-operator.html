@@ -87,24 +87,24 @@ operator as an example.</p>
 <h3 id="the-operator-template-wmoperatortype">The operator “template” <code>wmOperatorType</code></h3>
 <p>Have a look at our <code>Echo</code> operator:</p>
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">echo_exec</span><span class="p">(</span><span class="n">bContext</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="n">wmOperator</span> <span class="o">*</span><span class="n">op</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">echo_exec</span><span class="p">(</span><span class="n">bContext</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="n">wmOperator</span> <span class="o">*</span><span class="n">op</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">BKE_reportf</span><span class="p">(</span><span class="n">op</span><span class="o">-&gt;</span><span class="n">reports</span><span class="p">,</span> <span class="n">RPT_INFO</span><span class="p">,</span>
-                <span class="s">&quot;Operator %s is invoked.&quot;</span><span class="p">,</span>
+                <span class="s">"Operator %s is invoked."</span><span class="p">,</span>
                 <span class="n">op</span><span class="o">-&gt;</span><span class="n">idname</span><span class="p">);</span>
     <span class="k">return</span> <span class="n">OPERATOR_FINISHED</span><span class="p">;</span>
 <span class="p">}</span>
  
 <span class="kt">void</span> <span class="nf">EXTRA_OT_echo</span><span class="p">(</span><span class="n">wmOperatorType</span> <span class="o">*</span><span class="n">ot</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;Echo&quot;</span><span class="p">;</span>
-    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Echo operator invocation&quot;</span><span class="p">;</span>
-    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">idname</span> <span class="o">=</span> <span class="s">&quot;EXTRA_OT_echo&quot;</span><span class="p">;</span>
+    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">name</span> <span class="o">=</span> <span class="s">"Echo"</span><span class="p">;</span>
+    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">description</span> <span class="o">=</span> <span class="s">"Echo operator invocation"</span><span class="p">;</span>
+    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">idname</span> <span class="o">=</span> <span class="s">"EXTRA_OT_echo"</span><span class="p">;</span>
  
     <span class="n">ot</span><span class="o">-&gt;</span><span class="n">exec</span> <span class="o">=</span> <span class="n">echo_exec</span><span class="p">;</span>
  
     <span class="n">ot</span><span class="o">-&gt;</span><span class="n">flag</span> <span class="o">=</span> <span class="n">OPTYPE_REGISTER</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>You may have already noticed that a <code>wmOperatorType</code> is used
 while you are writing operator registration function;
@@ -185,9 +185,9 @@ to save the last operator instance.</p>
 <p>And those saved operators in <code>wm-&gt;operators</code> can be called from a redo,
 which is in function <code>WM_operator_last_redo</code>(file <code>wm_operators.c</code>):</p>
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">for</span> <span class="p">(</span><span class="n">op</span> <span class="o">=</span> <span class="n">wm</span><span class="o">-&gt;</span><span class="n">operators</span><span class="p">.</span><span class="n">last</span><span class="p">;</span> <span class="n">op</span><span class="p">;</span> <span class="n">op</span> <span class="o">=</span> <span class="n">op</span><span class="o">-&gt;</span><span class="n">prev</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">for</span> <span class="p">(</span><span class="n">op</span> <span class="o">=</span> <span class="n">wm</span><span class="o">-&gt;</span><span class="n">operators</span><span class="p">.</span><span class="n">last</span><span class="p">;</span> <span class="n">op</span><span class="p">;</span> <span class="n">op</span> <span class="o">=</span> <span class="n">op</span><span class="o">-&gt;</span><span class="n">prev</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">((</span><span class="n">op</span><span class="o">-&gt;</span><span class="n">type</span><span class="o">-&gt;</span><span class="n">flag</span> <span class="o">&amp;</span> <span class="n">OPTYPE_REGISTER</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">op</span><span class="o">-&gt;</span><span class="n">type</span><span class="o">-&gt;</span><span class="n">flag</span> <span class="o">&amp;</span> <span class="n">OPTYPE_UNDO</span><span class="p">))</span>
-        <span class="k">break</span><span class="p">;</span></code></pre></div>
+        <span class="k">break</span><span class="p">;</span></code></pre></figure>
 
 <p>For our <code>Echo</code> operator, which does not have an undo flag,
 it will not be active during a redo action.</p>

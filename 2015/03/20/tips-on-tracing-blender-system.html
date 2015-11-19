@@ -85,12 +85,12 @@ And set a break point in the operator registration or invocation function.</p>
 You do a solution-wide search of <code>primitive_cube_add</code>,
 the you can find the function <code>MESH_OT_primitive_cube_add</code>.</p>
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">MESH_OT_primitive_cube_add</span><span class="p">(</span><span class="n">wmOperatorType</span> <span class="o">*</span><span class="n">ot</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">MESH_OT_primitive_cube_add</span><span class="p">(</span><span class="n">wmOperatorType</span> <span class="o">*</span><span class="n">ot</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="cm">/* identifiers */</span>
-    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;Add Cube&quot;</span><span class="p">;</span>
-    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Construct a cube mesh&quot;</span><span class="p">;</span>
-    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">idname</span> <span class="o">=</span> <span class="s">&quot;MESH_OT_primitive_cube_add&quot;</span><span class="p">;</span>
+    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">name</span> <span class="o">=</span> <span class="s">"Add Cube"</span><span class="p">;</span>
+    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">description</span> <span class="o">=</span> <span class="s">"Construct a cube mesh"</span><span class="p">;</span>
+    <span class="n">ot</span><span class="o">-&gt;</span><span class="n">idname</span> <span class="o">=</span> <span class="s">"MESH_OT_primitive_cube_add"</span><span class="p">;</span>
 
     <span class="cm">/* api callbacks */</span>
     <span class="n">ot</span><span class="o">-&gt;</span><span class="n">exec</span> <span class="o">=</span> <span class="n">add_primitive_cube_exec</span><span class="p">;</span>
@@ -101,7 +101,7 @@ the you can find the function <code>MESH_OT_primitive_cube_add</code>.</p>
 
     <span class="n">ED_object_add_unit_props</span><span class="p">(</span><span class="n">ot</span><span class="p">);</span>
     <span class="n">ED_object_add_generic_props</span><span class="p">(</span><span class="n">ot</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>This is the registration function of the operator.
 Some meta information is given here.
@@ -132,16 +132,16 @@ the one in the file <code>source/blender/makesrna/intern/rna_scene_gen.c</code>.
 
 <p>The code looks like:</p>
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">PointerPropertyRNA</span> <span class="n">rna_SceneObjects_active</span> <span class="o">=</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">PointerPropertyRNA</span> <span class="n">rna_SceneObjects_active</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">{</span><span class="nb">NULL</span><span class="p">,</span> <span class="p">(</span><span class="n">PropertyRNA</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">rna_SceneObjects_rna_type</span><span class="p">,</span>
-    <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;active&quot;</span><span class="p">,</span> <span class="mi">41943041</span><span class="p">,</span> <span class="s">&quot;Active Object&quot;</span><span class="p">,</span>
-    <span class="s">&quot;Active object for this scene&quot;</span><span class="p">,</span>
-    <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;*&quot;</span><span class="p">,</span>
+    <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">"active"</span><span class="p">,</span> <span class="mi">41943041</span><span class="p">,</span> <span class="s">"Active Object"</span><span class="p">,</span>
+    <span class="s">"Active object for this scene"</span><span class="p">,</span>
+    <span class="mi">0</span><span class="p">,</span> <span class="s">"*"</span><span class="p">,</span>
     <span class="n">PROP_POINTER</span><span class="p">,</span> <span class="n">PROP_NONE</span> <span class="o">|</span> <span class="n">PROP_UNIT_NONE</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span> <span class="mi">0</span><span class="p">,</span>
     <span class="nb">NULL</span><span class="p">,</span> <span class="mi">67567616</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span>
     <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">},</span>
     <span class="n">SceneObjects_active_get</span><span class="p">,</span> <span class="n">SceneObjects_active_set</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span><span class="o">&amp;</span><span class="n">RNA_Object</span>
-<span class="p">};</span></code></pre></div>
+<span class="p">};</span></code></pre></figure>
 
 <p>Then you can add a break point in function <code>SceneObjects_active_set</code>
 to trace what happens if I set an active object.</p>

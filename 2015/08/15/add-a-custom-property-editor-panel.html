@@ -117,7 +117,7 @@ Finally we draw the body of Simulation panel when it is activated.</p>
 <h2 id="define-a-new-panel">Define a new panel</h2>
 <p>A new item of <code>eSpaceButtons_Context</code><sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup> should be defined:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">typedef</span> <span class="k">enum</span> <span class="n">eSpaceButtons_Context</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">typedef</span> <span class="k">enum</span> <span class="n">eSpaceButtons_Context</span> <span class="p">{</span>
     <span class="n">BCONTEXT_RENDER</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">BCONTEXT_SCENE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">BCONTEXT_WORLD</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -136,12 +136,12 @@ Finally we draw the body of Simulation panel when it is activated.</p>
     
     <span class="cm">/* always as last... */</span>
     <span class="n">BCONTEXT_TOT</span>
-<span class="p">}</span> <span class="n">eSpaceButtons_Context</span><span class="p">;</span></code></pre></div>
+<span class="p">}</span> <span class="n">eSpaceButtons_Context</span><span class="p">;</span></code></pre></figure>
 
 <p>Also some meta information(description text, icon, etc) should be provided in
 <code>buttons_context_items</code><sup id="fnref:2"><a href="#fn:2" class="footnote">2</a></sup>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="p">{</span><span class="n">BCONTEXT_SIMULATION</span><span class="p">,</span> <span class="s">&quot;SIMULATION&quot;</span><span class="p">,</span> <span class="n">ICON_ANIM</span><span class="p">,</span> <span class="s">&quot;Simulation&quot;</span><span class="p">,</span> <span class="s">&quot;Simulation&quot;</span><span class="p">}</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="p">{</span><span class="n">BCONTEXT_SIMULATION</span><span class="p">,</span> <span class="s">"SIMULATION"</span><span class="p">,</span> <span class="n">ICON_ANIM</span><span class="p">,</span> <span class="s">"Simulation"</span><span class="p">,</span> <span class="s">"Simulation"</span><span class="p">}</span></code></pre></figure>
 
 <h2 id="draw-button-on-header">Draw button on header</h2>
 <p>The source code for properties view are located in the folder
@@ -150,12 +150,12 @@ After a brief search inside this folder
 we can locate the area(or region) definition function <code>ED_spacetype_buttons</code>
 in the file <code>space_buttons.c</code>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">void</span> <span class="nf">ED_spacetype_buttons</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">void</span> <span class="nf">ED_spacetype_buttons</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="cm">/* ... */</span>
     
     <span class="cm">/* regions: header */</span>
-    <span class="n">art</span> <span class="o">=</span> <span class="n">MEM_callocN</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">ARegionType</span><span class="p">),</span> <span class="s">&quot;spacetype buttons region&quot;</span><span class="p">);</span>
+    <span class="n">art</span> <span class="o">=</span> <span class="n">MEM_callocN</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">ARegionType</span><span class="p">),</span> <span class="s">"spacetype buttons region"</span><span class="p">);</span>
     <span class="n">art</span><span class="o">-&gt;</span><span class="n">regionid</span> <span class="o">=</span> <span class="n">RGN_TYPE_HEADER</span><span class="p">;</span>
     <span class="n">art</span><span class="o">-&gt;</span><span class="n">prefsizey</span> <span class="o">=</span> <span class="n">HEADERY</span><span class="p">;</span>
     <span class="n">art</span><span class="o">-&gt;</span><span class="n">keymapflag</span> <span class="o">=</span> <span class="n">ED_KEYMAP_UI</span> <span class="o">|</span> <span class="n">ED_KEYMAP_VIEW2D</span> <span class="o">|</span> <span class="n">ED_KEYMAP_FRAMES</span> <span class="o">|</span> <span class="n">ED_KEYMAP_HEADER</span><span class="p">;</span>
@@ -165,12 +165,12 @@ in the file <code>space_buttons.c</code>:</p>
     <span class="n">BLI_addhead</span><span class="p">(</span><span class="o">&amp;</span><span class="n">st</span><span class="o">-&gt;</span><span class="n">regiontypes</span><span class="p">,</span> <span class="n">art</span><span class="p">);</span>
 
     <span class="n">BKE_spacetype_register</span><span class="p">(</span><span class="n">st</span><span class="p">);</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>For buttons rendering we focus on the header area.
 We can see the actual header rendering is registered as function <code>buttons_header_area_draw</code>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">static</span> <span class="kt">void</span> <span class="nf">buttons_header_area_draw</span><span class="p">(</span><span class="k">const</span> <span class="n">bContext</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="n">ARegion</span> <span class="o">*</span><span class="n">ar</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">static</span> <span class="kt">void</span> <span class="nf">buttons_header_area_draw</span><span class="p">(</span><span class="k">const</span> <span class="n">bContext</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="n">ARegion</span> <span class="o">*</span><span class="n">ar</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">SpaceButs</span> <span class="o">*</span><span class="n">sbuts</span> <span class="o">=</span> <span class="n">CTX_wm_space_buts</span><span class="p">(</span><span class="n">C</span><span class="p">);</span>
 
@@ -178,7 +178,7 @@ We can see the actual header rendering is registered as function <code>buttons_h
     <span class="n">buttons_context_compute</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sbuts</span><span class="p">);</span>
 
     <span class="n">ED_region_header</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">ar</span><span class="p">);</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>The <code>ED_region_header</code> function performs the UI rendering.
 But what does function <code>buttons_context_compute</code> do?</p>
@@ -186,7 +186,7 @@ But what does function <code>buttons_context_compute</code> do?</p>
 <h3 id="understand-spacebuts">Understand SpaceButs</h3>
 <p>Let me distill the essential parts of function <code>buttons_context_compute</code> here:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">void</span> <span class="nf">buttons_context_compute</span><span class="p">(</span><span class="k">const</span> <span class="n">bContext</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="n">SpaceButs</span> <span class="o">*</span><span class="n">sbuts</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">void</span> <span class="nf">buttons_context_compute</span><span class="p">(</span><span class="k">const</span> <span class="n">bContext</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="n">SpaceButs</span> <span class="o">*</span><span class="n">sbuts</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">ButsContextPath</span> <span class="o">*</span><span class="n">path</span><span class="p">;</span>
     <span class="n">PointerRNA</span> <span class="o">*</span><span class="n">ptr</span><span class="p">;</span>
@@ -198,8 +198,8 @@ But what does function <code>buttons_context_compute</code> do?</p>
 
     <span class="cm">/* ... */</span>
 
-    <span class="cm">/* for each context, see if we can compute a valid path to it, if</span>
-<span class="cm">     * this is the case, we know we have to display the button */</span>
+    <span class="cm">/* for each context, see if we can compute a valid path to it, if
+     * this is the case, we know we have to display the button */</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">BCONTEXT_TOT</span><span class="p">;</span> <span class="n">a</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">buttons_context_path</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">pflag</span><span class="p">))</span> <span class="p">{</span>
             <span class="n">flag</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">a</span><span class="p">);</span>
@@ -208,15 +208,15 @@ But what does function <code>buttons_context_compute</code> do?</p>
         <span class="p">}</span>
     <span class="p">}</span>
 
-    <span class="cm">/* always try to use the tab that was explicitly</span>
-<span class="cm">     * set to the user, so that once that context comes</span>
-<span class="cm">     * back, the tab is activated again */</span>
+    <span class="cm">/* always try to use the tab that was explicitly
+     * set to the user, so that once that context comes
+     * back, the tab is activated again */</span>
     <span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">mainb</span> <span class="o">=</span> <span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">mainbuser</span><span class="p">;</span>
 
     <span class="cm">/* ... */</span>
 
     <span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">pathflag</span> <span class="o">=</span> <span class="n">flag</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>The <code>SpaceButs</code> structure records the state of each property editors.
 In particular,</p>
@@ -245,8 +245,8 @@ it loops through all property editors and records available ones to the <code>pa
 <h3 id="render">Render</h3>
 <p>We simply turn on the corresponding bit in <code>pathflag</code> to mark our new property editor available for header rendering:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* Always include BCONTEXT_SIMULATION */</span>
-<span class="n">flag</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">BCONTEXT_SIMULATION</span><span class="p">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* Always include BCONTEXT_SIMULATION */</span>
+<span class="n">flag</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">BCONTEXT_SIMULATION</span><span class="p">);</span></code></pre></figure>
 
 <p>However you still cannot see our new button now.</p>
 
@@ -262,9 +262,9 @@ Through a search of <code>pathflag</code> I finally find the solution.</p>
 <p>An enum item should be added for each available editor.
 So I should add this in function <code>rna_SpaceProperties_context_itemf</code><sup id="fnref:2:1"><a href="#fn:2" class="footnote">2</a></sup>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">if</span> <span class="p">(</span><span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">pathflag</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">BCONTEXT_SIMULATION</span><span class="p">))</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">if</span> <span class="p">(</span><span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">pathflag</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">BCONTEXT_SIMULATION</span><span class="p">))</span> <span class="p">{</span>
     <span class="n">RNA_enum_items_add_value</span><span class="p">(</span><span class="o">&amp;</span><span class="n">item</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">totitem</span><span class="p">,</span> <span class="n">buttons_context_items</span><span class="p">,</span> <span class="n">BCONTEXT_SIMULATION</span><span class="p">);</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>Let us have a look at its stack trace. It is hard to trace through that Python part:</p>
 
@@ -313,20 +313,20 @@ You can refer to scripts in <code>release/scripts/startup/bl_ui</code> for examp
 
 <p>Mine is here:</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">SimulationButtonsPanel</span><span class="p">:</span>
-    <span class="n">bl_space_type</span> <span class="o">=</span> <span class="s">&#39;PROPERTIES&#39;</span>
-    <span class="n">bl_region_type</span> <span class="o">=</span> <span class="s">&#39;WINDOW&#39;</span>
-    <span class="n">bl_context</span> <span class="o">=</span> <span class="s">&quot;simulation&quot;</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">SimulationButtonsPanel</span><span class="p">:</span>
+    <span class="n">bl_space_type</span> <span class="o">=</span> <span class="s">'PROPERTIES'</span>
+    <span class="n">bl_region_type</span> <span class="o">=</span> <span class="s">'WINDOW'</span>
+    <span class="n">bl_context</span> <span class="o">=</span> <span class="s">"simulation"</span>
 
 
 <span class="k">class</span> <span class="nc">SIMULATION_PT_context_simulation</span><span class="p">(</span><span class="n">SimulationButtonsPanel</span><span class="p">,</span> <span class="n">Panel</span><span class="p">):</span>
-    <span class="n">bl_label</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
-    <span class="n">bl_options</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;HIDE_HEADER&#39;</span><span class="p">}</span>
+    <span class="n">bl_label</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="n">bl_options</span> <span class="o">=</span> <span class="p">{</span><span class="s">'HIDE_HEADER'</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">&quot;SimulationPanel.draw&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"SimulationPanel.draw"</span><span class="p">)</span>
         <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span>
-        <span class="n">layout</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">&quot;Coming soon.&quot;</span><span class="p">)</span></code></pre></div>
+        <span class="n">layout</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">"Coming soon."</span><span class="p">)</span></code></pre></figure>
 
 <p>Note that I use <code>"simulation"</code> for <code>bl_context</code>.
 This tells Blender we want to put this panel under the Simulation context.</p>
@@ -334,8 +334,8 @@ This tells Blender we want to put this panel under the Simulation context.</p>
 <p>The C++ side of Blender also have to use this string to dispatch UI rendering to Python.
 Therefore we add following code in the function <code>buttons_main_area_draw</code><sup id="fnref:3"><a href="#fn:3" class="footnote">3</a></sup>:</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">mainb</span> <span class="o">==</span> <span class="n">BCONTEXT_SIMULATION</span><span class="p">)</span>
-    <span class="n">ED_region_panels</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="n">vertical</span><span class="p">,</span> <span class="s">&quot;simulation&quot;</span><span class="p">,</span> <span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">mainb</span><span class="p">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">mainb</span> <span class="o">==</span> <span class="n">BCONTEXT_SIMULATION</span><span class="p">)</span>
+    <span class="n">ED_region_panels</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="n">vertical</span><span class="p">,</span> <span class="s">"simulation"</span><span class="p">,</span> <span class="n">sbuts</span><span class="o">-&gt;</span><span class="n">mainb</span><span class="p">);</span></code></pre></figure>
 
 <h2 id="some-extra-notes">Some extra notes</h2>
 <p>In this post we just turn on a bit of <code>pathflag</code> to force our custom panel appear in the user interface.

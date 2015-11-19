@@ -108,7 +108,7 @@ by using Blender’s Python API.</p>
 
 <p>I assume you are familiar of how to achieve this using Python API:</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">mesh</span> <span class="o">=</span> <span class="n">bpy</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">meshes</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s">&quot;MyMesh&quot;</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">mesh</span> <span class="o">=</span> <span class="n">bpy</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">meshes</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s">"MyMesh"</span><span class="p">)</span>
 <span class="n">vertices</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
@@ -116,7 +116,7 @@ by using Blender’s Python API.</p>
     <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="p">]</span>
 <span class="n">faces</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
-<span class="n">mesh</span><span class="o">.</span><span class="n">from_pydata</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="p">[],</span> <span class="n">faces</span><span class="p">)</span></code></pre></div>
+<span class="n">mesh</span><span class="o">.</span><span class="n">from_pydata</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="p">[],</span> <span class="n">faces</span><span class="p">)</span></code></pre></figure>
 
 <p>The most important function is <code>from_pydata</code>.
 This function fills the mesh data and build the topology for a mesh.
@@ -125,17 +125,17 @@ in file <code>bpy_types.py</code>(directory <code>blender/release/scripts/module
 
 <p>I put an excerpt of its source code below:</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">))</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">))</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">loops</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">sum</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">)))</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">faces</span><span class="p">))</span>
 
 <span class="n">vertices_flat</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vertices</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">foreach_set</span><span class="p">(</span><span class="s">&quot;co&quot;</span><span class="p">,</span> <span class="n">vertices_flat</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">foreach_set</span><span class="p">(</span><span class="s">"co"</span><span class="p">,</span> <span class="n">vertices_flat</span><span class="p">)</span>
 <span class="k">del</span> <span class="n">vertices_flat</span>
 
 <span class="n">edges_flat</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">e</span><span class="p">]</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">foreach_set</span><span class="p">(</span><span class="s">&quot;vertices&quot;</span><span class="p">,</span> <span class="n">edges_flat</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">foreach_set</span><span class="p">(</span><span class="s">"vertices"</span><span class="p">,</span> <span class="n">edges_flat</span><span class="p">)</span>
 <span class="k">del</span> <span class="n">edges_flat</span>
 
 <span class="c"># this is different in bmesh</span>
@@ -150,7 +150,7 @@ in file <code>bpy_types.py</code>(directory <code>blender/release/scripts/module
 
 <span class="c"># if no edges - calculate them</span>
 <span class="k">if</span> <span class="n">faces</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">edges</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">calc_edges</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></div>
+    <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">calc_edges</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></figure>
 
 <p>All functions called above is implemented in C.
 By applying tracing techniques I introduced in

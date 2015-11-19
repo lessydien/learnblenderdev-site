@@ -106,9 +106,9 @@ main(int argc, const unsigned char * * UNUSED_argv_c)
 
 <p>In the function <code>mesh_calc_modifiers</code> we see a loop through all modifiers:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">for</span> <span class="p">(;</span> <span class="n">md</span><span class="p">;</span> <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">,</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-    <span class="n">ndm</span> <span class="o">=</span> <span class="n">modwrap_applyModifier</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">app_flags</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">for</span> <span class="p">(;</span> <span class="n">md</span><span class="p">;</span> <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">,</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span>    <span class="n">ndm</span> <span class="o">=</span> <span class="n">modwrap_applyModifier</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">app_flags</span><span class="p">);</span>
     <span class="n">ASSERT_IS_VALID_DM</span><span class="p">(</span><span class="n">ndm</span><span class="p">);</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">ndm</span><span class="p">)</span> <span class="p">{</span>
@@ -116,10 +116,10 @@ main(int argc, const unsigned char * * UNUSED_argv_c)
         <span class="k">if</span> <span class="p">(</span><span class="n">dm</span> <span class="o">&amp;&amp;</span> <span class="n">dm</span> <span class="o">!=</span> <span class="n">ndm</span><span class="p">)</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">release</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
 
         <span class="n">dm</span> <span class="o">=</span> <span class="n">ndm</span><span class="p">;</span>
-        <span class="c1">// ...</span>
-    <span class="p">}</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></div>
+        <span class="c1">// ...
+</span>    <span class="p">}</span>
+    <span class="c1">// ...
+</span><span class="p">}</span></code></pre></figure>
 
 <p>Inside this loop each modifier gets executed in <code>modwrap_applyModifier</code> function.</p>
 
@@ -138,33 +138,33 @@ This is a long function. I try to provide an overview of what it does.</p>
 <p>In the beginning of <code>arrayModifier_doArray</code> it collects options and parameters from the <code>ArrayModifierData</code>(variable <code>amd</code> in following source code).
 For example:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">const</span> <span class="kt">bool</span> <span class="n">use_merge</span> <span class="o">=</span> <span class="p">(</span><span class="n">amd</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">MOD_ARR_MERGE</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="c1">// ...</span>
-<span class="k">const</span> <span class="kt">bool</span> <span class="n">use_offset_ob</span> <span class="o">=</span> <span class="p">((</span><span class="n">amd</span><span class="o">-&gt;</span><span class="n">offset_type</span> <span class="o">&amp;</span> <span class="n">MOD_ARR_OFF_OBJ</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">amd</span><span class="o">-&gt;</span><span class="n">offset_ob</span><span class="p">);</span>
-<span class="c1">// ...</span>
-<span class="n">count</span> <span class="o">=</span> <span class="n">amd</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">const</span> <span class="n">bool</span> <span class="n">use_merge</span> <span class="o">=</span> <span class="p">(</span><span class="n">amd</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">MOD_ARR_MERGE</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="c1">// ...
+</span><span class="k">const</span> <span class="n">bool</span> <span class="n">use_offset_ob</span> <span class="o">=</span> <span class="p">((</span><span class="n">amd</span><span class="o">-&gt;</span><span class="n">offset_type</span> <span class="o">&amp;</span> <span class="n">MOD_ARR_OFF_OBJ</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">amd</span><span class="o">-&gt;</span><span class="n">offset_ob</span><span class="p">);</span>
+<span class="c1">// ...
+</span><span class="n">count</span> <span class="o">=</span> <span class="n">amd</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span></code></pre></figure>
 
 <p>Then it reads in the <code>DerivedMesh</code> which is passed from previous modifier in the modifier stack:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">chunk_nverts</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumVerts</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">chunk_nverts</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumVerts</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
 <span class="n">chunk_nedges</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumEdges</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
 <span class="n">chunk_nloops</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumLoops</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
 <span class="n">chunk_npolys</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getNumPolys</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
-<span class="c1">// ...</span>
-<span class="n">src_mvert</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getVertArray</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span></code></pre></div>
+<span class="c1">// ...
+</span><span class="n">src_mvert</span> <span class="o">=</span> <span class="n">dm</span><span class="o">-&gt;</span><span class="n">getVertArray</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span></code></pre></figure>
 
 <p>After all information has been ready, a new derived mesh will be constructed:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">result</span> <span class="o">=</span> <span class="n">CDDM_from_template</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result_nverts</span><span class="p">,</span> <span class="n">result_nedges</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">result_nloops</span><span class="p">,</span> <span class="n">result_npolys</span><span class="p">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">result</span> <span class="o">=</span> <span class="n">CDDM_from_template</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result_nverts</span><span class="p">,</span> <span class="n">result_nedges</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">result_nloops</span><span class="p">,</span> <span class="n">result_npolys</span><span class="p">);</span></code></pre></figure>
 
 <p>Then we can write to this new derived mesh:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* copy customdata to original geometry */</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* copy customdata to original geometry */</span>
 <span class="n">DM_copy_vert_data</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_nverts</span><span class="p">);</span>
 <span class="n">DM_copy_edge_data</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_nedges</span><span class="p">);</span>
 <span class="n">DM_copy_loop_data</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_nloops</span><span class="p">);</span>
 <span class="n">DM_copy_poly_data</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_npolys</span><span class="p">);</span>
-<span class="c1">// ...</span></code></pre></div>
+<span class="o">//</span> <span class="p">...</span></code></pre></figure>
 
 <p>Finally the modifier finishes by returning the new derived mesh: <code>return result;</code>.</p>
 

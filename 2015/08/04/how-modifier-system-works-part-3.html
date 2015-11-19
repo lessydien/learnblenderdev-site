@@ -115,10 +115,10 @@ to control the size of the tetrahedron.</p>
 <p>We first define the data structure which is going to be passed to the modifier.
 This is done by adding following to the file <code>source/blender/makesdna/DNA_modifier_types.h</code>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* Tetrahedron modifier */</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* Tetrahedron modifier */</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">TetrahedronModifierData</span> <span class="p">{</span>
     <span class="n">ModifierData</span> <span class="n">modifier</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">TetrahedronModifierData</span><span class="p">;</span></code></pre></div>
+<span class="p">}</span> <span class="n">TetrahedronModifierData</span><span class="p">;</span></code></pre></figure>
 
 <p>In the above code we make a ‘derived’ class of <code>ModifierData</code>.
 This structure will be parsed by Blender’s reflection system(a.k.a the DNA and RNA infrastructure) later.</p>
@@ -147,12 +147,12 @@ any change in <code>ModifierType</code> enum that failed to preserve its origina
 
 <p>After that we construct a new mapping from <code>ModifierType</code> to <code>ModifierTypeInfo</code> in function <code>modifier_type_init</code>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">INIT_TYPE</span><span class="p">(</span><span class="n">Tetrahedron</span><span class="p">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">INIT_TYPE</span><span class="p">(</span><span class="n">Tetrahedron</span><span class="p">);</span></code></pre></figure>
 
 <p>Finally we provide declaration of Tetrahedron’s <code>ModifierTypeInfo</code>
 in file <code>source/blender/modifiers/MOD_modifiertypes.h</code> so the initializer can see it:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">extern</span> <span class="n">ModifierTypeInfo</span> <span class="n">modifierType_Tetrahedron</span><span class="p">;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">extern</span> <span class="n">ModifierTypeInfo</span> <span class="n">modifierType_Tetrahedron</span><span class="p">;</span></code></pre></figure>
 
 <h2 id="implement-the-modifier">Implement the modifier</h2>
 <p>Now we go on to fill the functions in <code>MOD_tetrahedron.c</code> with actual implementation.</p>
@@ -173,25 +173,25 @@ or by executing <code>bpy.ops.object.modifier_add</code>.</p>
 the RNA system should be able to “dynamic cast” a <code>ModifierType</code> to the “derived” one.
 We add following code in the function <code>rna_Modifier_refine</code><sup id="fnref:3"><a href="#fn:3" class="footnote">3</a></sup>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">case</span> <span class="nl">eModifierType_Tetrahedron</span><span class="p">:</span>
-    <span class="k">return</span> <span class="o">&amp;</span><span class="n">RNA_TetrahedronModifier</span><span class="p">;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">case</span> <span class="n">eModifierType_Tetrahedron</span><span class="p">:</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">RNA_TetrahedronModifier</span><span class="p">;</span></code></pre></figure>
 
 <p>An icon and description used for “Add Modifier” dropdown menu can be put in the <code>modifier_type_items</code> array<sup id="fnref:3:1"><a href="#fn:3" class="footnote">3</a></sup>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="p">{</span><span class="n">eModifierType_Tetrahedron</span><span class="p">,</span> <span class="s">&quot;TETRAHEDRON&quot;</span><span class="p">,</span> <span class="n">ICON_MOD_BUILD</span><span class="p">,</span> <span class="s">&quot;Tetrahedron&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">},</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="p">{</span><span class="n">eModifierType_Tetrahedron</span><span class="p">,</span> <span class="s">"TETRAHEDRON"</span><span class="p">,</span> <span class="n">ICON_MOD_BUILD</span><span class="p">,</span> <span class="s">"Tetrahedron"</span><span class="p">,</span> <span class="s">""</span><span class="p">},</span></code></pre></figure>
 
 <p>And we also provide similar informations for the modifier panel:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">static</span> <span class="kt">void</span> <span class="nf">rna_def_modifier_tetrahedron</span><span class="p">(</span><span class="n">BlenderRNA</span> <span class="o">*</span><span class="n">brna</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">static</span> <span class="kt">void</span> <span class="nf">rna_def_modifier_tetrahedron</span><span class="p">(</span><span class="n">BlenderRNA</span> <span class="o">*</span><span class="n">brna</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">StructRNA</span> <span class="o">*</span><span class="n">srna</span><span class="p">;</span>
     <span class="n">PropertyRNA</span> <span class="o">*</span><span class="n">prop</span><span class="p">;</span>
 
-    <span class="n">srna</span> <span class="o">=</span> <span class="n">RNA_def_struct</span><span class="p">(</span><span class="n">brna</span><span class="p">,</span> <span class="s">&quot;TetrahedronModifier&quot;</span><span class="p">,</span> <span class="s">&quot;Modifier&quot;</span><span class="p">);</span>
-    <span class="n">RNA_def_struct_ui_text</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">&quot;Tetrahedron Modifier&quot;</span><span class="p">,</span> <span class="s">&quot;Generate Tetrahedron&quot;</span><span class="p">);</span>
-    <span class="n">RNA_def_struct_sdna</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">&quot;TetrahedronModifierData&quot;</span><span class="p">);</span>
+    <span class="n">srna</span> <span class="o">=</span> <span class="n">RNA_def_struct</span><span class="p">(</span><span class="n">brna</span><span class="p">,</span> <span class="s">"TetrahedronModifier"</span><span class="p">,</span> <span class="s">"Modifier"</span><span class="p">);</span>
+    <span class="n">RNA_def_struct_ui_text</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">"Tetrahedron Modifier"</span><span class="p">,</span> <span class="s">"Generate Tetrahedron"</span><span class="p">);</span>
+    <span class="n">RNA_def_struct_sdna</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">"TetrahedronModifierData"</span><span class="p">);</span>
     <span class="n">RNA_def_struct_ui_icon</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="n">ICON_MOD_BUILD</span><span class="p">);</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>For simplicity I use <code>ICON_MOD_BUILD</code> here.</p>
 
@@ -200,13 +200,13 @@ We add following code in the function <code>rna_Modifier_refine</code><sup id="f
 <p>Currently we do not have parameters in the Tetrahedron modifier.
 So we just provide a dummy panel in the Python function <code>DATA_PT_modifiers.draw</code><sup id="fnref:5"><a href="#fn:5" class="footnote">4</a></sup>:</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">TETRAHEDRON</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
-    <span class="n">layout</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">&quot;Comming soon.&quot;</span><span class="p">)</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">TETRAHEDRON</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">"Comming soon."</span><span class="p">)</span></code></pre></figure>
 
 <p>Optionally, you can also customize your modifier icon in the outline view<sup id="fnref:4"><a href="#fn:4" class="footnote">5</a></sup>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">case</span> <span class="nl">eModifierType_Tetrahedron</span><span class="p">:</span>
-    <span class="n">UI_icon_draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ICON_MOD_BUILD</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">case</span> <span class="n">eModifierType_Tetrahedron</span><span class="p">:</span>
+    <span class="n">UI_icon_draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ICON_MOD_BUILD</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span></code></pre></figure>
 
 <h2 id="add-parameters-to-modifieroptional">Add parameters to modifier(optional)</h2>
 <p>Now you can build your costomized Blender and try the Tetrahedron modifier.</p>
@@ -215,19 +215,19 @@ So we just provide a dummy panel in the Python function <code>DATA_PT_modifiers.
 
 <p>For example, we can put a <code>scale</code> parameter in <code>TetrahedronModifierdata</code>:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* Tetrahedron modifier */</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cm">/* Tetrahedron modifier */</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">TetrahedronModifierData</span> <span class="p">{</span>
     <span class="n">ModifierData</span> <span class="n">modifier</span><span class="p">;</span>
     
     <span class="kt">float</span> <span class="n">scale</span><span class="p">;</span>
 
     <span class="kt">int</span> <span class="n">pad</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">TetrahedronModifierData</span><span class="p">;</span></code></pre></div>
+<span class="p">}</span> <span class="n">TetrahedronModifierData</span><span class="p">;</span></code></pre></figure>
 
 <p>While you are implementing the modifier, you can read this parameter as below:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">TetrahedronModifierData</span> <span class="o">*</span><span class="n">tmd</span> <span class="o">=</span> <span class="p">(</span><span class="n">TetrahedronModifierData</span> <span class="o">*</span><span class="p">)</span><span class="n">md</span><span class="p">;</span>
-<span class="kt">float</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">tmd</span><span class="o">-&gt;</span><span class="n">scale</span><span class="p">;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">TetrahedronModifierData</span> <span class="o">*</span><span class="n">tmd</span> <span class="o">=</span> <span class="p">(</span><span class="n">TetrahedronModifierData</span> <span class="o">*</span><span class="p">)</span><span class="n">md</span><span class="p">;</span>
+<span class="kt">float</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">tmd</span><span class="o">-&gt;</span><span class="n">scale</span><span class="p">;</span></code></pre></figure>
 
 <p>Note that we should keep the structure size be multiples of 8 bytes
 according to <a href="http://wiki.blender.org/index.php/Dev:Source/Architecture/SDNA_Notes">this wiki page</a>.</p>
@@ -235,23 +235,23 @@ according to <a href="http://wiki.blender.org/index.php/Dev:Source/Architecture/
 <p>It is also required that this parameter definition should be exported to interface using RNA.
 We revise the previous RNA property/struct definition as below:</p>
 
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">static</span> <span class="kt">void</span> <span class="nf">rna_def_modifier_tetrahedron</span><span class="p">(</span><span class="n">BlenderRNA</span> <span class="o">*</span><span class="n">brna</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">static</span> <span class="kt">void</span> <span class="nf">rna_def_modifier_tetrahedron</span><span class="p">(</span><span class="n">BlenderRNA</span> <span class="o">*</span><span class="n">brna</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">StructRNA</span> <span class="o">*</span><span class="n">srna</span><span class="p">;</span>
     <span class="n">PropertyRNA</span> <span class="o">*</span><span class="n">prop</span><span class="p">;</span>
 
-    <span class="n">srna</span> <span class="o">=</span> <span class="n">RNA_def_struct</span><span class="p">(</span><span class="n">brna</span><span class="p">,</span> <span class="s">&quot;TetrahedronModifier&quot;</span><span class="p">,</span> <span class="s">&quot;Modifier&quot;</span><span class="p">);</span>
-    <span class="n">RNA_def_struct_ui_text</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">&quot;Tetrahedron Modifier&quot;</span><span class="p">,</span> <span class="s">&quot;Generate Tetrahedron&quot;</span><span class="p">);</span>
-    <span class="n">RNA_def_struct_sdna</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">&quot;TetrahedronModifierData&quot;</span><span class="p">);</span>
+    <span class="n">srna</span> <span class="o">=</span> <span class="n">RNA_def_struct</span><span class="p">(</span><span class="n">brna</span><span class="p">,</span> <span class="s">"TetrahedronModifier"</span><span class="p">,</span> <span class="s">"Modifier"</span><span class="p">);</span>
+    <span class="n">RNA_def_struct_ui_text</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">"Tetrahedron Modifier"</span><span class="p">,</span> <span class="s">"Generate Tetrahedron"</span><span class="p">);</span>
+    <span class="n">RNA_def_struct_sdna</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">"TetrahedronModifierData"</span><span class="p">);</span>
     <span class="n">RNA_def_struct_ui_icon</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="n">ICON_MOD_BUILD</span><span class="p">);</span>
 
-    <span class="n">prop</span> <span class="o">=</span> <span class="n">RNA_def_property</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">&quot;scale&quot;</span><span class="p">,</span> <span class="n">PROP_FLOAT</span><span class="p">,</span> <span class="n">PROP_FACTOR</span><span class="p">);</span>
-    <span class="n">RNA_def_property_float_sdna</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="s">&quot;scale&quot;</span><span class="p">);</span>
-    <span class="n">RNA_def_property_range</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="mf">100.0f</span><span class="p">);</span>
-    <span class="n">RNA_def_property_ui_range</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="mf">100.0f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
-    <span class="n">RNA_def_property_ui_text</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s">&quot;Scale&quot;</span><span class="p">,</span> <span class="s">&quot;Scale of the tetrahedron&quot;</span><span class="p">);</span>
-    <span class="n">RNA_def_property_update</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;rna_Modifier_update&quot;</span><span class="p">);</span>
-<span class="p">}</span></code></pre></div>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">RNA_def_property</span><span class="p">(</span><span class="n">srna</span><span class="p">,</span> <span class="s">"scale"</span><span class="p">,</span> <span class="n">PROP_FLOAT</span><span class="p">,</span> <span class="n">PROP_FACTOR</span><span class="p">);</span>
+    <span class="n">RNA_def_property_float_sdna</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="s">"scale"</span><span class="p">);</span>
+    <span class="n">RNA_def_property_range</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">100.0</span><span class="n">f</span><span class="p">);</span>
+    <span class="n">RNA_def_property_ui_range</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">100.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="n">RNA_def_property_ui_text</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s">"Scale"</span><span class="p">,</span> <span class="s">"Scale of the tetrahedron"</span><span class="p">);</span>
+    <span class="n">RNA_def_property_update</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">"rna_Modifier_update"</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Note that we provide the same string <code>"scale"</code> for both <code>RNA_def_property</code> and <code>RNA_def_property_float_sdna</code>.
 But they have different meanings.</p>
@@ -261,8 +261,8 @@ The second is the name of corresponding struct member in C++.</p>
 
 <p>Finally we go on to revise the panel appearance in Python:</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">TETRAHEDRON</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
-    <span class="n">layout</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s">&quot;scale&quot;</span><span class="p">)</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">TETRAHEDRON</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s">"scale"</span><span class="p">)</span></code></pre></figure>
 
 <p>Now the Tetrahedron modifier is finished.
 And it also works with other modifiers correctly.</p>

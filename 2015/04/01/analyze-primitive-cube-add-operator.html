@@ -146,7 +146,7 @@ wm_operator_invoke(bContext * C, wmOperatorType * ot, wmEvent * event, PointerRN
 There will be multiple notifications for different objects during the operator execution. 
 One of them is for the scene, and that notification is sent from <code>make_prim_init</code>:</p>
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">WM_event_add_notifier</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">NC_SCENE</span> <span class="o">|</span> <span class="n">ND_LAYER_CONTENT</span><span class="p">,</span> <span class="n">scene</span><span class="p">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">WM_event_add_notifier</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">NC_SCENE</span> <span class="o">|</span> <span class="n">ND_LAYER_CONTENT</span><span class="p">,</span> <span class="n">scene</span><span class="p">);</span></code></pre></figure>
 
 <p>The abbreviation <code>NC</code> in <code>NC_SCENE</code> means “notification category”,
 and the <code>ND</code> in <code>ND_LAYER_CONTENT</code> stands for “notification data”.
@@ -154,7 +154,7 @@ All of these enumerator definitions can be found in the file <code>WM_types.h</c
 
 <p>Another notification is for the newly created object, and that is sent from <code>make_prim_finish</code>:</p>
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">WM_event_add_notifier</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">NC_OBJECT</span> <span class="o">|</span> <span class="n">ND_DRAW</span><span class="p">,</span> <span class="n">obedit</span><span class="p">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">WM_event_add_notifier</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">NC_OBJECT</span> <span class="o">|</span> <span class="n">ND_DRAW</span><span class="p">,</span> <span class="n">obedit</span><span class="p">);</span></code></pre></figure>
 
 <p>I list the call stack of this notification from <code>make_prim_finish</code> below:</p>
 
@@ -227,13 +227,13 @@ Note that every <code>BMOpDefine</code> also has a name. You can use this name a
 <p>We start from the function <code>EDBM_op_call_and_selectf</code>,
 which is the entry point to the BMesh system:</p>
 
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">EDBM_op_call_and_selectf</span><span class="p">(</span>
-        <span class="n">em</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="s">&quot;verts.out&quot;</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span>
-        <span class="s">&quot;create_cube matrix=%m4 size=%f&quot;</span><span class="p">,</span>
-        <span class="n">mat</span><span class="p">,</span> <span class="n">RNA_float_get</span><span class="p">(</span><span class="n">op</span><span class="o">-&gt;</span><span class="n">ptr</span><span class="p">,</span> <span class="s">&quot;radius&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0f</span><span class="p">))</span>
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">EDBM_op_call_and_selectf</span><span class="p">(</span>
+        <span class="n">em</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="s">"verts.out"</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span>
+        <span class="s">"create_cube matrix=%m4 size=%f"</span><span class="p">,</span>
+        <span class="n">mat</span><span class="p">,</span> <span class="n">RNA_float_get</span><span class="p">(</span><span class="n">op</span><span class="o">-&gt;</span><span class="n">ptr</span><span class="p">,</span> <span class="s">"radius"</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="n">f</span><span class="p">))</span>
 <span class="p">{</span>
     <span class="k">return</span> <span class="n">OPERATOR_CANCELLED</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>The third argument <code>"verts.out"</code> is the name of the output slot;
 the argument in C-style format string(the fifth argument)
