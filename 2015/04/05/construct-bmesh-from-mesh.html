@@ -9,11 +9,11 @@
   <title>Construct BMesh from Mesh</title>
   <meta name="description" content="(WARNINGThe implementation of this operatoris based on an inspection of Blender source code.It just works but does not reflectthe suggested usage from the de...">
 
-  <link rel="shortcut icon" href="/learnblenderdev-site/public/favicon.ico">
+  <link rel="shortcut icon" href="/learnblenderdev//public/favicon.ico">
 
-  <link rel="stylesheet" href="/learnblenderdev-site/css/main.css">
-  <link rel="canonical" href="http://thebusytypist.github.io/learnblenderdev-site/2015/04/05/construct-bmesh-from-mesh.html">
-  <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" />
+  <link rel="stylesheet" href="/learnblenderdev//css/main.css">
+  <link rel="canonical" href="http://blog.linearconstraints.net/learnblenderdev//2015/04/05/construct-bmesh-from-mesh.html">
+  <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://blog.linearconstraints.net/learnblenderdev//feed.xml" />
 
   
 </head>
@@ -25,7 +25,7 @@
 
   <div class="wrapper">
 
-    <a class="site-title" href="/learnblenderdev-site/">Learn Blender Development</a>
+    <a class="site-title" href="/learnblenderdev//">Learn Blender Development</a>
 
     <nav class="site-nav">
       <a href="#" class="menu-icon">
@@ -39,7 +39,7 @@
       <div class="trigger">
         
           
-          <a class="page-link" href="/learnblenderdev-site/about/">About</a>
+          <a class="page-link" href="/learnblenderdev//about/">About</a>
           
         
           
@@ -49,7 +49,7 @@
           
         
           
-          <a class="page-link" href="/learnblenderdev-site/tags/">Tags</a>
+          <a class="page-link" href="/learnblenderdev//tags/">Tags</a>
           
         
           
@@ -81,7 +81,7 @@ the suggested usage from the design.)</p>
 <p>In this post I will take an experiment
 on generating mesh dynamically in Blender.</p>
 
-<p>As I said in the <a href="/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html">previous post</a>
+<p>As I said in the <a href="/learnblenderdev//2015/04/01/analyze-primitive-cube-add-operator.html">previous post</a>
 there are two possible approaches to generate mesh data dynamically.
 One is to add a new BMesh operator which is similar to <code>create_cube</code>.
 The other is
@@ -154,7 +154,7 @@ in file <code>bpy_types.py</code>(directory <code>blender/release/scripts/module
 
 <p>All functions called above is implemented in C.
 By applying tracing techniques I introduced in
-<a href="/learnblenderdev-site/2015/03/20/tips-on-tracing-blender-system.html">this post</a>
+<a href="/learnblenderdev//2015/03/20/tips-on-tracing-blender-system.html">this post</a>
 (Hint: search <code>"add"</code>, <code>"loop_start"</code> in the source code.
 Be sure to include the double quotes while searching
 since we are interested in the reflection code with those words),
@@ -163,7 +163,7 @@ we can collect all of the information we need to construct a <code>Mesh</code>.<
 <p>After that, the remains are simple.</p>
 
 <p>To call a BMesh operator, according our
-<a href="/learnblenderdev-site/2015/04/01/analyze-primitive-cube-add-operator.html">analysis</a>
+<a href="/learnblenderdev//2015/04/01/analyze-primitive-cube-add-operator.html">analysis</a>
 on BMesh system,
 you can find the desired operator name and parameters in <code>bmo_opdefines</code>.</p>
 

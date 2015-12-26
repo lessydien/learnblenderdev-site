@@ -4,10 +4,10 @@
     <title>Learn Blender Development</title>
     <description>A blog on scripting and extending of Blender.
 </description>
-    <link>http://thebusytypist.github.io/learnblenderdev-site/</link>
-    <atom:link href="http://thebusytypist.github.io/learnblenderdev-site/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 19 Nov 2015 09:36:18 -0800</pubDate>
-    <lastBuildDate>Thu, 19 Nov 2015 09:36:18 -0800</lastBuildDate>
+    <link>http://blog.linearconstraints.net/learnblenderdev//</link>
+    <atom:link href="http://blog.linearconstraints.net/learnblenderdev//feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Fri, 25 Dec 2015 23:09:13 -0800</pubDate>
+    <lastBuildDate>Fri, 25 Dec 2015 23:09:13 -0800</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
     
       <item>
@@ -24,8 +24,8 @@ In the next two weeks I will spend some time on enrollment.&lt;/p&gt;
 &lt;p&gt;Thank you for reading.&lt;/p&gt;
 </description>
         <pubDate>Sun, 30 Aug 2015 19:42:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/30/move-blender-extensions-from-gist-to-github.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/30/move-blender-extensions-from-gist-to-github.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/08/30/move-blender-extensions-from-gist-to-github.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/08/30/move-blender-extensions-from-gist-to-github.html</guid>
         
         <category>general</category>
         
@@ -47,8 +47,8 @@ in &lt;a href=&quot;http://blenderartists.org/forum/showthread.php?379027-Get-3D
 &lt;p&gt;Later I will rewrite this in C for optimal performance.&lt;/p&gt;
 </description>
         <pubDate>Sun, 30 Aug 2015 18:44:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/30/transform-uv-coordinates-to-world-space.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/30/transform-uv-coordinates-to-world-space.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/08/30/transform-uv-coordinates-to-world-space.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/08/30/transform-uv-coordinates-to-world-space.html</guid>
         
         <category>blender-scripting</category>
         
@@ -61,7 +61,7 @@ in &lt;a href=&quot;http://blenderartists.org/forum/showthread.php?379027-Get-3D
         <title>Add a custom property editor panel</title>
         <description>&lt;p&gt;I start with adding a custom property editor panel to realize my plan
 stated in the
-&lt;a href=&quot;/learnblenderdev-site/2015/08/12/use-blender-as-a-research-platform.html&quot;&gt;previous post&lt;/a&gt;.&lt;/p&gt;
+&lt;a href=&quot;/learnblenderdev//2015/08/12/use-blender-as-a-research-platform.html&quot;&gt;previous post&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;The patch file for a sample property editor can be found &lt;a href=&quot;https://gist.github.com/thebusytypist/68173569e311ae5b01ed&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
@@ -92,7 +92,7 @@ But these custom panels are confined in predefined property editors.&lt;/p&gt;
 
 &lt;p&gt;We call this new property editor “Simulation”. Here is a screenshot of it:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/simulation-property-editor-panel.png&quot; alt=&quot;Custom property editor panel&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev//assets/simulation-property-editor-panel.png&quot; alt=&quot;Custom property editor panel&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;For simplicity I use &lt;code&gt;ICON_ANIM&lt;/code&gt; as its icon.&lt;/p&gt;
 
@@ -212,7 +212,7 @@ In particular,&lt;/p&gt;
   &lt;li&gt;
     &lt;p&gt;&lt;code&gt;path&lt;/code&gt; contains the current available components(such as mesh data, particle systems, etc) of an object.
 It gets its name since a serial hierarchy from the root scene to the corresponding component will be rendered later.
-It looks like &lt;img src=&quot;/learnblenderdev-site/assets/path-in-properties-view.png&quot; alt=&quot;Path of components in properties view&quot; /&gt;.&lt;/p&gt;
+It looks like &lt;img src=&quot;/learnblenderdev//assets/path-in-properties-view.png&quot; alt=&quot;Path of components in properties view&quot; /&gt;.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;&lt;code&gt;mainb&lt;/code&gt; is the index of current property editor(or context in the source code).
@@ -345,8 +345,8 @@ I leave this for future works.&lt;/p&gt;
 &lt;/div&gt;
 </description>
         <pubDate>Sat, 15 Aug 2015 00:00:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/15/add-a-custom-property-editor-panel.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/15/add-a-custom-property-editor-panel.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/08/15/add-a-custom-property-editor-panel.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/08/15/add-a-custom-property-editor-panel.html</guid>
         
         <category>blender-coding</category>
         
@@ -415,8 +415,8 @@ but it would be more clear if we group logical related properties in a separate 
 &lt;/ul&gt;
 </description>
         <pubDate>Wed, 12 Aug 2015 00:00:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/12/use-blender-as-a-research-platform.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/12/use-blender-as-a-research-platform.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/08/12/use-blender-as-a-research-platform.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/08/12/use-blender-as-a-research-platform.html</guid>
         
         <category>general</category>
         
@@ -449,8 +449,8 @@ the BMesh object gets converted to result &lt;code&gt;DerivedMesh&lt;/code&gt; u
 and released using &lt;code&gt;BM_mesh_free&lt;/code&gt;.&lt;/p&gt;
 </description>
         <pubDate>Mon, 10 Aug 2015 00:00:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/10/notes-on-construction-of-derived-mesh.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/10/notes-on-construction-of-derived-mesh.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/08/10/notes-on-construction-of-derived-mesh.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/08/10/notes-on-construction-of-derived-mesh.html</guid>
         
         <category>blender-coding</category>
         
@@ -518,7 +518,7 @@ In this step I just make a skeleton of this modifier. The blanks will be filled 
 &lt;p&gt;Finally, we include the new modifier into the build system by registering &lt;code&gt;MOD_tetrahedron.c&lt;/code&gt;
 into the build script &lt;code&gt;source/blender/modifiers/CMakeLists.txt&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;You may refer to &lt;a href=&quot;/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html&quot;&gt;part 2&lt;/a&gt;
+&lt;p&gt;You may refer to &lt;a href=&quot;/learnblenderdev//2015/07/25/how-modifier-system-works-part-2.html&quot;&gt;part 2&lt;/a&gt;
 of these series for discussion of &lt;code&gt;ModifierData&lt;/code&gt; and &lt;code&gt;ModifierTypeInfo&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;register-the-new-modifier-to-system&quot;&gt;Register the new modifier to system&lt;/h2&gt;
@@ -546,7 +546,7 @@ in file &lt;code&gt;source/blender/modifiers/MOD_modifiertypes.h&lt;/code&gt; so
 &lt;h2 id=&quot;implement-the-modifier&quot;&gt;Implement the modifier&lt;/h2&gt;
 &lt;p&gt;Now we go on to fill the functions in &lt;code&gt;MOD_tetrahedron.c&lt;/code&gt; with actual implementation.&lt;/p&gt;
 
-&lt;p&gt;As we discussed in &lt;a href=&quot;/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html&quot;&gt;part 2&lt;/a&gt;
+&lt;p&gt;As we discussed in &lt;a href=&quot;/learnblenderdev//2015/07/25/how-modifier-system-works-part-2.html&quot;&gt;part 2&lt;/a&gt;
 of these series, we construct a &lt;code&gt;DerivedMesh&lt;/code&gt; and pass it through the modifiers stack.
 Please look at the source code for details.&lt;/p&gt;
 
@@ -656,7 +656,7 @@ The second is the name of corresponding struct member in C++.&lt;/p&gt;
 &lt;p&gt;Now the Tetrahedron modifier is finished.
 And it also works with other modifiers correctly.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/tetrahedron-array-modifiers.png&quot; alt=&quot;Tetrahedron and Array&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev//assets/tetrahedron-array-modifiers.png&quot; alt=&quot;Tetrahedron and Array&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
 
@@ -681,8 +681,8 @@ And it also works with other modifiers correctly.&lt;/p&gt;
 &lt;/div&gt;
 </description>
         <pubDate>Tue, 04 Aug 2015 00:00:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/08/04/how-modifier-system-works-part-3.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/08/04/how-modifier-system-works-part-3.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/08/04/how-modifier-system-works-part-3.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/08/04/how-modifier-system-works-part-3.html</guid>
         
         <category>blender-coding</category>
         
@@ -737,8 +737,8 @@ This approach works for me.&lt;/p&gt;
 so you can play around with them.&lt;/p&gt;
 </description>
         <pubDate>Tue, 28 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/28/discrete-gauss-bonnet-theorem.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/28/discrete-gauss-bonnet-theorem.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/07/28/discrete-gauss-bonnet-theorem.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/07/28/discrete-gauss-bonnet-theorem.html</guid>
         
         <category>blender-scripting</category>
         
@@ -774,14 +774,14 @@ needs to be indexed from the mesh grid using &lt;code&gt;s[y, x, z]&lt;/code&gt;
 
 &lt;p&gt;Now the 3D heart function can be successfully contoured:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/heart-function-3d-dc.png&quot; alt=&quot;3D dual contoured heart function&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev//assets/heart-function-3d-dc.png&quot; alt=&quot;3D dual contoured heart function&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The source code of this script can be found &lt;a href=&quot;https://gist.github.com/thebusytypist/b043745a6d7712998485&quot;&gt;here&lt;/a&gt;.
 It still has some topology issues to be resolved.&lt;/p&gt;
 </description>
         <pubDate>Sat, 25 Jul 2015 02:57:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</guid>
         
         <category>blender-scripting</category>
         
@@ -791,7 +791,7 @@ It still has some topology issues to be resolved.&lt;/p&gt;
       <item>
         <title>Learn how Blender&#39;s modifier system works (part 2)</title>
         <description>&lt;p&gt;We have learned how a modifier is constructed
-in the &lt;a href=&quot;/learnblenderdev-site/2015/07/23/how-modifier-system-works-part-1.html&quot;&gt;previous post&lt;/a&gt;.&lt;/p&gt;
+in the &lt;a href=&quot;/learnblenderdev//2015/07/23/how-modifier-system-works-part-1.html&quot;&gt;previous post&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;In this post we will learn how a modifier is applied.&lt;/p&gt;
 
@@ -891,8 +891,8 @@ except that the dependency graph related functions in a modifier implementation.
 I leave these things to future posts.&lt;/p&gt;
 </description>
         <pubDate>Sat, 25 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/25/how-modifier-system-works-part-2.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/07/25/how-modifier-system-works-part-2.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/07/25/how-modifier-system-works-part-2.html</guid>
         
         <category>blender-coding</category>
         
@@ -909,11 +909,11 @@ I guess my intersection solver fails and causes infinite loop.&lt;/p&gt;
 
 &lt;p&gt;Anyway here is a working result I get for the moment:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/learnblenderdev-site/assets/preliminary-3d-dc.png&quot; alt=&quot;Preliminary 3D dual contouring&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/learnblenderdev//assets/preliminary-3d-dc.png&quot; alt=&quot;Preliminary 3D dual contouring&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 24 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://thebusytypist.github.io/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html</link>
-        <guid isPermaLink="true">http://thebusytypist.github.io/learnblenderdev-site/2015/07/24/preliminary-3d-dual-contouring.html</guid>
+        <link>http://blog.linearconstraints.net/learnblenderdev//2015/07/24/preliminary-3d-dual-contouring.html</link>
+        <guid isPermaLink="true">http://blog.linearconstraints.net/learnblenderdev//2015/07/24/preliminary-3d-dual-contouring.html</guid>
         
         <category>blender-scripting</category>
         
