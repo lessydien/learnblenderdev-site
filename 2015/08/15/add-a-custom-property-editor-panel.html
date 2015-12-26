@@ -9,11 +9,11 @@
   <title>Add a custom property editor panel</title>
   <meta name="description" content="I start with adding a custom property editor panel to realize my planstated in theprevious post.">
 
-  <link rel="shortcut icon" href="/learnblenderdev//public/favicon.ico">
+  <link rel="shortcut icon" href="/public/favicon.ico">
 
-  <link rel="stylesheet" href="/learnblenderdev//css/main.css">
-  <link rel="canonical" href="http://blog.linearconstraints.net/learnblenderdev//2015/08/15/add-a-custom-property-editor-panel.html">
-  <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://blog.linearconstraints.net/learnblenderdev//feed.xml" />
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blender.linearconstraints.net/2015/08/15/add-a-custom-property-editor-panel.html">
+  <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://blender.linearconstraints.net/feed.xml" />
 
   
 </head>
@@ -25,7 +25,7 @@
 
   <div class="wrapper">
 
-    <a class="site-title" href="/learnblenderdev//">Learn Blender Development</a>
+    <a class="site-title" href="/">Learn Blender Development</a>
 
     <nav class="site-nav">
       <a href="#" class="menu-icon">
@@ -39,7 +39,7 @@
       <div class="trigger">
         
           
-          <a class="page-link" href="/learnblenderdev//about/">About</a>
+          <a class="page-link" href="/about/">About</a>
           
         
           
@@ -49,7 +49,7 @@
           
         
           
-          <a class="page-link" href="/learnblenderdev//tags/">Tags</a>
+          <a class="page-link" href="/tags/">Tags</a>
           
         
           
@@ -74,7 +74,7 @@
   <article class="post-content">
     <p>I start with adding a custom property editor panel to realize my plan
 stated in the
-<a href="/learnblenderdev//2015/08/12/use-blender-as-a-research-platform.html">previous post</a>.</p>
+<a href="/2015/08/12/use-blender-as-a-research-platform.html">previous post</a>.</p>
 
 <p>The patch file for a sample property editor can be found <a href="https://gist.github.com/thebusytypist/68173569e311ae5b01ed">here</a>.</p>
 
@@ -105,7 +105,7 @@ But these custom panels are confined in predefined property editors.</p>
 
 <p>We call this new property editor “Simulation”. Here is a screenshot of it:</p>
 
-<p><img src="/learnblenderdev//assets/simulation-property-editor-panel.png" alt="Custom property editor panel" /></p>
+<p><img src="/assets/simulation-property-editor-panel.png" alt="Custom property editor panel" /></p>
 
 <p>For simplicity I use <code>ICON_ANIM</code> as its icon.</p>
 
@@ -225,7 +225,7 @@ In particular,</p>
   <li>
     <p><code>path</code> contains the current available components(such as mesh data, particle systems, etc) of an object.
 It gets its name since a serial hierarchy from the root scene to the corresponding component will be rendered later.
-It looks like <img src="/learnblenderdev//assets/path-in-properties-view.png" alt="Path of components in properties view" />.</p>
+It looks like <img src="/assets/path-in-properties-view.png" alt="Path of components in properties view" />.</p>
   </li>
   <li>
     <p><code>mainb</code> is the index of current property editor(or context in the source code).

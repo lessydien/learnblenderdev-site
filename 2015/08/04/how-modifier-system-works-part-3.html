@@ -9,11 +9,11 @@
   <title>Learn how Blender's modifier system works (part 3)</title>
   <meta name="description" content="In this post I am going to implement a trivial modifierto show how to extend Blender by adding custom modifiers.">
 
-  <link rel="shortcut icon" href="/learnblenderdev//public/favicon.ico">
+  <link rel="shortcut icon" href="/public/favicon.ico">
 
-  <link rel="stylesheet" href="/learnblenderdev//css/main.css">
-  <link rel="canonical" href="http://blog.linearconstraints.net/learnblenderdev//2015/08/04/how-modifier-system-works-part-3.html">
-  <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://blog.linearconstraints.net/learnblenderdev//feed.xml" />
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blender.linearconstraints.net/2015/08/04/how-modifier-system-works-part-3.html">
+  <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://blender.linearconstraints.net/feed.xml" />
 
   
 </head>
@@ -25,7 +25,7 @@
 
   <div class="wrapper">
 
-    <a class="site-title" href="/learnblenderdev//">Learn Blender Development</a>
+    <a class="site-title" href="/">Learn Blender Development</a>
 
     <nav class="site-nav">
       <a href="#" class="menu-icon">
@@ -39,7 +39,7 @@
       <div class="trigger">
         
           
-          <a class="page-link" href="/learnblenderdev//about/">About</a>
+          <a class="page-link" href="/about/">About</a>
           
         
           
@@ -49,7 +49,7 @@
           
         
           
-          <a class="page-link" href="/learnblenderdev//tags/">Tags</a>
+          <a class="page-link" href="/tags/">Tags</a>
           
         
           
@@ -129,7 +129,7 @@ In this step I just make a skeleton of this modifier. The blanks will be filled 
 <p>Finally, we include the new modifier into the build system by registering <code>MOD_tetrahedron.c</code>
 into the build script <code>source/blender/modifiers/CMakeLists.txt</code>.</p>
 
-<p>You may refer to <a href="/learnblenderdev//2015/07/25/how-modifier-system-works-part-2.html">part 2</a>
+<p>You may refer to <a href="/2015/07/25/how-modifier-system-works-part-2.html">part 2</a>
 of these series for discussion of <code>ModifierData</code> and <code>ModifierTypeInfo</code>.</p>
 
 <h2 id="register-the-new-modifier-to-system">Register the new modifier to system</h2>
@@ -157,7 +157,7 @@ in file <code>source/blender/modifiers/MOD_modifiertypes.h</code> so the initial
 <h2 id="implement-the-modifier">Implement the modifier</h2>
 <p>Now we go on to fill the functions in <code>MOD_tetrahedron.c</code> with actual implementation.</p>
 
-<p>As we discussed in <a href="/learnblenderdev//2015/07/25/how-modifier-system-works-part-2.html">part 2</a>
+<p>As we discussed in <a href="/2015/07/25/how-modifier-system-works-part-2.html">part 2</a>
 of these series, we construct a <code>DerivedMesh</code> and pass it through the modifiers stack.
 Please look at the source code for details.</p>
 
@@ -267,7 +267,7 @@ The second is the name of corresponding struct member in C++.</p>
 <p>Now the Tetrahedron modifier is finished.
 And it also works with other modifiers correctly.</p>
 
-<p><img src="/learnblenderdev//assets/tetrahedron-array-modifiers.png" alt="Tetrahedron and Array" /></p>
+<p><img src="/assets/tetrahedron-array-modifiers.png" alt="Tetrahedron and Array" /></p>
 
 <h2 id="footnotes">Footnotes</h2>
 
