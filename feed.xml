@@ -6,9 +6,88 @@
 </description>
     <link>http://blender.linearconstraints.net/</link>
     <atom:link href="http://blender.linearconstraints.net/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 29 Dec 2015 10:16:23 -0800</pubDate>
-    <lastBuildDate>Tue, 29 Dec 2015 10:16:23 -0800</lastBuildDate>
+    <pubDate>Tue, 29 Dec 2015 23:12:07 -0800</pubDate>
+    <lastBuildDate>Tue, 29 Dec 2015 23:12:07 -0800</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
+    
+      <item>
+        <title>Blender reflection system (part 1)</title>
+        <description>&lt;p&gt;While I was reading the modifier code
+I found many data types such as &lt;code&gt;PointerRNA&lt;/code&gt; and &lt;code&gt;StructRNA&lt;/code&gt;.
+These data types are parts of Blender’s reflection system.
+The reflection system plays an important rule in Blender native development,
+so I plan to spend some days on reading its source code.&lt;/p&gt;
+
+&lt;p&gt;A reflection system usually handles following tasks:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Manage the size, alignment, endianness, padding of data structures.&lt;/li&gt;
+  &lt;li&gt;Record meta information of data structures, such as
+minimum, maximum, default value, display name for GUI, etc.&lt;/li&gt;
+  &lt;li&gt;Enumerate properties or fields of data structure.&lt;/li&gt;
+  &lt;li&gt;Provide foreign language binding.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The first task is handled by Blender’s DNA system.
+And the rest tasks are handled by Blender’s RNA system.
+Since the general Blender programming involves with
+meta information retrieval and properties enumeration only,
+we concentrate on the RNA system in this and following posts.&lt;/p&gt;
+
+&lt;p&gt;Currently C/C++ does not have built-in reflection syntax,
+so reflection is usually implemented manually.&lt;/p&gt;
+
+&lt;p&gt;One way to implement reflection is to define a meta-class
+while you are defining a concrete class.
+Typically,
+you have a global static variable called &lt;code&gt;MetaClassManager&lt;/code&gt;,
+and use a predefined macro &lt;code&gt;DECLARE_METACLASS(Object)&lt;/code&gt;
+to declare a meta class for the concrete class &lt;code&gt;Object&lt;/code&gt;
+and insert an instance of meta class into &lt;code&gt;MetaClassManager&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;You will see some code looks like this:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Other properties for Object...
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;BEGIN_DECLARE_METACLASS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;DECLARE_FLOAT_METAPROPERTY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;100.0&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Mass&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Other meta properties...
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;END_DECLARE_METACLASS&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;We will see the similar implementation in Blender soon.&lt;/p&gt;
+
+&lt;p&gt;Blender also has a tool &lt;code&gt;makesrna&lt;/code&gt; running at build time
+to automatically generate information(getter, setter, etc)
+for each data structures.
+These informations are used for Python binding.&lt;/p&gt;
+
+&lt;p&gt;I will start to read the source code in the next post.
+And I want to arrange our topics
+from the aspect of a &lt;em&gt;user&lt;/em&gt; of reflection system.
+Questions such as following ones will be answered:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;How to access the corresponding meta part of a Blender module?&lt;/li&gt;
+  &lt;li&gt;How to attach custom properties to the meta classes hierarchy?&lt;/li&gt;
+  &lt;li&gt;What is type inheritance in RNA and how to express “is-a” relations?&lt;/li&gt;
+  &lt;li&gt;How to generate Python bindings automatically for custom types?&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Tue, 29 Dec 2015 00:00:00 -0800</pubDate>
+        <link>http://blender.linearconstraints.net/2015/12/29/blender-reflection-system-part-1.html</link>
+        <guid isPermaLink="true">http://blender.linearconstraints.net/2015/12/29/blender-reflection-system-part-1.html</guid>
+        
+        <category>blender-coding</category>
+        
+        <category>reflection</category>
+        
+        
+      </item>
     
       <item>
         <title>Move Blender extensions from Gist to GitHub</title>
@@ -897,25 +976,6 @@ I leave these things to future posts.&lt;/p&gt;
         <category>blender-coding</category>
         
         <category>modifier</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Preliminary 3D dual contouring</title>
-        <description>&lt;p&gt;I try to do 3D dual contouring in Python today.
-It runs too slow and suffers severe numerical problems in some test cases.
-I guess my intersection solver fails and causes infinite loop.&lt;/p&gt;
-
-&lt;p&gt;Anyway here is a working result I get for the moment:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/preliminary-3d-dc.png&quot; alt=&quot;Preliminary 3D dual contouring&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Fri, 24 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://blender.linearconstraints.net/2015/07/24/preliminary-3d-dual-contouring.html</link>
-        <guid isPermaLink="true">http://blender.linearconstraints.net/2015/07/24/preliminary-3d-dual-contouring.html</guid>
-        
-        <category>blender-scripting</category>
         
         
       </item>
