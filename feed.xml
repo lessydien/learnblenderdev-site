@@ -6,9 +6,106 @@
 </description>
     <link>http://blender.linearconstraints.net/</link>
     <atom:link href="http://blender.linearconstraints.net/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 29 Dec 2015 23:12:07 -0800</pubDate>
-    <lastBuildDate>Tue, 29 Dec 2015 23:12:07 -0800</lastBuildDate>
+    <pubDate>Wed, 17 Feb 2016 18:53:32 -0800</pubDate>
+    <lastBuildDate>Wed, 17 Feb 2016 18:53:32 -0800</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
+    
+      <item>
+        <title>Blender reflection system (part 2)</title>
+        <description>&lt;p&gt;In this post we will look at the RNA tree and
+use several tool functions from &lt;code&gt;RNA_access.h&lt;/code&gt;
+to inspect the structure of RNA.
+We also will have a brief overview of polymorphism
+in RNA.&lt;/p&gt;
+
+&lt;p&gt;As a user of Blender reflection system,
+the first questions are
+where is the root of RNA tree defined
+and what is its lifetime/ownership?&lt;/p&gt;
+
+&lt;p&gt;The root of RNA tree is a &lt;code&gt;BlenderRNA&lt;/code&gt; structure,
+which is a collection of structure RNAs(&lt;code&gt;StructRNA&lt;/code&gt;):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/* File source/blender/makesrna/intern/rna_internal_types.h */&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BlenderRNA&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ListBase&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;structs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The instance of &lt;code&gt;BlenderRNA&lt;/code&gt; is called &lt;code&gt;BLENDER_RNA&lt;/code&gt;,
+which is defined in the file &lt;code&gt;rna_ID_gen.c&lt;/code&gt; as a global variable
+in static storage.
+The &lt;code&gt;BLENDER_RNA&lt;/code&gt; is also declared in the file &lt;code&gt;RNA_access.h&lt;/code&gt;
+so you can access it by including &lt;code&gt;RNA_access.h&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;When a new module type is registered to Blender,
+a corresponding new &lt;code&gt;StructRNA&lt;/code&gt; is created and
+get appended to &lt;code&gt;BLENDER_RNA&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Take Blender operators as an example:
+When a new operator is registered,
+firstly a &lt;code&gt;StructRNA&lt;/code&gt; is created by &lt;code&gt;RNA_def_struct_ptr&lt;/code&gt;,
+and then passed to custom operator registration code
+such as &lt;code&gt;MESH_OT_subdivide&lt;/code&gt;,
+where operator-specific properties will be defined.
+The source code of above process can be found in
+function &lt;code&gt;WM_operatortype_append&lt;/code&gt;
+(file &lt;code&gt;source/blender/windowmanager/intern/wm_operators.c&lt;/code&gt;):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;WM_operatortype_append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;opfunc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wmOperatorType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;wmOperatorType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MEM_callocN&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wmOperatorType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;operatortype&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srna&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RNA_def_struct_ptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BLENDER_RNA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RNA_OperatorProperties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;opfunc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;To inspect the RNA informations I write an operator
+called &lt;code&gt;DumpRNAInfo&lt;/code&gt;.
+The source code can be found &lt;a href=&quot;https://github.com/thebusytypist/BlenderExtraOperators/tree/master/DumpRNAInfo&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;This operator just iterates all RNA nodes and
+output the sub-tree for a given root node.&lt;/p&gt;
+
+&lt;p&gt;For example, the sub-tree for &lt;code&gt;Lamp&lt;/code&gt; type is shown below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/blender-rna-lamp-tree.svg&quot; alt=&quot;blender-rna-lamp-tree&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can use functions such as &lt;code&gt;RNA_struct_is_a&lt;/code&gt;(also declared
+in the header &lt;code&gt;RNA_access.h&lt;/code&gt;) to check
+runtime information of a type.
+For “is-a” checking, Blender has to traverse through the parent link
+to find a match.&lt;/p&gt;
+
+&lt;p&gt;As an extension reading, I suggest to look at
+how LLVM handles the runtime information in constant time&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://llvm.org/docs/ProgrammersManual.html#the-isa-cast-and-dyn-cast-templates&quot; target=&quot;_blank&quot;&gt;http://llvm.org/docs/ProgrammersManual.html#the-isa-cast-and-dyn-cast-templates&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Wed, 17 Feb 2016 00:00:00 -0800</pubDate>
+        <link>http://blender.linearconstraints.net/2016/02/17/blender-reflection-system-part-2.html</link>
+        <guid isPermaLink="true">http://blender.linearconstraints.net/2016/02/17/blender-reflection-system-part-2.html</guid>
+        
+        <category>blender-coding</category>
+        
+        <category>reflection</category>
+        
+        
+      </item>
     
       <item>
         <title>Blender reflection system (part 1)</title>
@@ -863,119 +960,6 @@ It still has some topology issues to be resolved.&lt;/p&gt;
         <guid isPermaLink="true">http://blender.linearconstraints.net/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</guid>
         
         <category>blender-scripting</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Learn how Blender&#39;s modifier system works (part 2)</title>
-        <description>&lt;p&gt;We have learned how a modifier is constructed
-in the &lt;a href=&quot;/2015/07/23/how-modifier-system-works-part-1.html&quot;&gt;previous post&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;In this post we will learn how a modifier is applied.&lt;/p&gt;
-
-&lt;p&gt;We have already known that a modifier defines a derived &lt;code&gt;ModifierTypeInfo&lt;/code&gt; structure.
-Take &lt;code&gt;Array&lt;/code&gt; modifier as an example, its &lt;code&gt;ModifierTypeInfo&lt;/code&gt; is defined
-in the file &lt;code&gt;source/blender/modifiers/intern/MOD_array.c&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;applyModifier&lt;/code&gt; function in &lt;code&gt;ModifierTypeInfo&lt;/code&gt; seems to be the place where actual modifier execution happens.
-We can set a break point in it and do some tracing.&lt;/p&gt;
-
-&lt;p&gt;Following is a call stack for the &lt;code&gt;applyModifier&lt;/code&gt; function:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;arrayModifier_doArray(ArrayModifierData * amd, Scene * scene, Object * ob, DerivedMesh * dm, ModifierApplyFlag flag)
-applyModifier(ModifierData * md, Object * ob, DerivedMesh * dm, ModifierApplyFlag flag)
-modwrap_applyModifier(ModifierData * md, Object * ob, DerivedMesh * dm, ModifierApplyFlag flag)
-mesh_calc_modifiers(Scene * scene, Object * ob, float[3] * inputVertexCos, DerivedMesh * * deform_r, DerivedMesh * * final_r, int useRenderParams, int useDeform, int needMapping, unsigned __int64 dataMask, int index, int useCache, int build_shapekey_layers)
-mesh_build_data(Scene * scene, Object * ob, unsigned __int64 dataMask, int build_shapekey_layers, int needMapping)
-makeDerivedMesh(Scene * scene, Object * ob, BMEditMesh * em, unsigned __int64 dataMask, int build_shapekey_layers)
-BKE_object_handle_data_update(EvaluationContext * eval_ctx, Scene * scene, Object * ob)
-BKE_object_handle_update_ex(EvaluationContext * eval_ctx, Scene * scene, Object * ob, RigidBodyWorld * rbw, const bool do_proxy_update)
-scene_update_object_func(TaskPool * pool, void * taskdata, int threadid)
-BLI_task_pool_work_and_wait(TaskPool * pool)
-scene_update_objects(EvaluationContext * eval_ctx, Main * bmain, Scene * scene, Scene * scene_parent)
-scene_update_tagged_recursive(EvaluationContext * eval_ctx, Main * bmain, Scene * scene, Scene * scene_parent)
-BKE_scene_update_tagged(EvaluationContext * eval_ctx, Main * bmain, Scene * scene)
-wm_event_do_notifiers(bContext * C)
-WM_main(bContext * C)
-main(int argc, const unsigned char * * UNUSED_argv_c)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In the function &lt;code&gt;mesh_calc_modifiers&lt;/code&gt; we see a loop through all modifiers:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;md&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;md&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;md&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// ...
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;ndm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modwrap_applyModifier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;md&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ob&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;app_flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ASSERT_IS_VALID_DM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ndm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;cm&quot;&gt;/* if the modifier returned a new dm, release the old one */&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ndm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;release&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-        &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ndm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// ...
-&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// ...
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Inside this loop each modifier gets executed in &lt;code&gt;modwrap_applyModifier&lt;/code&gt; function.&lt;/p&gt;
-
-&lt;p&gt;We notice that a &lt;code&gt;DerivedMesh&lt;/code&gt;(file &lt;code&gt;source/blender/blenkernel/BKE_DerivedMesh.h&lt;/code&gt;) object(variable &lt;code&gt;dm&lt;/code&gt; in the code) is passed to the modifier
-and then another &lt;code&gt;DerivedMesh&lt;/code&gt; object(variable &lt;code&gt;ndm&lt;/code&gt; in the code) is returned back to the caller.
-We can then conclude that the &lt;code&gt;DerivedMesh&lt;/code&gt; is the media that gets passed through modifier stack.
-&lt;a href=&quot;http://wiki.blender.org/index.php/Dev:Source/Modeling/DerivedMesh&quot;&gt;Here&lt;/a&gt; is the document for &lt;code&gt;Derivedmesh&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Also note that the caller of a modifier always &lt;em&gt;own&lt;/em&gt; the &lt;code&gt;DerivedMesh&lt;/code&gt; object.
-If we construct a new &lt;code&gt;DerivedMesh&lt;/code&gt; in our modifier like what the &lt;code&gt;Array&lt;/code&gt; modifier does,
-the new derived mesh will be &lt;em&gt;moved&lt;/em&gt; to the caller, and the old one will be released.&lt;/p&gt;
-
-&lt;p&gt;Now we go back to the function &lt;code&gt;arrayModifier_doArray&lt;/code&gt;, where actual modifier action happens.
-This is a long function. I try to provide an overview of what it does.&lt;/p&gt;
-
-&lt;p&gt;In the beginning of &lt;code&gt;arrayModifier_doArray&lt;/code&gt; it collects options and parameters from the &lt;code&gt;ArrayModifierData&lt;/code&gt;(variable &lt;code&gt;amd&lt;/code&gt; in following source code).
-For example:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;use_merge&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MOD_ARR_MERGE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// ...
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;use_offset_ob&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;offset_type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MOD_ARR_OFF_OBJ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;amd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;offset_ob&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// ...
-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;amd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Then it reads in the &lt;code&gt;DerivedMesh&lt;/code&gt; which is passed from previous modifier in the modifier stack:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;chunk_nverts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getNumVerts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;chunk_nedges&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getNumEdges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;chunk_nloops&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getNumLoops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;chunk_npolys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getNumPolys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// ...
-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src_mvert&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getVertArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;After all information has been ready, a new derived mesh will be constructed:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CDDM_from_template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result_nverts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result_nedges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result_nloops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result_npolys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Then we can write to this new derived mesh:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/* copy customdata to original geometry */&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;DM_copy_vert_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chunk_nverts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;DM_copy_edge_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chunk_nedges&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;DM_copy_loop_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chunk_nloops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;DM_copy_poly_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chunk_npolys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;//&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Finally the modifier finishes by returning the new derived mesh: &lt;code&gt;return result;&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Now we have learned almost all about Blender modifier system,
-except that the dependency graph related functions in a modifier implementation.
-I leave these things to future posts.&lt;/p&gt;
-</description>
-        <pubDate>Sat, 25 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://blender.linearconstraints.net/2015/07/25/how-modifier-system-works-part-2.html</link>
-        <guid isPermaLink="true">http://blender.linearconstraints.net/2015/07/25/how-modifier-system-works-part-2.html</guid>
-        
-        <category>blender-coding</category>
-        
-        <category>modifier</category>
         
         
       </item>
