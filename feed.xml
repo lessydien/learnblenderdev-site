@@ -6,9 +6,94 @@
 </description>
     <link>http://blender.linearconstraints.net/</link>
     <atom:link href="http://blender.linearconstraints.net/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 17 Feb 2016 18:53:32 -0800</pubDate>
-    <lastBuildDate>Wed, 17 Feb 2016 18:53:32 -0800</lastBuildDate>
+    <pubDate>Sat, 20 Feb 2016 12:38:56 -0800</pubDate>
+    <lastBuildDate>Sat, 20 Feb 2016 12:38:56 -0800</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
+    
+      <item>
+        <title>Notes on offset surfaces and shape optimization</title>
+        <description>&lt;p&gt;In this post I will do a summery of reading
+on a paper&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; about shape optimization using offset surfaces.
+This paper is suggested by Campbell Barton(ideasman42)
+and it may be used to implement new solidify tools
+in the coming GSOC 2016.&lt;/p&gt;
+
+&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;
+&lt;p&gt;In this paper&lt;sup id=&quot;fnref:1:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; the stated problem is modeled
+as an optimization problem
+using offset direction &lt;script type=&quot;math/tex&quot;&gt; \mathcal{V} &lt;/script&gt;,
+and offset depth &lt;script type=&quot;math/tex&quot;&gt; \delta &lt;/script&gt;.
+The objective function and constraints are built based on
+&lt;script type=&quot;math/tex&quot;&gt; \delta &lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;A mean curvature flow based method is used to find the “shape skeleton”
+(or meso-skeletons in the paper),
+which we can take as an upper bound for how far we can offset
+from the shape surface.
+By using this upper bound we can also avoid self-intersection.&lt;/p&gt;
+
+&lt;p&gt;The offset direction can also be retrieved using the shape skeleton:
+we just take the direction from one vertex from
+contracted surface to its counterpart on the original surface.&lt;/p&gt;
+
+&lt;p&gt;If we try to solve the problem based on current setting,
+we would suffer from high complexity due to potential large number
+of vertices.
+So the author uses manifold harmonics to transform the
+explicit mesh representation into several discrete basis.
+And hence then the original problem of searching for &lt;script type=&quot;math/tex&quot;&gt; \delta &lt;/script&gt;
+gets transformed into searching for a vector of basis weights.&lt;/p&gt;
+
+&lt;p&gt;Starting from section 6 the author shows
+how to represent geometric/mechanic constraints.&lt;/p&gt;
+
+&lt;h2 id=&quot;notes-and-thoughts&quot;&gt;Notes and thoughts&lt;/h2&gt;
+
+&lt;p&gt;I have known the mean curvature flow problem before.
+And I learned it as a non-linear hyperbolic equation.
+In this paper, the approach used is slightly different&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;p&gt;For manifold harmonics, which is used for order reduction,
+several (discrete)differential geometric tools will be used.
+I find this book&lt;sup id=&quot;fnref:3&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt; really useful for implementation.
+Several concepts,
+such as Laplace-Beltrami operator, one-ring neighborhood, etc.
+are introduced in chapter 3.&lt;/p&gt;
+
+&lt;p&gt;For the future Solidify tools of Blender,
+I also consider other potential solutions than the one in this paper.
+The first idea I come up with
+is that I can compute the distance field for the given mesh,
+and solve a level-set problem(almost exactly a mean curvature flow problem) to contract or dilate the distance field,
+finally a iso-surface extraction method(e.g. marching cube or dual contouring) is used to get the mesh representation
+for the offset surface.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;Musialski, Przemyslaw, et al. “Reduced-order shape optimization using offset surfaces.” ACM Trans. Graph 34.4 (2015): 102. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:1:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot;&gt;
+      &lt;p&gt;Tagliasacchi, Andrea, et al. “Mean curvature skeletons.” Computer Graphics Forum. Vol. 31. No. 5. Blackwell Publishing Ltd, 2012. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot;&gt;
+      &lt;p&gt;Botsch, Mario, et al. Polygon mesh processing. CRC press, 2010. &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sat, 20 Feb 2016 00:00:00 -0800</pubDate>
+        <link>http://blender.linearconstraints.net/2016/02/20/notes-on-offset-surfaces-and-shape-optimization.html</link>
+        <guid isPermaLink="true">http://blender.linearconstraints.net/2016/02/20/notes-on-offset-surfaces-and-shape-optimization.html</guid>
+        
+        <category>summary-of-reading</category>
+        
+        <category>gsoc2016</category>
+        
+        
+      </item>
     
       <item>
         <title>Blender reflection system (part 2)</title>
@@ -919,47 +1004,6 @@ so you can play around with them.&lt;/p&gt;
         <category>blender-scripting</category>
         
         <category>mathematics</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Fix mesh grid indexing in 3D dual contouring</title>
-        <description>&lt;p&gt;I fixed a problem in my previous 3D dual contouring script today.&lt;/p&gt;
-
-&lt;p&gt;For a given mesh grid constructed by &lt;code&gt;numpy.meshgrid&lt;/code&gt;, for example:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;np&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;meshgrid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;F&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vectorize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;A coordinate of &lt;code&gt;(x0 + step * x, y0 + step * y, z0 + step * z)&lt;/code&gt;,
-whose integer grid coordinate is &lt;code&gt;(x, y, z)&lt;/code&gt;,
-needs to be indexed from the mesh grid using &lt;code&gt;s[y, x, z]&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Now the 3D heart function can be successfully contoured:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/heart-function-3d-dc.png&quot; alt=&quot;3D dual contoured heart function&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The source code of this script can be found &lt;a href=&quot;https://gist.github.com/thebusytypist/b043745a6d7712998485&quot;&gt;here&lt;/a&gt;.
-It still has some topology issues to be resolved.&lt;/p&gt;
-</description>
-        <pubDate>Sat, 25 Jul 2015 02:57:00 -0700</pubDate>
-        <link>http://blender.linearconstraints.net/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</link>
-        <guid isPermaLink="true">http://blender.linearconstraints.net/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html</guid>
-        
-        <category>blender-scripting</category>
         
         
       </item>

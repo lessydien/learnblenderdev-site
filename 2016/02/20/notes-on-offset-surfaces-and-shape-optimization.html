@@ -6,15 +6,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Learn how Blender's modifier system works (part 1)</title>
-  <meta name="description" content="In this and following several posts I will write about Blender’s modifier system.I expect following questions to be answered:">
+  <title>Notes on offset surfaces and shape optimization</title>
+  <meta name="description" content="In this post I will do a summery of readingon a paper1 about shape optimization using offset surfaces.This paper is suggested by Campbell Barton(ideasman42)a...">
 
   <link rel="shortcut icon" href="/public/favicon.ico">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://blender.linearconstraints.net/2015/07/23/how-modifier-system-works-part-1.html">
+  <link rel="canonical" href="http://blender.linearconstraints.net/2016/02/20/notes-on-offset-surfaces-and-shape-optimization.html">
   <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://blender.linearconstraints.net/feed.xml" />
 
+  
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 </head>
 
@@ -69,84 +71,82 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Learn how Blender's modifier system works (part 1)</h1>
-    <p class="post-meta">Jul 23, 2015</p>
+    <h1 class="post-title">Notes on offset surfaces and shape optimization</h1>
+    <p class="post-meta">Feb 20, 2016</p>
   </header>
 
   <article class="post-content">
-    <p>In this and following several posts I will write about Blender’s modifier system.
-I expect following questions to be answered:</p>
+    <p>In this post I will do a summery of reading
+on a paper<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup> about shape optimization using offset surfaces.
+This paper is suggested by Campbell Barton(ideasman42)
+and it may be used to implement new solidify tools
+in the coming GSOC 2016.</p>
 
-<ol>
-  <li>How is modifiers’ source code organized in the source tree?</li>
-  <li>How is a modifier registered to Blender system?</li>
-  <li>Where and when does a modifier operate?</li>
-  <li>How are modifiers combined together?</li>
-</ol>
+<h2 id="overview">Overview</h2>
+<p>In this paper<sup id="fnref:1:1"><a href="#fn:1" class="footnote">1</a></sup> the stated problem is modeled
+as an optimization problem
+using offset direction <script type="math/tex"> \mathcal{V} </script>,
+and offset depth <script type="math/tex"> \delta </script>.
+The objective function and constraints are built based on
+<script type="math/tex"> \delta </script>.</p>
 
-<p>It seems that the last question is too broad. Let me elaborate to make it more specific.</p>
+<p>A mean curvature flow based method is used to find the “shape skeleton”
+(or meso-skeletons in the paper),
+which we can take as an upper bound for how far we can offset
+from the shape surface.
+By using this upper bound we can also avoid self-intersection.</p>
 
-<p>As you know, Blender organizes all modifiers in a stack.
-Then multiple modifiers can be combined and chained together.
-Two adjacent modifiers in the stack must agree in a data format
-so that the processed data from previous modifier can be handed over
-to the next one.
-So what is the protocol of data format which is used among different modifiers?</p>
+<p>The offset direction can also be retrieved using the shape skeleton:
+we just take the direction from one vertex from
+contracted surface to its counterpart on the original surface.</p>
 
-<p>Now let us get started with above questions in mind.</p>
+<p>If we try to solve the problem based on current setting,
+we would suffer from high complexity due to potential large number
+of vertices.
+So the author uses manifold harmonics to transform the
+explicit mesh representation into several discrete basis.
+And hence then the original problem of searching for <script type="math/tex"> \delta </script>
+gets transformed into searching for a vector of basis weights.</p>
 
-<p>First we start with the function where a modifier is added to an object.
-Hover the cursor on the <code>Array</code> modifier icon from the <code>Add Modifier</code> menu in the modifiers panel,
-you can see the Python code in the pop-up: <code>bpy.ops.object.modifier_add(type="ARRAY")</code>.
-This is an operator named <code>modifier_add</code>.
-Search this name in the source code you will find the operator registration function <code>OBJECT_OT_modifier_add</code>.
-And then you can locate the actual execution function of this operator: <code>modifier_add_exec</code>(file <code>source/blender/editors/object/object_modifier.c</code>).
-We add a break point in <code>modifier_add_exec</code> to trace the construction of a modifier.</p>
+<p>Starting from section 6 the author shows
+how to represent geometric/mechanic constraints.</p>
 
-<p>Now we try to add an <code>Array</code> modifier and step into the <code>ED_object_modifier_add</code> from <code>modifier_add_exec</code>.</p>
+<h2 id="notes-and-thoughts">Notes and thoughts</h2>
 
-<p>In <code>ED_object_modifier_add</code>,</p>
+<p>I have known the mean curvature flow problem before.
+And I learned it as a non-linear hyperbolic equation.
+In this paper, the approach used is slightly different<sup id="fnref:2"><a href="#fn:2" class="footnote">2</a></sup>.</p>
 
-<ol>
-  <li>
-    <p>Information of a modifier is retrieved by calling function
-<code>modifierType_getInfo</code>(file <code>source/blender/blenkernel/intern/modifier.c</code>)
-on a given <code>ModifierType</code>(file <code>source/blender/makesdna/DNA_modifier_types.h</code>).
-This information is stored in <code>struct ModifierTypeInfo</code>(file <code>source/blender/blenkernel/BKE_modifier.h</code>).
-You can register your own modifiers by providing informations for them in this file.</p>
-  </li>
-  <li>
-    <p>A new modifier is constructed in function <code>modifier_new</code>(file <code>source/blender/blenkernel/intern/modifier.c</code>).
-In this function, a <code>ModifierData</code> structure(file <code>source/blender/makesdna/DNA_modifier_types.h</code>) is allocated
-through <code>MEM_callocN(mti-&gt;structSize, mti-&gt;structName)</code>.</p>
+<p>For manifold harmonics, which is used for order reduction,
+several (discrete)differential geometric tools will be used.
+I find this book<sup id="fnref:3"><a href="#fn:3" class="footnote">3</a></sup> really useful for implementation.
+Several concepts,
+such as Laplace-Beltrami operator, one-ring neighborhood, etc.
+are introduced in chapter 3.</p>
 
-    <p>Note that a “derived” <code>ModifierData</code> is actually allocated here.
-The allocator uses a structure size recored in <code>ModifierTypeInfo</code>(<code>mti</code> variable in the code), which usually is different from <code>ModifierData</code>’s.</p>
+<p>For the future Solidify tools of Blender,
+I also consider other potential solutions than the one in this paper.
+The first idea I come up with
+is that I can compute the distance field for the given mesh,
+and solve a level-set problem(almost exactly a mean curvature flow problem) to contract or dilate the distance field,
+finally a iso-surface extraction method(e.g. marching cube or dual contouring) is used to get the mesh representation
+for the offset surface.</p>
 
-    <p>For <code>Array</code> modifier, we can see its derived <code>ModifierData</code> is named as <code>ArrayModifierData</code>,
-which is defined in the file <code>source/blender/makesdna/DNA_modifier_types.h</code>.</p>
+<h2 id="references">References</h2>
 
-    <p>After that, the modifier gets initialized through <code>if (mti-&gt;initData) mti-&gt;initData(md);</code>.</p>
-
-    <p>The function <code>initData</code> is a function pointer you could set in the <code>ModifierTypeInfo</code> structure.
-By stepping into this function you can reach the definition of <code>Array</code> modifier’s initializer,
-which resides in the file <code>source/blender/modifiers/intern/MOD_array.c</code>.
-During the initialization stage, one modifier’s “derived” <code>ModifierData</code> is initialized.</p>
-
-    <p>In the file <code>MOD_array.c</code> there are also many other functions.
-These functions could be set to the <code>ModifierTypeInfo</code> structure when you define the modifier.</p>
-
-    <p>Along with the file <code>MOD_array.c</code> there are many other files with a prefix of <code>MOD_</code>.
-These are the sources of other modifiers. They reside in the folder <code>source/blender/modifiers/intern</code>.</p>
-  </li>
-</ol>
-
-<p>Speak in the Object-Oriented glossary,
-the <code>ModifierTypeInfo</code> is the common interface that modifiers should derive from.</p>
-
-<p>Now the definition and construction of a modifier are finished.</p>
-
-<p>In the next part I will dive into the execution code of the <code>Array</code> modifier.</p>
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>Musialski, Przemyslaw, et al. “Reduced-order shape optimization using offset surfaces.” ACM Trans. Graph 34.4 (2015): 102. <a href="#fnref:1" class="reversefootnote">&#8617;</a> <a href="#fnref:1:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+    </li>
+    <li id="fn:2">
+      <p>Tagliasacchi, Andrea, et al. “Mean curvature skeletons.” Computer Graphics Forum. Vol. 31. No. 5. Blackwell Publishing Ltd, 2012. <a href="#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p>Botsch, Mario, et al. Polygon mesh processing. CRC press, 2010. <a href="#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
 
   </article>
 

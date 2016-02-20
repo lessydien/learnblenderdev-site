@@ -6,13 +6,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Blender reflection system (part 1)</title>
-  <meta name="description" content="While I was reading the modifier codeI found many data types such as PointerRNA and StructRNA.These data types are parts of Blender’s reflection system.The r...">
+  <title>Learn Blender Development</title>
+  <meta name="description" content="A blog on scripting and extending of Blender.
+">
 
   <link rel="shortcut icon" href="/public/favicon.ico">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://blender.linearconstraints.net/2015/12/29/blender-reflection-system-part-1.html">
+  <link rel="canonical" href="http://blender.linearconstraints.net/page3/">
   <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://blender.linearconstraints.net/feed.xml" />
 
   
@@ -66,99 +67,51 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="post">
+        <div class="home">
 
-  <header class="post-header">
-    <h1 class="post-title">Blender reflection system (part 1)</h1>
-    <p class="post-meta">Dec 29, 2015</p>
-  </header>
+  <h1 class="page-heading">Posts</h1>
 
-  <article class="post-content">
-    <p>While I was reading the modifier code
-I found many data types such as <code>PointerRNA</code> and <code>StructRNA</code>.
-These data types are parts of Blender’s reflection system.
-The reflection system plays an important rule in Blender native development,
-so I plan to spend some days on reading its source code.</p>
-
-<p>A reflection system usually handles following tasks:</p>
-
-<ol>
-  <li>Manage the size, alignment, endianness, padding of data structures.</li>
-  <li>Record meta information of data structures, such as
-minimum, maximum, default value, display name for GUI, etc.</li>
-  <li>Enumerate properties or fields of data structure.</li>
-  <li>Provide foreign language binding.</li>
-</ol>
-
-<p>The first task is handled by Blender’s DNA system.
-And the rest tasks are handled by Blender’s RNA system.
-Since the general Blender programming involves with
-meta information retrieval and properties enumeration only,
-we concentrate on the RNA system in this and following posts.</p>
-
-<p>Currently C/C++ does not have built-in reflection syntax,
-so reflection is usually implemented manually.</p>
-
-<p>One way to implement reflection is to define a meta-class
-while you are defining a concrete class.
-Typically,
-you have a global static variable called <code>MetaClassManager</code>,
-and use a predefined macro <code>DECLARE_METACLASS(Object)</code>
-to declare a meta class for the concrete class <code>Object</code>
-and insert an instance of meta class into <code>MetaClassManager</code>.</p>
-
-<p>You will see some code looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">class</span> <span class="nc">Object</span> <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-    <span class="kt">float</span> <span class="n">mass</span><span class="p">;</span>
-
-    <span class="c1">// Other properties for Object...
-</span><span class="p">};</span>
-
-<span class="n">BEGIN_DECLARE_METACLASS</span><span class="p">(</span><span class="n">Object</span><span class="p">)</span>
-    <span class="n">DECLARE_FLOAT_METAPROPERTY</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">100.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="s">"Mass"</span><span class="p">);</span>
-    <span class="c1">// Other meta properties...
-</span><span class="n">END_DECLARE_METACLASS</span></code></pre></figure>
-
-<p>We will see the similar implementation in Blender soon.</p>
-
-<p>Blender also has a tool <code>makesrna</code> running at build time
-to automatically generate information(getter, setter, etc)
-for each data structures.
-These informations are used for Python binding.</p>
-
-<p>I will start to read the source code in the next post.
-And I want to arrange our topics
-from the aspect of a <em>user</em> of reflection system.
-Questions such as following ones will be answered:</p>
-
-<ul>
-  <li>How to access the corresponding meta part of a Blender module?</li>
-  <li>How to attach custom properties to the meta classes hierarchy?</li>
-  <li>What is type inheritance in RNA and how to express “is-a” relations?</li>
-  <li>How to generate Python bindings automatically for custom types?</li>
-</ul>
-
-  </article>
-
-  <hr>
-  
-  
-  <div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES * * */
-    var disqus_shortname = 'learnblenderdev';
+  <ul class="post-list">
     
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+      <li>
+        <span class="post-meta">Mar 19, 2015</span>
+
+        <h2>
+          <a class="post-link" href="/2015/03/19/blender-as-module.html">Use Blender as Python module</a>
+        </h2>
+      </li>
+    
+  </ul>
+
+  <!-- Pagination links -->
   
+  <div class="pagination">
+    
+      <a href="/page2">&laquo; Prev</a>
+    
+
+    
+      
+        <a href="/index.html">1</a>
+      
+    
+      
+        <a href="/page2">2</a>
+      
+    
+      
+        <em>3</em>
+      
+    
+
+    
+      <span>Next &raquo;</span>
+    
+  </div>
+  
+
+  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
+
 </div>
 
       </div>
