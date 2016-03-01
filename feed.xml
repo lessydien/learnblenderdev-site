@@ -6,8 +6,8 @@
 </description>
     <link>http://blender.linearconstraints.net/</link>
     <atom:link href="http://blender.linearconstraints.net/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 01 Mar 2016 12:15:30 -0800</pubDate>
-    <lastBuildDate>Tue, 01 Mar 2016 12:15:30 -0800</lastBuildDate>
+    <pubDate>Tue, 01 Mar 2016 12:43:28 -0800</pubDate>
+    <lastBuildDate>Tue, 01 Mar 2016 12:43:28 -0800</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
     
       <item>
@@ -20,7 +20,7 @@ But the essential idea is not so hard to get.&lt;/p&gt;
 
 &lt;p&gt;I use a parameter configuration that “Fill Rim” is turned off.
 In this way the actual active code path of &lt;code&gt;applyModifier&lt;/code&gt;
-is very short and it is easies to understand the essence.&lt;/p&gt;
+is very short and it is easier to understand the essence.&lt;/p&gt;
 
 &lt;h2 id=&quot;implementation-and-source-code-excerpts&quot;&gt;Implementation and source code excerpts&lt;/h2&gt;
 
