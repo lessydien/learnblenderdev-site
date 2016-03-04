@@ -6,8 +6,8 @@
 </description>
     <link>http://blender.linearconstraints.net/</link>
     <atom:link href="http://blender.linearconstraints.net/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 01 Mar 2016 12:43:28 -0800</pubDate>
-    <lastBuildDate>Tue, 01 Mar 2016 12:43:28 -0800</lastBuildDate>
+    <pubDate>Thu, 03 Mar 2016 22:04:07 -0800</pubDate>
+    <lastBuildDate>Thu, 03 Mar 2016 22:04:07 -0800</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
     
       <item>
@@ -197,7 +197,7 @@ or just the level set method.&lt;/p&gt;
     
       <item>
         <title>Notes on undo</title>
-        <description>&lt;p&gt;Here are some random notes on Blender undo implementation.
+        <description>&lt;p&gt;Here are some random notes on Blender undo mechanism.
 This is to prepare for optimizing the memory usage of undo stack.&lt;/p&gt;
 
 &lt;p&gt;Undo is implemented as a Blender operator
