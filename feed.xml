@@ -6,9 +6,46 @@
 </description>
     <link>http://blender.linearconstraints.net/</link>
     <atom:link href="http://blender.linearconstraints.net/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 03 Mar 2016 22:04:07 -0800</pubDate>
-    <lastBuildDate>Thu, 03 Mar 2016 22:04:07 -0800</lastBuildDate>
+    <pubDate>Tue, 22 Mar 2016 14:17:55 -0700</pubDate>
+    <lastBuildDate>Tue, 22 Mar 2016 14:17:55 -0700</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
+    
+      <item>
+        <title>Union at self-intersection</title>
+        <description>&lt;p&gt;This post is for preparing the Blender GSoC project.
+In the previous posts I tried several signed distance field/PDE based methods
+for the new Solidify modifier.&lt;/p&gt;
+
+&lt;p&gt;Here is another one which also makes use of signed distance field
+but has a more straightforward implementation.
+Simply put, I offset the mesh surface and perform a union
+at the self-intersection places.&lt;/p&gt;
+
+&lt;p&gt;Following illustrates the basic idea of this approach.
+The source code is provided on
+&lt;a href=&quot;https://gist.github.com/thebusytypist/dc7492c34d85614e2eff&quot; target=&quot;_blank&quot;&gt;gist&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/clip-at-zero-level.svg&quot; alt=&quot;clip-at-zero-level&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Note that I use signed distance function to determine
+if a vertex resides inside a polygon,
+rather than to fire a ray and compute the winding number.&lt;/p&gt;
+
+&lt;p&gt;In my opinion, the computation of winding number by firing a ray is
+not numerically robust and we have to handle the corner cases
+(such as co-planner issues, tangent hits, multiple counts at intersection,
+etc.) very carefully.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 22 Mar 2016 00:00:00 -0700</pubDate>
+        <link>http://blender.linearconstraints.net/2016/03/22/union-at-self-intersection.html</link>
+        <guid isPermaLink="true">http://blender.linearconstraints.net/2016/03/22/union-at-self-intersection.html</guid>
+        
+        <category>gsoc2016</category>
+        
+        <category>mathematics</category>
+        
+        
+      </item>
     
       <item>
         <title>Notes on current Solidify modifier</title>
@@ -1013,74 +1050,6 @@ I leave this for future works.&lt;/p&gt;
         <category>blender-coding</category>
         
         <category>user-interface</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Use Blender as a research platform</title>
-        <description>&lt;p&gt;When I was studying Computer Graphics as an undergraduate student,
-I saw many people doing their research or course project in an ad-hoc way:
-the implementation is not designed carefully, the sample test data are hard coded
-and it is not easy to visualize the experiment result.&lt;/p&gt;
-
-&lt;p&gt;This is fine for a tentative implementation of a paper or a course project.
-But I think we could do much better with only a little extra effort by using Blender.&lt;/p&gt;
-
-&lt;p&gt;In the fields such as Computer Graphics, Computational Science(fluid simulations, FEM simulations),
-with the help of Blender, we can:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Build experiment data in an intuitive way.
-For example, we can put an object in the scene by drag and drop
-rather than hard code its position as &lt;code&gt;(1.414, 1.414, 0)&lt;/code&gt;.
-This boosts our productivity.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Make use of Blender’s rendering system to produce publishing-quality demonstrations.
-This can be useful for physics simulation projects.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Make use of tools from Blender to boost productivity further.
-For example, the Python binding is more friendly than C++
-as a programmable interface.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Besides, by fitting your implementation into Blender system,
-your work can reach much more users, including artists and developers from industry.&lt;/p&gt;
-
-&lt;p&gt;In the following several weeks, I will learn how to achieve my goals.
-Concretely, I will:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Learn how to write a simulate modifier.
-A good example is the Particle System modifier.
-I will also learn how caching and baking work.
-The Cloth modifier may worth reading as well.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Learn how a modifier interacts with others in a scene.
-We will look at Particle System/Cloth and Collision modifiers
-to learn how to do collision detection/handling among objects in a scene.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Learn how to add a new context editor.
-By “context editors” I mean the properties panels
-such as Render, Render Layers, Scene, World, Object,
-Constraints, Modifiers, Data, Material, Texture, Particles and Physics.
-This is optional
-but it would be more clear if we group logical related properties in a separate context.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Wed, 12 Aug 2015 00:00:00 -0700</pubDate>
-        <link>http://blender.linearconstraints.net/2015/08/12/use-blender-as-a-research-platform.html</link>
-        <guid isPermaLink="true">http://blender.linearconstraints.net/2015/08/12/use-blender-as-a-research-platform.html</guid>
-        
-        <category>general</category>
         
         
       </item>

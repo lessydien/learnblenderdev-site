@@ -6,16 +6,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Learn Blender Development</title>
-  <meta name="description" content="A blog on scripting and extending of Blender.
-">
+  <title>Union at self-intersection</title>
+  <meta name="description" content="This post is for preparing the Blender GSoC project.In the previous posts I tried several signed distance field/PDE based methodsfor the new Solidify modifier.">
 
   <link rel="shortcut icon" href="/public/favicon.ico">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://blender.linearconstraints.net/page2/">
+  <link rel="canonical" href="http://blender.linearconstraints.net/2016/03/22/union-at-self-intersection.html">
   <link rel="alternate" type="application/atom+xml" title="Learn Blender Development" href="http://blender.linearconstraints.net/feed.xml" />
 
+  
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 </head>
 
@@ -67,131 +68,57 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <div class="post">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title">Union at self-intersection</h1>
+    <p class="post-meta">Mar 22, 2016</p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Aug 10, 2015</span>
+  <article class="post-content">
+    <p>This post is for preparing the Blender GSoC project.
+In the previous posts I tried several signed distance field/PDE based methods
+for the new Solidify modifier.</p>
 
-        <h2>
-          <a class="post-link" href="/2015/08/10/notes-on-construction-of-derived-mesh.html">Notes on construction of DerivedMesh</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 4, 2015</span>
+<p>Here is another one which also makes use of signed distance field
+but has a more straightforward implementation.
+Simply put, I offset the mesh surface and perform a union
+at the self-intersection places.</p>
 
-        <h2>
-          <a class="post-link" href="/2015/08/04/how-modifier-system-works-part-3.html">Learn how Blender's modifier system works (part 3)</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 28, 2015</span>
+<p>Following illustrates the basic idea of this approach.
+The source code is provided on
+<a href="https://gist.github.com/thebusytypist/dc7492c34d85614e2eff" target="_blank">gist</a>.</p>
 
-        <h2>
-          <a class="post-link" href="/2015/07/28/discrete-gauss-bonnet-theorem.html">Discrete Gauss-Bonnet theorem in Blender</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 25, 2015</span>
+<p><img src="/assets/clip-at-zero-level.svg" alt="clip-at-zero-level" width="400px" /></p>
 
-        <h2>
-          <a class="post-link" href="/2015/07/25/fix-meshgrid-indexing-in-3d-dual-contouring.html">Fix mesh grid indexing in 3D dual contouring</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 25, 2015</span>
+<p>Note that I use signed distance function to determine
+if a vertex resides inside a polygon,
+rather than to fire a ray and compute the winding number.</p>
 
-        <h2>
-          <a class="post-link" href="/2015/07/25/how-modifier-system-works-part-2.html">Learn how Blender's modifier system works (part 2)</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 24, 2015</span>
+<p>In my opinion, the computation of winding number by firing a ray is
+not numerically robust and we have to handle the corner cases
+(such as co-planner issues, tangent hits, multiple counts at intersection,
+etc.) very carefully.</p>
 
-        <h2>
-          <a class="post-link" href="/2015/07/24/preliminary-3d-dual-contouring.html">Preliminary 3D dual contouring</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 23, 2015</span>
+  </article>
 
-        <h2>
-          <a class="post-link" href="/2015/07/23/how-modifier-system-works-part-1.html">Learn how Blender's modifier system works (part 1)</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 22, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/2015/07/22/revise-2d-dual-contouring.html">Some updates on my 2D dual contouring script</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 16, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/2015/07/16/bpy-2d-dual-contouring.html">2D dual contouring in Blender script</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 5, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/2015/04/05/construct-bmesh-from-mesh.html">Construct BMesh from Mesh</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 1, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/2015/04/01/analyze-primitive-cube-add-operator.html">Analyze the cube adding operator</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <!-- Pagination links -->
+  <hr>
   
-  <div class="pagination">
-    
-      <a href="/">&laquo; Prev</a>
-    
-
-    
-      
-        <a href="/index.html">1</a>
-      
-    
-      
-        <em>2</em>
-      
-    
-      
-        <a href="/page3">3</a>
-      
-    
-
-    
-      <a href="/page3">Next &raquo;</a>
-    
-  </div>
   
-
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'learnblenderdev';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
 </div>
 
       </div>
